@@ -249,9 +249,132 @@
       <DependentUpon>ShowsGarageData.mdf</DependentUpon>
     </Content>
     <Content Include="Web.config" />
+    <Content Include="Web_Files\Images\icons\Show%27s Garage Logo BG.png" />
+    <Content Include="Web_Files\Images\icons\Show%27s Garage Logo.png" />
+    <Content Include="Web_Files\Master_Pages\Styles\homePage.css" />
+    <Content Include="Web_Files\Master_Pages\Styles\login.css" />
+    <Content Include="Web_Files\Master_Pages\Styles\siteMaster.css" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="homePage.aspx.cs">
+      <DependentUpon>homePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="homePage.aspx.designer.cs">
+      <DependentUpon>homePage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\attributes.aspx.cs">
+      <DependentUpon>attributes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\attributes.aspx.designer.cs">
+      <DependentUpon>attributes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\dashboard.aspx.cs">
+      <DependentUpon>dashboard.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\dashboard.aspx.designer.cs">
+      <DependentUpon>dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\expenses.aspx.cs">
+      <DependentUpon>expenses.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\expenses.aspx.designer.cs">
+      <DependentUpon>expenses.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\orders.aspx.cs">
+      <DependentUpon>orders.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\orders.aspx.designer.cs">
+      <DependentUpon>orders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\products.aspx.cs">
+      <DependentUpon>products.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\products.aspx.designer.cs">
+      <DependentUpon>products.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\reports.aspx.cs">
+      <DependentUpon>reports.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\reports.aspx.designer.cs">
+      <DependentUpon>reports.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\users.aspx.cs">
+      <DependentUpon>users.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\users.aspx.designer.cs">
+      <DependentUpon>users.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\cart.aspx.cs">
+      <DependentUpon>cart.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\cart.aspx.designer.cs">
+      <DependentUpon>cart.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\checkout.aspx.cs">
+      <DependentUpon>checkout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\checkout.aspx.designer.cs">
+      <DependentUpon>checkout.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Master_Pages\Pages\login.aspx.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Master_Pages\Pages\login.aspx.designer.cs">
+      <DependentUpon>login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\myOrders.aspx.cs">
+      <DependentUpon>myOrders.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\myOrders.aspx.designer.cs">
+      <DependentUpon>myOrders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\productDetails.aspx.cs">
+      <DependentUpon>productDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\productDetails.aspx.designer.cs">
+      <DependentUpon>productDetails.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\profile.aspx.cs">
+      <DependentUpon>profile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\profile.aspx.designer.cs">
+      <DependentUpon>profile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\register.aspx.cs">
+      <DependentUpon>register.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\register.aspx.designer.cs">
+      <DependentUpon>register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\shop.aspx.cs">
+      <DependentUpon>shop.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\shop.aspx.designer.cs">
+      <DependentUpon>shop.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Master_Pages\Pages\Site.Master.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Master_Pages\Pages\Site.Master.designer.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -261,15 +384,40 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="homePage.aspx" />
+    <Content Include="Web_Files\Admin\Pages\attributes.aspx" />
+    <Content Include="Web_Files\Admin\Pages\dashboard.aspx" />
+    <Content Include="Web_Files\Admin\Pages\expenses.aspx" />
+    <Content Include="Web_Files\Admin\Pages\orders.aspx" />
+    <Content Include="Web_Files\Admin\Pages\products.aspx" />
+    <Content Include="Web_Files\Admin\Pages\reports.aspx" />
+    <Content Include="Web_Files\Admin\Pages\users.aspx" />
+    <Content Include="Web_Files\Admin\Styles\attributes.css" />
+    <Content Include="Web_Files\Admin\Styles\dashboard.css" />
+    <Content Include="Web_Files\Admin\Styles\expenses.css" />
+    <Content Include="Web_Files\Admin\Styles\orders.css" />
+    <Content Include="Web_Files\Admin\Styles\products.css" />
+    <Content Include="Web_Files\Admin\Styles\reports.css" />
+    <Content Include="Web_Files\Admin\Styles\users.css" />
+    <Content Include="Web_Files\Client\Pages\cart.aspx" />
+    <Content Include="Web_Files\Client\Pages\checkout.aspx" />
+    <Content Include="Web_Files\Client\Styles\cart.css" />
+    <Content Include="Web_Files\Client\Styles\checkout.css" />
+    <Content Include="Web_Files\Client\Styles\myOrders.css" />
+    <Content Include="Web_Files\Client\Styles\productDetails.css" />
+    <Content Include="Web_Files\Client\Styles\profile.css" />
+    <Content Include="Web_Files\Client\Styles\register.css" />
+    <Content Include="Web_Files\Client\Styles\shop.css" />
+    <Content Include="Web_Files\Master_Pages\Pages\login.aspx" />
+    <Content Include="Web_Files\Client\Pages\myOrders.aspx" />
+    <Content Include="Web_Files\Client\Pages\productDetails.aspx" />
+    <Content Include="Web_Files\Client\Pages\profile.aspx" />
+    <Content Include="Web_Files\Client\Pages\register.aspx" />
+    <Content Include="Web_Files\Client\Pages\shop.aspx" />
+    <Content Include="Web_Files\Master_Pages\Pages\Site.Master" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Web_Files\Admin\Pages\" />
-    <Folder Include="Web_Files\Admin\Styles\" />
-    <Folder Include="Web_Files\Client\Pages\" />
-    <Folder Include="Web_Files\Client\Styles\" />
-    <Folder Include="Web_Files\Images\" />
-    <Folder Include="Web_Files\Master_Pages\Pages\" />
-    <Folder Include="Web_Files\Master_Pages\Styles\" />
+    <Folder Include="Web_Files\Images\photoGallery\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
