@@ -259,6 +259,7 @@
     <Content Include="Web_Files\Images\icons\logout.png" />
     <Content Include="Web_Files\Images\icons\search-icon.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo BG.png" />
+    <Content Include="Web_Files\Images\icons\Show%27s Garage Logo%28Master Page BG%29.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo%28Master Page%29.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo.png" />
     <Content Include="Web_Files\Master_Pages\Pages\DeveloperProfile.aspx" />

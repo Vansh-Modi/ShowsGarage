@@ -18,7 +18,7 @@
                 <div id="nav-bar">
                     <div class="header-top">
                         <div id="logo-section">
-                            <asp:ImageButton ID="ibLogo" runat="server" ImageUrl="~/Web_Files/Images/icons/Show's Garage Logo(Master Page).png" PostBackUrl="~/homePage.aspx" CssClass="logo-img" />
+                            <asp:ImageButton ID="ibLogo" runat="server" ImageUrl="~/Web_Files/Images/icons/Show's Garage Logo(Master Page BG).png" PostBackUrl="~/homePage.aspx" CssClass="logo-img" />
                         </div>
 
                         <div id="search-bar">
@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    &copy; 2026 Shows Garage | Crafted for Hobbyists <a href="~\..\Web_Files\Master_Pages\Pages\DeveloperProfile.aspx" class="developer-link">Vansh Modi</a>
+                    &copy; 2026 Shows Garage | Crafted for Hobbyists <a href="/Web_Files/Master_Pages/Pages/DeveloperProfile.aspx" class="developer-link">Vansh Modi</a>
                     <script>
                         console.log("%c🚀 Shows Garage %cBuilt by Vansh Modi",
                             "color: #D4AF37; font-size: 20px; font-weight: bold;",
