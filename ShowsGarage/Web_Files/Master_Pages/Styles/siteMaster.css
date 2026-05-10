@@ -1,2 +1,312 @@
-﻿body {
+﻿/* --- 1. GLOBAL & STICKY FOOTER RESET --- */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #005461; /* Deep Teal Body */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- 2. PROMO STRIP & HEADER --- */
+.promo-strip {
+    background-color: #1a1a1a;
+    /*    color: #FAEAB1;*/
+    text-align: center;
+    padding: 6px 0;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+header {
+    background-color: #FAEAB1;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+}
+
+#nav-bar {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 5%;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 15px;
+}
+
+.logo-img {
+    width: 80px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+/* --- 3. ENHANCED SEARCH BAR --- */
+#search-bar {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d4c491;
+    border-radius: 25px;
+    background: #fff;
+    flex: 1;
+    max-width: 500px;
+    height: 38px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+    #search-bar input[type="text"] {
+        flex: 1;
+        border: none !important;
+        padding: 0 12px;
+        height: 100%;
+        outline: none;
+        font-size: 14px;
+        background: transparent;
+        min-width: 0;
+    }
+
+.search-icon {
+    width: 42px !important;
+    height: 100% !important;
+    background: linear-gradient(135deg, #fcf6e0 0%, #FAEAB1 100%);
+    border: none;
+    border-left: 1px solid #d4c491;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px !important;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+    .search-icon:hover {
+        background: #005461 !important;
+    }
+
+    .search-icon:hover {
+        filter: invert(1);
+    }
+
+/* --- 4. ICON GROUPS --- */
+.icon-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* --- 5. NAVIGATION LINKS --- */
+.header-bottom {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+#user-nav ul, #admin-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+}
+
+#user-nav a {
+    color: #0000FF;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+#admin-nav a {
+    color: #0000FF;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+/* --- 6. MAIN CONTENT --- */
+.main-container {
+    flex: 1 0 auto;
+    padding: 20px 5%;
+}
+
+/* --- 7. PREMIUM FOOTER (FIXED LINK COLORS & STACKING) --- */
+footer {
+    flex-shrink: 0;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 50px 0 20px 0;
+    border-top: 4px solid #D4AF37;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    padding: 0 8%;
+}
+
+.footer-section h4 {
+    color: #D4AF37; /* Gold Header */
+    margin-bottom: 20px;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* This fixes the "Blue Link" and "Stacking" issue */
+.footer-section a {
+    color: #ccc !important; /* Normal off-white color */
+    text-decoration: none !important;
+    display: block; /* Forces each link to be on a new line (below each other) */
+    margin-bottom: 12px;
+    font-size: 14px;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+    .footer-section a:hover {
+        color: #FAEAB1 !important; /* Turns Cream/Gold on hover */
+        transform: translateX(5px); /* Subtle slide effect */
+    }
+
+.footer-section p {
+    color: #bbb;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* --- FOOTER NEWSLETTER CONTAINER --- */
+.newsletter-container {
+    display: flex;
+    align-items: stretch;
+    margin-top: 15px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.footer-input {
+    flex: 1;
+    background: transparent !important;
+    border: none !important;
+    color: #fff !important;
+    padding: 0 15px;
+    font-size: 14px;
+    outline: none;
+    height: 100%;
+}
+
+/* --- THE GRID-CENTERED BUTTON --- */
+.footer-btn {
+    background-color: #D4AF37 !important;
+    color: #1a1a1a !important;
+    text-decoration: none !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    padding: 0 20px !important;
+    /* Using Grid for absolute centering */
+    display: grid !important;
+    place-items: center !important;
+    height: 100% !important;
+    border: none !important;
+    cursor: pointer !important;
+    /* Resetting all text-pushing properties */
+    line-height: normal !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+}
+
+    .footer-btn:hover {
+        background-color: #FAEAB1 !important;
+    }
+
+.footer-bottom {
+    text-align: center;
+    font-size: 11px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+    color: #666;
+}
+
+/* --- 8. MOBILE RESPONSIVE (HORIZONTAL HEADER) --- */
+@media (max-width: 768px) {
+    #nav-bar {
+        padding: 8px 2%;
+    }
+
+    .header-top {
+        flex-direction: row !important;
+        gap: 8px;
+    }
+
+    .logo-img {
+        width: 60px;
+    }
+
+    #search-bar {
+        height: 34px;
+    }
+
+    .search-icon {
+        width: 34px !important;
+    }
+
+    .icon-group {
+        gap: 8px;
+    }
+
+    .nav-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    #user-nav ul, #admin-nav ul {
+        gap: 12px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .footer-section a:hover {
+        transform: none; /* Disable slide on mobile center align */
+    }
+}
+
+.developer-link {
+    color: #D4AF37 !important; /* Gold to match your theme */
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    padding-bottom: 2px;
+    border-bottom: 1px solid transparent;
+}
+
+    .developer-link:hover {
+        color: #FAEAB1 !important; /* Changes to cream on hover */
+        border-bottom: 1px solid #FAEAB1;
+        text-shadow: 0 0 8px rgba(250, 234, 177, 0.4);
+    }

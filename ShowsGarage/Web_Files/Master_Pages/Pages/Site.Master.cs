@@ -11,7 +11,25 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            //if (!IsPostBack)
+            //{
+            //    if (Session["UserRole"].ToString() == "Admin")
+            //    {
+                    pnlAdminNav.Visible = true;
+                    pnlUserNav.Visible = false;
+            //    }
+            //}
+        }
+
+        protected void ibUserLogout_Click(object sender, ImageClickEventArgs e)
+        {
+
+        }
+
+        protected void ibAdminLogout_Click(object sender, ImageClickEventArgs e)
+        {
 
         }
     }
+    
 }

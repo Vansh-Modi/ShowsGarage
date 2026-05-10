@@ -249,8 +249,19 @@
       <DependentUpon>ShowsGarageData.mdf</DependentUpon>
     </Content>
     <Content Include="Web.config" />
+    <Content Include="Web_Files\Admin\Pages\account.aspx" />
+    <Content Include="Web_Files\Images\icons\1.png" />
+    <Content Include="Web_Files\Images\icons\2.png" />
+    <Content Include="Web_Files\Images\icons\3.png" />
+    <Content Include="Web_Files\Images\icons\4.png" />
+    <Content Include="Web_Files\Images\icons\account-icon.png" />
+    <Content Include="Web_Files\Images\icons\cart-icon.png" />
+    <Content Include="Web_Files\Images\icons\logout.png" />
+    <Content Include="Web_Files\Images\icons\search-icon.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo BG.png" />
+    <Content Include="Web_Files\Images\icons\Show%27s Garage Logo%28Master Page%29.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo.png" />
+    <Content Include="Web_Files\Master_Pages\Pages\DeveloperProfile.aspx" />
     <Content Include="Web_Files\Master_Pages\Styles\homePage.css" />
     <Content Include="Web_Files\Master_Pages\Styles\login.css" />
     <Content Include="Web_Files\Master_Pages\Styles\siteMaster.css" />
@@ -263,6 +274,13 @@
     </Compile>
     <Compile Include="homePage.aspx.designer.cs">
       <DependentUpon>homePage.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\account.aspx.cs">
+      <DependentUpon>account.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\account.aspx.designer.cs">
+      <DependentUpon>account.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web_Files\Admin\Pages\attributes.aspx.cs">
       <DependentUpon>attributes.aspx</DependentUpon>
@@ -327,6 +345,13 @@
     <Compile Include="Web_Files\Client\Pages\checkout.aspx.designer.cs">
       <DependentUpon>checkout.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Web_Files\Master_Pages\Pages\DeveloperProfile.aspx.cs">
+      <DependentUpon>DeveloperProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Master_Pages\Pages\DeveloperProfile.aspx.designer.cs">
+      <DependentUpon>DeveloperProfile.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Web_Files\Master_Pages\Pages\login.aspx.cs">
       <DependentUpon>login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -371,6 +396,7 @@
     </Compile>
     <Compile Include="Web_Files\Master_Pages\Pages\Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Web_Files\Master_Pages\Pages\Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
