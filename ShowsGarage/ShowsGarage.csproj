@@ -250,22 +250,35 @@
     </Content>
     <Content Include="Web.config" />
     <Content Include="Web_Files\Admin\Pages\account.aspx" />
-    <Content Include="Web_Files\Images\icons\1.png" />
-    <Content Include="Web_Files\Images\icons\2.png" />
-    <Content Include="Web_Files\Images\icons\3.png" />
-    <Content Include="Web_Files\Images\icons\4.png" />
     <Content Include="Web_Files\Images\icons\account-icon.png" />
     <Content Include="Web_Files\Images\icons\cart-icon.png" />
     <Content Include="Web_Files\Images\icons\logout.png" />
+    <Content Include="Web_Files\Images\icons\Screenshot 2026-05-21 221701.png" />
     <Content Include="Web_Files\Images\icons\search-icon.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo BG.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo%28Master Page BG%29.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo%28Master Page%29.png" />
     <Content Include="Web_Files\Images\icons\Show%27s Garage Logo.png" />
+    <Content Include="Web_Files\Images\photoGallery\demo2.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo3.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo4.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo5.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo6.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo7.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo8.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo9.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo10.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo11.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo12.jpeg" />
+    <Content Include="Web_Files\Images\photoGallery\demo1.jpeg" />
+    <Content Include="Web_Files\Images\icons\HomepageImg.jpeg" />
     <Content Include="Web_Files\Master_Pages\Pages\DeveloperProfile.aspx" />
     <Content Include="Web_Files\Master_Pages\Styles\homePage.css" />
     <Content Include="Web_Files\Master_Pages\Styles\login.css" />
     <Content Include="Web_Files\Master_Pages\Styles\siteMaster.css" />
+    <Content Include="Web_Files\Others\contactUs.aspx" />
+    <Content Include="Web_Files\Others\privacy.aspx" />
+    <Content Include="Web_Files\Others\shipping.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -402,6 +415,27 @@
     <Compile Include="Web_Files\Master_Pages\Pages\Site.Master.designer.cs">
       <DependentUpon>Site.Master</DependentUpon>
     </Compile>
+    <Compile Include="Web_Files\Others\contactUs.aspx.cs">
+      <DependentUpon>contactUs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Others\contactUs.aspx.designer.cs">
+      <DependentUpon>contactUs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Others\privacy.aspx.cs">
+      <DependentUpon>privacy.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Others\privacy.aspx.designer.cs">
+      <DependentUpon>privacy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Others\shipping.aspx.cs">
+      <DependentUpon>shipping.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Others\shipping.aspx.designer.cs">
+      <DependentUpon>shipping.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -443,9 +477,7 @@
     <Content Include="Web_Files\Client\Pages\shop.aspx" />
     <Content Include="Web_Files\Master_Pages\Pages\Site.Master" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Web_Files\Images\photoGallery\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>

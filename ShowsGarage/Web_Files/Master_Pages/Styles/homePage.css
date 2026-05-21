@@ -1,2 +1,199 @@
-﻿body {
+﻿/* 1. THE MAIN BANNER CONTAINER */
+.my-hero-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 450px !important; /* Fixed height ensures it doesn't collapse into a thin strip */
+    /* BACKGROUND IMAGE CONTROLS */
+    background-size: cover !important; /* Scales image dynamically to fill the box neatly */
+    background-position: center !important; /* Keeps the center of your image perfectly focused */
+    background-repeat: no-repeat !important;
+    /* FLEXBOX - This forces the text block to sit dead center */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
+
+/* 2. THE DARK OVERLAY (Improves text readability) */
+.my-hero-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.5) !important; /* 50% dark tint */
+    z-index: 1 !important;
+}
+
+/* 3. THE TEXT CONTAINER CONTENT BOX */
+.my-hero-content-box {
+    position: relative !important;
+    z-index: 2 !important; /* Pushes content on top of the dark overlay */
+    text-align: center !important;
+    max-width: 800px !important;
+    padding: 0 20px !important;
+}
+
+/* 4. THE TITLE CSS */
+.my-hero-title {
+    color: #ffffff !important;
+    font-size: 32px !important;
+    font-weight: 700 !important;
+    margin: 0 0 15px 0 !important;
+    text-transform: uppercase !important;
+}
+
+/* 5. THE CONTENT/DESCRIPTION CSS */
+.my-hero-description {
+    color: #f0f0f0 !important;
+    font-size: 18px !important;
+    line-height: 1.5 !important;
+    margin: 0 0 25px 0 !important;
+}
+
+/* 6. THE BUTTON CSS */
+.my-hero-button {
+    display: inline-block !important;
+    background-color: #ff3838 !important; /* Vibrant racing red */
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    padding: 12px 30px !important;
+    border: none !important;
+    border-radius: 25px !important; /* Smooth rounded pill shape */
+    cursor: pointer !important;
+    box-shadow: 0 4px 15px rgba(255, 56, 56, 0.4) !important;
+    transition: background-color 0.2s ease !important;
+}
+
+    .my-hero-button:hover {
+        background-color: #e02828 !important; /* Slightly darker red on hover */
+    }
+
+
+/* This is the copy paste section of the image gallary   */
+
+    /* GALLERY SECTION CONTAINER */
+/*.my-gallery-container {
+    max-width: 1200px !important;
+    margin: 50px auto !important;
+    padding: 0 20px !important;
+    font-family: Arial, sans-serif;
+}
+
+.my-gallery-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 30px !important;
+    border-bottom: 2px solid #005f6b !important;
+    padding-bottom: 10px !important;
+}
+
+.my-gallery-title {
+    color: #ffffff !important;*/ /* Matches your layout theme text color */
+    /*font-size: 24px !important;
+    margin: 0 !important;
+}*/
+
+/* THE GRID SWITCHER BUTTON */
+/*.my-gallery-toggle-btn {
+    background-color: #005f6b !important;*/ /* Deep teal theme accent */
+    /*color: #ffffff !important;
+    border: 1px solid #ffffff !important;
+    padding: 8px 18px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.my-gallery-toggle-btn:hover {
+    background-color: #ff3838 !important;*/ /* Accent pop on mouse hover */
+    /*border-color: #ff3838 !important;
+}*/
+
+/* CORE SYSTEM ENGINE (CSS Grid) */
+/*.my-gallery-grid {
+    display: grid !important;
+    gap: 25px !important;*/ /* Controlled layout spacing between cards */
+    /*width: 100% !important;
+}*/
+
+/* Explicit layouts controlled by C# script states */
+/*.gallery-grid-2 {
+    grid-template-columns: repeat(2, 1fr) !important;*/ /* 2 Images per row default */
+/*}
+
+.gallery-grid-3 {
+    grid-template-columns: repeat(3, 1fr) !important;*/ /* 3 Images per row optional */
+/*}*/
+
+/* INDIVIDUAL IMAGE CARDS */
+/*.my-gallery-card {
+    background-color: #1a1a1a !important;*/ /* Contrasting background container */
+    /*border: 1px solid #333333 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+}
+
+.my-gallery-image {
+    width: 100% !important;
+    height: 280px !important;
+    object-fit: cover !important;*/ /* Guarantees layout files do not stretch warped */
+    /*display: block !important;
+}
+
+.my-gallery-card-body {
+    padding: 15px !important;
+    text-align: left !important;
+}
+
+.my-gallery-card-body h4 {
+    color: #ffffff !important;
+    margin: 0 0 5px 0 !important;
+    font-size: 18px !important;
+}
+
+.my-gallery-card-body p {
+    color: #aaaaaa !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+}*/
+
+/* --- MOBILE & MOBILE WINDOW APP RESPONSIVENESS --- */
+
+/* Tablets / Medium devices */
+/*@media (max-width: 900px) {
+    .gallery-grid-3 {
+        grid-template-columns: repeat(2, 1fr) !important;*/ /* Shrink 3-grid into 2 columns automatically */
+    /*}
+    .my-gallery-image {
+        height: 220px !important;
+    }
+}*/
+
+/* Smartphones / Small view windows */
+/*@media (max-width: 550px) {
+    .gallery-grid-2, .gallery-grid-3 {
+        grid-template-columns: 1fr !important;*/ /* Forces 1 layout item per line on screens too small for splits */
+    /*}
+    
+    .my-gallery-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 15px !important;
+    }
+    
+    .my-gallery-toggle-btn {
+        display: none !important;*/ /* Conceals layout control button since mobile is permanently optimized to single rows */
+    /*}
+    
+    .my-gallery-image {
+        height: 180px !important;
+    }
+}*/

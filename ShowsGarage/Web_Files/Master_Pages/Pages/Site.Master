@@ -8,7 +8,7 @@
     <meta name="author" content="Vansh Modi" />
     <meta name="designer" content="Vansh Modi" />
     <link href="../Styles/siteMaster.css" rel="stylesheet" />
-    <%--<title>Shows Garage | 1:64 Diecast Hub</title>--%>
+    <link rel="icon" type="image/png" href="~/Web_Files/Images/icons/Show's Garage Logo BG.png" />
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
 </head>
 <body>
@@ -29,14 +29,14 @@
 
                         <div id="utility-buttons">
                             <asp:Panel ID="Panel1" runat="server" CssClass="icon-group">
-                                <asp:ImageButton ID="ibUserCart" runat="server" ImageUrl="~/Web_Files/Images/icons/cart-icon.png" CssClass="nav-icon" EnableViewState="False" PostBackUrl="~/Web_Files/Client/Pages/cart.aspx" />
-                                <asp:ImageButton ID="ibUserAccount" runat="server" ImageUrl="~/Web_Files/Images/icons/account-icon.png" CssClass="nav-icon" PostBackUrl="~/Web_Files/Client/Pages/profile.aspx" />
-                                <asp:ImageButton ID="ibUserLogout" runat="server" ImageUrl="~/Web_Files/Images/icons/logout.png" CssClass="nav-icon" OnClick="ibUserLogout_Click" />
+                                <asp:ImageButton ID="ibUserCart" runat="server" ImageUrl="~/Web_Files/Images/icons/cart-icon.png" CssClass="nav-icon" EnableViewState="False" PostBackUrl="~/Web_Files/Client/Pages/cart.aspx" CausesValidation="False" />
+                                <asp:ImageButton ID="ibUserAccount" runat="server" ImageUrl="~/Web_Files/Images/icons/account-icon.png" CssClass="nav-icon" PostBackUrl="~/Web_Files/Client/Pages/profile.aspx" CausesValidation="False" />
+                                <asp:ImageButton ID="ibUserLogout" runat="server" ImageUrl="~/Web_Files/Images/icons/logout.png" CssClass="nav-icon" OnClick="ibUserLogout_Click" CausesValidation="False" />
                             </asp:Panel>
 
                             <asp:Panel ID="Panel2" runat="server" Visible="false" CssClass="icon-group">
-                                <asp:ImageButton ID="ibAdminAccount" runat="server" ImageUrl="~/Web_Files/Images/icons/account-icon.png" CssClass="nav-icon" PostBackUrl="~/Web_Files/Admin/Pages/account.aspx" />
-                                <asp:ImageButton ID="ibAdminLogout" runat="server" ImageUrl="~/Web_Files/Images/icons/logout.png" CssClass="nav-icon" OnClick="ibAdminLogout_Click" />
+                                <asp:ImageButton ID="ibAdminAccount" runat="server" ImageUrl="~/Web_Files/Images/icons/account-icon.png" CssClass="nav-icon" PostBackUrl="~/Web_Files/Admin/Pages/account.aspx" CausesValidation="False" />
+                                <asp:ImageButton ID="ibAdminLogout" runat="server" ImageUrl="~/Web_Files/Images/icons/logout.png" CssClass="nav-icon" OnClick="ibAdminLogout_Click" CausesValidation="False" />
                             </asp:Panel>
                         </div>
                     </div>
@@ -89,9 +89,9 @@
 
                     <div class="footer-section">
                         <h4>Customer Service</h4>
-                        <a href="Contact.aspx">Contact Us</a>
-                        <a href="FAQ.aspx">Shipping Info</a>
-                        <a href="Terms.aspx">Privacy Policy</a>
+                        <a href="/Web_Files/Others/contactUs.aspx">Contact Us</a>
+                        <a href="/Web_Files/Others/Shipping.aspx">Shipping Info</a>
+                        <a href="/Web_Files/Others/privacy.aspx">Privacy Policy</a>
                     </div>
 
                     <div class="footer-section">

@@ -10,8 +10,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class login : System.Web.UI.Page
     {
-
-        SqlConnection conn;
         string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)

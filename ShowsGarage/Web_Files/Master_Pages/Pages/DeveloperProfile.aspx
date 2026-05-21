@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="DeveloperProfile.aspx.cs" Inherits="ShowsGarage.Web_Files.Master_Pages.Pages.DeveloperProfile" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <title>Developer Profile</title>
+    <title>Show's Garage | Developer Profile</title>
     <style>
         .profile-wrapper {
     display: flex;
