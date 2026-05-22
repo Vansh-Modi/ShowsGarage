@@ -250,6 +250,14 @@
     </Content>
     <Content Include="Web.config" />
     <Content Include="Web_Files\Admin\Pages\account.aspx" />
+    <Content Include="Web_Files\Images\blog\blog1.jpeg" />
+    <Content Include="Web_Files\Images\blog\blog2.jpeg" />
+    <Content Include="Web_Files\Images\blog\blog3.jpeg" />
+    <Content Include="Web_Files\Images\blog\blog4.jpeg" />
+    <Content Include="Web_Files\Images\blog\blog5.jpeg" />
+    <Content Include="Web_Files\Images\blog\blog6.jpeg" />
+    <Content Include="Web_Files\Images\blog\blog7.jpeg" />
+    <Content Include="Web_Files\Images\blog\blog8.jpeg" />
     <Content Include="Web_Files\Images\icons\account-icon.png" />
     <Content Include="Web_Files\Images\icons\cart-icon.png" />
     <Content Include="Web_Files\Images\icons\logout.png" />
