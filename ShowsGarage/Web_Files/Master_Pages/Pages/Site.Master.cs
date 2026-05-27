@@ -11,25 +11,45 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            //if (!IsPostBack)
-            //{
-            //    if (Session["UserRole"].ToString() == "Admin")
-            //    {
-                    pnlAdminNav.Visible = true;
-                    pnlUserNav.Visible = false;
-            //    }
-            //}
+
+            if (!IsPostBack)
+            {
+
+                if (Session["UserRole"] == null)
+                {
+                    pnlAdminNav.Visible = false;
+                    pnlUserNav.Visible = true;
+                }
+                else
+                {
+                    string userSession = Session["UserRole"].ToString();
+                    if (Session["UserRole"].ToString() == "Admin")
+                    {
+                        pnlAdminNav.Visible = true;
+                        pnlUserNav.Visible = false;
+                    }
+                    else
+                    {
+                        pnlAdminNav.Visible = false;
+                        pnlUserNav.Visible = true;
+                    }
+                }
+            }
         }
 
         protected void ibUserLogout_Click(object sender, ImageClickEventArgs e)
         {
-
+            Session.Abandon();
+            Session.Clear();
+            Response.Redirect("~/homePage.aspx");
         }
 
         protected void ibAdminLogout_Click(object sender, ImageClickEventArgs e)
         {
-
+            Session.Abandon();
+            Session.Clear();
+            Response.Redirect("~/homePage.aspx");
         }
     }
-    
+
 }

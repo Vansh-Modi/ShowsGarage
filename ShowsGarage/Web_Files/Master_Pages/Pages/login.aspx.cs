@@ -16,7 +16,8 @@ namespace ShowsGarage.Web_Files.Client.Pages
         {
             if (Session["UserRole"] != null)
             {
-                Response.Redirect("homePage.aspx");
+                
+                Response.Redirect("~/homePage.aspx");
             }
         }
 
@@ -27,7 +28,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 using (SqlConnection con = new SqlConnection(connStr))
                 {
                     // Secure query using Parameters to prevent SQL Injection
-                    string query = "SELECT UserID, Role, FullName FROM Users WHERE Email=@email AND PasswordHash=@pass";
+                    string query = "SELECT * FROM Users WHERE Email=@email AND PasswordHash=@pass";
 
                     SqlCommand cmd = new SqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
@@ -42,15 +43,16 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         Session["UserID"] = dr["UserID"].ToString();
                         Session["UserRole"] = dr["Role"].ToString();
                         Session["UserName"] = dr["FullName"].ToString();
+                        Session["UserEmail"] = dr["Email"].ToString();
 
                         // 2. REDIRECT BASED ON ROLE
                         if (dr["Role"].ToString() == "Admin")
                         {
-                            Response.Redirect("AdminDashboard.aspx");
+                            Response.Redirect("~/Web_Files/Admin/Pages/dashboard.aspx");
                         }
                         else if(dr["Role"].ToString() == "Client")
                         {
-                            Response.Redirect("homePage.aspx");
+                            Response.Redirect("~/homePage.aspx");
                         }
                     }
                     else

@@ -13,131 +13,136 @@ namespace ShowsGarage.Web_Files.Client.Pages
     public partial class register : System.Web.UI.Page
     {
         string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
-
+        string password;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
+            {
                 btnRegister.Enabled = false;
+                btnResendOTP.Visible = false; // Hide resend button initially
+            }
         }
 
         protected void btnRegister_Click(object sender, EventArgs e)
         {
             try
             {
-                if (txtOTP.Text.Trim() == Session["GeneratedOTP"]?.ToString())
+                // 1. Verify OTP from Session
+                if (Session["GeneratedOTP"] != null && txtOTP.Text.Trim() == Session["GeneratedOTP"].ToString())
                 {
-                    // SUCCESS: Run your SQL Insert Code here
+                    // Clear OTP session once successfully verified
+                    Session["GeneratedOTP"] = null;
+
+                    // 2. Connect to Database and Insert User Records
+                    using (SqlConnection con = new SqlConnection(connStr))
+                    {
+                        //Updated query: Inserts data securely and marks user as verified immediately
+                        string query = "INSERT INTO Users (FullName, Phone, Email, PasswordHash, Role, IsVerified) " +
+                                       "VALUES (@name, @phone, @email, @pass, @role, @isVerified)";
+
+                        using (SqlCommand cmd = new SqlCommand(query, con))
+                        {
+                            cmd.Parameters.AddWithValue("@name", txtName.Text.Trim());
+                            cmd.Parameters.AddWithValue("@phone", txtNumber.Text.Trim());
+                            cmd.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
+                            if (Session["tempPass"] != null)
+                                cmd.Parameters.AddWithValue("@pass", Session["tempPass"]); // Note: Plain text for now, consider hashing later!
+                            else
+                                cmd.Parameters.AddWithValue("@pass", txtPassword); // Note: Plain text for now, consider hashing later!
+                            cmd.Parameters.AddWithValue("@role", "Client");
+                            cmd.Parameters.AddWithValue("@isVerified", true); // Sets [IsVerified] column to 1 (true)
+                            Session["tempPass"] = null;
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    // 3. UI Success Feedback & Redirect
                     lblError.Text = "Registration Successful!";
+                    lblError.ForeColor = System.Drawing.Color.LightGreen;
+
+                    Response.Redirect("~/homePage.aspx");
                 }
                 else
                 {
                     lblError.Text = "Invalid OTP. Please check and try again.";
                     lblError.ForeColor = System.Drawing.Color.Red;
                 }
-                using (SqlConnection con = new SqlConnection(connStr))
-                {
-                    // Secure query using Parameters to prevent SQL Injection
-                    //string query = "INTO INTO Users UserID, Role, FullName FROM Users WHERE Email=@email AND PasswordHash=@pass";
-
-                    //SqlCommand cmd = new SqlCommand(query, con);
-                    //cmd.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
-                    //cmd.Parameters.AddWithValue("@pass", txtPassword.Text.Trim());
-
-                    //con.Open();
-                    //SqlDataReader dr = cmd.ExecuteReader();
-
-                    //if (dr.Read())
-                    //{
-                    //    // 1. SET THE SESSIONS (This "wakes up" the Master Page logic)
-                    //    Session["UserID"] = dr["UserID"].ToString();
-                    //    Session["UserRole"] = dr["Role"].ToString();
-                    //    Session["UserName"] = dr["FullName"].ToString();
-
-                    //    // 2. REDIRECT BASED ON ROLE
-                    //    if (dr["Role"].ToString() == "Admin")
-                    //    {
-                    //        Response.Redirect("AdminDashboard.aspx");
-                    //    }
-                    //    else if (dr["Role"].ToString() == "Client")
-                    //    {
-                    //        Response.Redirect("homePage.aspx");
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    // Show error if login fails
-                    //    lblError.Text = "Invalid email or password. Please try again.";
-                    //    lblError.ForeColor = System.Drawing.Color.FromArgb(255, 100, 100); // Soft red
-                    //}
-                }
             }
             catch (Exception ex)
             {
                 lblError.Text = "Database Error: " + ex.Message;
+                lblError.ForeColor = System.Drawing.Color.Red;
             }
         }
 
         protected void btnGetOTP_Click(object sender, EventArgs e)
         {
-            // 1. Generate the Code
+            // Validation check: Ensure the user typed an email address first
+            if (string.IsNullOrEmpty(txtEmail.Text.Trim()))
+            {
+                lblError.Text = "Please enter an email address first.";
+                lblError.ForeColor = System.Drawing.Color.Red;
+                return;
+            }
+
+            // Step 1: Securely generate a new 6-digit numeric OTP string
             string otp = new Random().Next(100000, 999999).ToString();
+
+            // Step 2: Store it safely in Session state to verify on registration
             Session["GeneratedOTP"] = otp;
 
-            // 2. UI Updates
-            txtName.Enabled = false;
-            txtNumber.Enabled = false;
-            txtEmail.Enabled = false;
-            txtPassword.Enabled = false;
-            txtConfirmPass.Enabled = false;
+            // Developer Quality of Life: Always log it to your Visual Studio Output Window!
+            System.Diagnostics.Debug.WriteLine("=== DEBUG OTP: " + otp + " ===");
 
-            btnGetOTP.Visible = false;
-            btnResendOTP.Visible = true;
-
-            btnRegister.Enabled = true;
-
-            // 3. Feedback
-            lblError.Text = "OTP sent to your email!";
-            lblError.ForeColor = System.Drawing.Color.LightGreen;
-
-            // DEBUG: Show the OTP for your trial and error
-            System.Diagnostics.Debug.WriteLine("DEBUG OTP: " + otp);
-
+            // Step 3: Attempt to dispatch the email to your testing environment
             try
             {
-                // 2. Setup the Mail Message
+                // Setup Mail Envelope
                 MailMessage mail = new MailMessage();
-                mail.To.Add(txtEmail.Text.Trim());
+                mail.To.Add(txtEmail.Text.Trim()); // The user's input email
+
+                // Your personal email used as the temporary sender mask
                 mail.From = new MailAddress("vanshmodi200@outlook.com", "Shows Garage");
+
                 mail.Subject = "Your Registration OTP";
-                mail.Body = $"Welcome to the Club! Your OTP for Shows Garage is: {otp}";
+                mail.Body = $"Welcome to the Club!<br/><br/>Your OTP for Shows Garage is: <b>{otp}</b>";
                 mail.IsBodyHtml = true;
 
-                // 3. Setup the SMTP Client (The Server)
-                SmtpClient smtp = new SmtpClient();
-                smtp.Host = "smtp.gmail.com";
-                smtp.Port = 587;
+                // Configure Mailtrap SMTP client settings (Safe, robust sandbox environment)
+                // Try changing 2525 to 587
+                SmtpClient smtp = new SmtpClient("sandbox.smtp.mailtrap.io", 587);
+                smtp.Credentials = new NetworkCredential("19cc235b8c7541", "c4348aebecad76");
                 smtp.EnableSsl = true;
 
-                // IMPORTANT: Use an 'App Password', not your regular login password
-                smtp.Credentials = new NetworkCredential("vanshmodi200@outlook.com", "spninemxuhkiewlx");
-
-                //IMPORTANT NOTE: Code given for the replacement of the above as the credentials are not working
-
-                //SmtpClient smtp = new SmtpClient("sandbox.smtp.mailtrap.io", 2525);
-                //smtp.Credentials = new System.Net.NetworkCredential("your_mailtrap_username", "your_mailtrap_password");
-                //smtp.EnableSsl = true;
-
-                // 4. Send it!
+                // Fire the email out!
                 smtp.Send(mail);
 
-                lblError.Text = "OTP sent to " + txtEmail.Text;
+                password = txtPassword.Text.Trim();
+                Session["tempPass"] = password;
+                // Step 4: UI Management (Only freezes inputs if email successfully executes!)
+                txtName.Enabled = false;
+                txtNumber.Enabled = false;
+                txtEmail.Enabled = false;
+                txtPassword.Enabled = false;
+                txtConfirmPass.Enabled = false;
+                txtPassword.Attributes.Add("value", txtPassword.Text);
+                txtConfirmPass.Attributes.Add("value", txtConfirmPass.Text);
+                btnGetOTP.Visible = false;
+                btnResendOTP.Visible = true;
+                btnRegister.Enabled = true; // Unlocks the validation process
+
+                lblError.Text = "OTP sent successfully to " + txtEmail.Text;
                 lblError.ForeColor = System.Drawing.Color.LightGreen;
-                btnRegister.Enabled = true;
             }
             catch (Exception ex)
             {
-                lblError.Text = "Mail Error: " + ex.Message;
+                // Graceful error state if network drops out or SMTP config fails
+                lblError.Text = "Mail Dispatch Failure: " + ex.Message;
                 lblError.ForeColor = System.Drawing.Color.Red;
+
+                // Safety lock down
+                btnRegister.Enabled = false;
             }
         }
     }

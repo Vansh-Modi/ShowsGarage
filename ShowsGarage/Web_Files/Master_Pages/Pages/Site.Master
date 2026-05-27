@@ -18,7 +18,7 @@
                 <div id="nav-bar">
                     <div class="header-top">
                         <div id="logo-section">
-                            <asp:ImageButton ID="ibLogo" runat="server" ImageUrl="~/Web_Files/Images/icons/Show's Garage Logo(Master Page BG).png" PostBackUrl="~/homePage.aspx" CssClass="logo-img" />
+                            <asp:ImageButton ID="ibLogo" runat="server" ImageUrl="~/Web_Files/Images/icons/Show's Garage Logo(Master Page BG).png" PostBackUrl="~/homePage.aspx" CssClass="logo-img" CausesValidation="False" />
                         </div>
 
                         <div id="search-bar">

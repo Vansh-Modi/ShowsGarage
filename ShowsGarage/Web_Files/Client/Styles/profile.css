@@ -1,1 +1,172 @@
-﻿
+﻿/* Layout Wrapper Alignment */
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 15px;
+    background-color: #fafafa;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Base Card Container */
+.profile-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.05);
+    max-width: 900px;
+    width: 100%;
+    padding: 40px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* Typography Elements */
+.profile-title {
+    font-size: 32px;
+    color: #0076df;
+    margin: 0 0 12px 0;
+    font-weight: 600;
+}
+
+.profile-subtitle {
+    font-size: 16px;
+    color: #444444;
+    margin: 0 0 25px 0;
+}
+
+/* Highlighted Welcome Text */
+.welcome-container {
+    margin-bottom: 25px;
+}
+
+.welcome-heading {
+    font-size: 26px;
+    color: #ff7637;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Layout Form Containers */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-clean {
+    margin-bottom: 18px;
+    width: 100%;
+}
+
+/* Core Inputs Style matching your image */
+.form-input-clean {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 15px;
+    color: #111111;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease-in-out;
+}
+
+    .form-input-clean:focus {
+        border-color: #0076df;
+        outline: none;
+    }
+
+/* Locked Down Field styling */
+.disabled-input {
+    background-color: #ffffff;
+    color: #222222;
+    cursor: not-allowed;
+}
+
+/* Button & Actions Row Mapping */
+.top-action-group {
+    margin-bottom: 20px;
+}
+
+.form-actions-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.bottom-actions {
+    margin-top: 25px;
+}
+
+/* Unified Button Architectures */
+.btn {
+    padding: 10px 22px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    border: none;
+    display: inline-block;
+    transition: opacity 0.15s ease;
+}
+
+    .btn:hover {
+        opacity: 0.9;
+    }
+
+/* Specific UI Button Color Palettes */
+.btn-action-toggle {
+    background-color: #0076df;
+    color: #ffffff;
+}
+
+.btn-save {
+    background-color: #0076df;
+    color: #ffffff;
+}
+
+.btn-cancel {
+    background-color: #0076df;
+    color: #ffffff;
+    line-height: 1.5;
+}
+
+.btn-reset {
+    background-color: #0076df;
+    color: #ffffff;
+}
+
+/* Collapsible Password Box Slider State */
+.password-sliding-drawer {
+    margin-top: 15px;
+    padding: 20px;
+    background-color: #fcfcfc;
+    border: 1px dashed #dddddd;
+    border-radius: 6px;
+    transition: all 0.3s ease-in-out;
+}
+
+.hidden-drawer {
+    display: none !important;
+}
+
+.drawer-title {
+    font-size: 16px;
+    color: #333333;
+    margin: 0 0 15px 0;
+    font-weight: 600;
+}
+
+/* Field Validation Error Layouts */
+.validation-error {
+    color: #d93025;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+.status-message-container {
+    min-height: 20px;
+    margin-bottom: 10px;
+}

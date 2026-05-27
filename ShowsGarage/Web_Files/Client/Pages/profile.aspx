@@ -1,7 +1,124 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="profile.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.profile" %>
+﻿<%@ Page Title="Profile | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="profile.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.profile" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <title>Profile | Show's Garage</title>
     <link href="/Web_Files/Client/Styles/profile.css" rel="stylesheet" type="text/css" />
 </asp:Content>
+
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="profile-wrapper">
+        <main class="profile-card">
+
+            <header class="profile-header">
+                <h1 class="profile-title">Your Profile</h1>
+                <p class="profile-subtitle">Manage your personal information and account settings.</p>
+            </header>
+
+            <div class="status-message-container">
+                <asp:Label ID="lblStatus" runat="server" CssClass="status-label"></asp:Label>
+            </div>
+
+            <div class="welcome-container">
+                <h2 class="welcome-heading">Welcome, <asp:Literal ID="litWelcomeName" runat="server"></asp:Literal></h2>
+            </div>
+
+            <div class="profile-form">
+
+                <div class="top-action-group">
+                    <button type="button" class="btn btn-action-toggle" onclick="togglePasswordSection()">Change Password</button>
+                </div>
+
+                <div class="form-group-clean">
+                    <asp:TextBox ID="txtName" runat="server" CssClass="form-input-clean" Placeholder="Enter your full name"></asp:TextBox>
+                    <asp:RequiredFieldValidator ID="rfvName" runat="server"
+                        ControlToValidate="txtName" ErrorMessage="Name is required"
+                        CssClass="validation-error" Display="Dynamic">
+                    </asp:RequiredFieldValidator>
+                </div>
+
+                <div class="form-group-clean">
+                    <asp:TextBox ID="txtEmail" runat="server" CssClass="form-input-clean disabled-input" Placeholder="Email Address"></asp:TextBox>
+                </div>
+
+                <div class="form-group-clean">
+                    <asp:TextBox ID="txtNumber" runat="server" CssClass="form-input-clean" Placeholder="Enter your phone number"></asp:TextBox>
+                    <asp:RequiredFieldValidator ID="rfvPhone" runat="server"
+                        ControlToValidate="txtNumber" ErrorMessage="Phone number is required"
+                        CssClass="validation-error" Display="Dynamic">
+                    </asp:RequiredFieldValidator>
+                    <asp:RegularExpressionValidator ID="revPhone" runat="server"
+                        ControlToValidate="txtNumber" ValidationExpression="^[0-9]{10}$"
+                        ErrorMessage="Please enter a valid 10-digit phone number"
+                        CssClass="validation-error" Display="Dynamic">
+                    </asp:RegularExpressionValidator>
+                </div>
+
+                <section id="passwordDrawer" class="password-sliding-drawer hidden-drawer">
+                    <h3 class="drawer-title">Update Security Credentials</h3>
+                    
+                    <div class="form-group-clean">
+                        <asp:TextBox ID="txtCurrentPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="Current Password"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvCurrentPass" runat="server" 
+                            ControlToValidate="txtCurrentPassword" ErrorMessage="Current password required." 
+                            CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
+                        </asp:RequiredFieldValidator>
+                    </div>
+
+                    <div class="form-group-clean">
+                        <asp:TextBox ID="txtNewPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="New Password"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvNewPass" runat="server" 
+                            ControlToValidate="txtNewPassword" ErrorMessage="New password required." 
+                            CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
+                        </asp:RequiredFieldValidator>
+                    </div>
+
+                    <div class="form-group-clean">
+                        <asp:TextBox ID="txtConfirmNewPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="Confirm New Password"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvConfirmNewPass" runat="server" 
+                            ControlToValidate="txtConfirmNewPassword" ErrorMessage="Please confirm your new password." 
+                            CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
+                        </asp:RequiredFieldValidator>
+                        <asp:CompareValidator ID="cvPasswordMatch" runat="server" 
+                            ControlToValidate="txtConfirmNewPassword" ControlToCompare="txtNewPassword" 
+                            ErrorMessage="Passwords do not match." CssClass="validation-error" 
+                            Display="Dynamic" ValidationGroup="PasswordGroup">
+                        </asp:CompareValidator>
+                    </div>
+
+                    <div class="form-actions-row">
+                        <asp:Button ID="btnUpdatePassword" runat="server" Text="Confirm New Password" 
+                            CssClass="btn btn-save" ValidationGroup="PasswordGroup" OnClick="btnUpdatePassword_Click" />
+                    </div>
+                </section>
+
+                <div class="form-actions-row bottom-actions">
+                    <asp:Button ID="btnUpdate" runat="server" Text="Save" CssClass="btn btn-save" OnClick="btnUpdate_Click" />
+                    <a href="../../../homePage.aspx" class="btn btn-cancel">Cancel</a>
+                    <button type="button" class="btn btn-reset" onclick="resetFormFields()">Reset</button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script type="text/javascript">
+        function togglePasswordSection() {
+            var drawer = document.getElementById('passwordDrawer');
+            drawer.classList.toggle('hidden-drawer');
+        }
+
+        function resetFormFields() {
+            // Revert changes back to their original state values natively
+            document.getElementById('<%= txtName.ClientID %>').value = document.getElementById('<%= txtName.ClientID %>').defaultValue;
+            document.getElementById('<%= txtNumber.ClientID %>').value = document.getElementById('<%= txtNumber.ClientID %>').defaultValue;
+            
+            var currentPass = document.getElementById('<%= txtCurrentPassword.ClientID %>');
+            var newPass = document.getElementById('<%= txtNewPassword.ClientID %>');
+            var confirmPass = document.getElementById('<%= txtConfirmNewPassword.ClientID %>');
+            
+            if(currentPass) currentPass.value = '';
+            if(newPass) newPass.value = '';
+            if(confirmPass) confirmPass.value = '';
+        }
+    </script>
 </asp:Content>
