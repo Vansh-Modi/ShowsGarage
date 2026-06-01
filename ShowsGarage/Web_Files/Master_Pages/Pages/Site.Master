@@ -46,10 +46,10 @@
                     <asp:Panel ID="pnlUserNav" runat="server">
                         <nav id="user-nav">
                             <ul>
-                                <li><a href="homePage.aspx">Home</a></li>
-                                <li><a href="collections.aspx">Collections</a></li>
-                                <li><a href="aboutUs.aspx">About Us</a></li>
-                                <li><a href="orders.aspx">Orders</a></li>
+                                <li><a href="../../../homePage.aspx">Home</a></li>
+                                <li><a href="../../../Web_Files/Client/Pages/shop.aspx">Collections</a></li>
+                                <li><a href="../../../Web_Files/Client/Pages/myOrders.aspx">Orders</a></li>
+                                <li><a href="../../../Web_Files/Client/Pages/cart.aspx">About Us</a></li>
                             </ul>
                         </nav>
                     </asp:Panel>
@@ -57,11 +57,13 @@
                     <asp:Panel ID="pnlAdminNav" runat="server" Visible="false">
                         <nav id="admin-nav">
                             <ul>
-                                <li><a href="dashboard.aspx">Dashboard</a></li>
-                                <li><a href="products.aspx">Inventory</a></li>
-                                <li><a href="users.aspx">Users</a></li>
-                                <li><a href="report.aspx">P/L Report</a></li>
-                                <li><a href="expenses.aspx">Expenses</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/dashboard.aspx">Dashboard</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/products.aspx">Inventory</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/users.aspx">Users</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/reports.aspx">P/L Report</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/expenses.aspx">Expenses</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/attributes.aspx">Site Settings</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/orders.aspx">Orders</a></li>
                             </ul>
                         </nav>
                     </asp:Panel>

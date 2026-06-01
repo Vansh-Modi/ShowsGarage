@@ -1,2 +1,175 @@
-﻿body {
+﻿/* ==========================================================================
+   Specialized Product Details Panel Design Overrides
+   ========================================================================== */
+.shop-theme-wrapper {
+    background-color: #004d51; /* Dark Teal canvas theme base */
+    min-height: 100vh;
+    padding: 20px 15px; /* Comfortable breathing room on mobile screen edges */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .shop-theme-wrapper {
+        padding: 40px 30px;
+    }
+}
+
+.shop-content-container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.details-back-container {
+    margin-bottom: 20px;
+}
+
+/* Master container for the detail layout */
+.product-details-layout-container {
+    display: flex;
+    flex-direction: column; /* Stacks vertically on mobile frames */
+    background-color: #1a1a1a; /* Dark charcoal card panel background */
+    padding: 24px 20px; /* Enhanced internal text padding */
+    border-radius: 12px;
+    border: 1px solid #2a2a2a;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    gap: 25px;
+}
+
+@media (min-width: 768px) {
+    .product-details-layout-container {
+        flex-direction: row; /* Sideways row layout on tablet/desktop viewports */
+        padding: 35px;
+        gap: 40px;
+    }
+}
+
+/* Product Photo Panel */
+.details-image-panel {
+    flex: 1;
+    background: #ffffff; /* Bright white photo canvas contrast */
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.details-main-img {
+    width: 100%;
+    max-height: 300px; /* Caps image size on mobile so it doesn't push text down */
+    object-fit: contain;
+}
+
+@media (min-width: 768px) {
+    .details-main-img {
+        max-height: 450px;
+    }
+}
+
+/* Text Information Column */
+.details-content-column {
+    flex: 1.2;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.details-brand-label {
+    color: #0076df; /* High-visibility blue badge theme text */
+    font-size: 13px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.details-product-title {
+    color: #ffffff; /* Swapped to pure high contrast white text for dark theme */
+    font-size: 24px;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+    .details-product-title {
+        font-size: 32px;
+        margin: 0 0 14px 0;
+    }
+}
+
+.details-price-display {
+    color: #2ebd59; /* Crisp toxic green currency indicator matching layout image */
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #2a2a2a; /* Clean separation line */
+}
+
+@media (min-width: 768px) {
+    .details-price-display {
+        font-size: 28px;
+    }
+}
+
+/* 
+   FIXED DESCRIPTION BLOCK 
+   Cleans up the text collapse seen in image_0e12e7.png
+*/
+.details-description-text {
+    color: #dddddd; /* Lighter soft gray text for easy nighttime reading */
+    font-size: 15px;
+    line-height: 1.7; /* Adds clean breathing room spacing between lines */
+    margin-bottom: 30px;
+    letter-spacing: 0.3px;
+    max-width: 650px; /* Prevents text lines from getting too wide or unreadable */
+    word-wrap: break-word;
+    white-space: pre-line; /* Preserves database line breaks or spacing automatically */
+}
+
+@media (min-width: 768px) {
+    .details-description-text {
+        font-size: 16px;
+        line-height: 1.8;
+    }
+}
+
+.details-action-row {
+    margin-top: auto; /* Aligns buy button along the bottom margin on desktops */
+}
+
+/* High-Visibility Interactive CTA Button Elements */
+.btn-add-to-cart-large {
+    background-color: #ff5722 !important; /* Standout high-visibility premium orange highlight */
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    padding: 14px 35px !important;
+    border-radius: 6px !important;
+    width: 100%; /* Spreads edge-to-edge on mobile for quick finger tapping */
+    box-sizing: border-box;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s, transform 0.1s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .btn-add-to-cart-large:hover {
+        background-color: #f4511e !important;
+    }
+
+    .btn-add-to-cart-large:active {
+        transform: scale(0.98); /* Tactile press animation look */
+    }
+
+@media (min-width: 480px) {
+    .btn-add-to-cart-large {
+        width: auto; /* Shrinks back down cleanly on tablet/desktop viewports */
+        display: inline-block;
+    }
 }

@@ -1,49 +1,90 @@
-﻿/* Layout Wrapper Alignment */
+﻿/* ==========================================================================
+   Dark Theme Profile Blueprint Integration
+   ========================================================================== */
+
+/* Layout Wrapper Alignment - Matched to Shop Canvas Background */
 .profile-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px 15px;
-    background-color: #fafafa;
+    padding: 20px 12px; /* Adaptive mobile safe padding gaps */
+    background-color: #004d51; /* Dark Teal Base Canvas */
+    min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
 }
 
-/* Base Card Container */
+@media (min-width: 768px) {
+    .profile-wrapper {
+        padding: 40px 30px;
+    }
+}
+
+/* Base Profile Display Panel */
 .profile-card {
-    background: #ffffff;
+    background: #1a1a1a; /* Dark charcoal card interior body */
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid #2a2a2a;
     max-width: 900px;
     width: 100%;
-    padding: 40px;
+    padding: 20px 15px; /* Compact margins on small displays */
     box-sizing: border-box;
     text-align: left;
 }
 
+@media (min-width: 768px) {
+    .profile-card {
+        padding: 40px;
+    }
+}
+
 /* Typography Elements */
 .profile-title {
-    font-size: 32px;
-    color: #0076df;
-    margin: 0 0 12px 0;
+    font-size: 26px; /* Scaled down for mobile viewports */
+    color: #ffffff; /* Flipped to high contrast white text */
+    margin: 0 0 8px 0;
     font-weight: 600;
+}
+
+@media (min-width: 768px) {
+    .profile-title {
+        font-size: 32px;
+        margin: 0 0 12px 0;
+    }
 }
 
 .profile-subtitle {
-    font-size: 16px;
-    color: #444444;
+    font-size: 14px;
+    color: #aaaaaa; /* Soft silver gray */
     margin: 0 0 25px 0;
+    line-height: 1.4;
 }
 
-/* Highlighted Welcome Text */
+@media (min-width: 768px) {
+    .profile-subtitle {
+        font-size: 16px;
+    }
+}
+
+/* Highlighted Welcome Banner Text Elements */
 .welcome-container {
     margin-bottom: 25px;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 15px;
 }
 
 .welcome-heading {
-    font-size: 26px;
-    color: #ff7637;
+    font-size: 22px;
+    color: #ff7637; /* Vibrant orange welcoming tone */
     margin: 0;
     font-weight: 600;
+}
+
+@media (min-width: 768px) {
+    .welcome-heading {
+        font-size: 26px;
+    }
 }
 
 /* Layout Form Containers */
@@ -57,94 +98,132 @@
     width: 100%;
 }
 
-/* Core Inputs Style matching your image */
+/* Core Form Input Inputs Style */
 .form-input-clean {
     width: 100%;
     padding: 12px 14px;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
+    border: 1px solid #333333;
+    border-radius: 6px;
     font-size: 15px;
-    color: #111111;
-    background-color: #ffffff;
+    color: #ffffff; /* Crisp white input tracking entry */
+    background-color: #222222; /* Dark field inputs to protect eyes */
     box-sizing: border-box;
-    transition: border-color 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out, background-color 0.15s;
 }
 
     .form-input-clean:focus {
-        border-color: #0076df;
+        border-color: #0076df; /* Store signature blue glow on activation */
+        background-color: #262626;
         outline: none;
     }
 
-/* Locked Down Field styling */
+/* Locked Down Disabled Field Styling */
 .disabled-input {
-    background-color: #ffffff;
-    color: #222222;
+    background-color: #151515 !important;
+    color: #666666 !important; /* Visual mute signature for locked records */
+    border-color: #222222 !important;
     cursor: not-allowed;
 }
 
-/* Button & Actions Row Mapping */
+/* Button & Actions Formatting Row Mapping */
 .top-action-group {
     margin-bottom: 20px;
 }
 
 .form-actions-row {
     display: flex;
-    gap: 12px;
+    flex-direction: column; /* Stacks button nodes flat to easily tap on mobile phones */
+    gap: 10px;
     margin-top: 10px;
 }
 
 .bottom-actions {
     margin-top: 25px;
+    border-top: 1px solid #2a2a2a;
+    padding-top: 20px;
 }
 
-/* Unified Button Architectures */
+@media (min-width: 480px) {
+    .form-actions-row {
+        flex-direction: row; /* Sideways flex alignment row returned on tablets */
+        gap: 12px;
+    }
+}
+
+/* Unified System Button Architecture */
 .btn {
-    padding: 10px 22px;
-    border-radius: 4px;
+    padding: 12px 22px; /* Slightly amplified click-target volume for phones */
+    border-radius: 6px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     text-decoration: none;
     text-align: center;
     border: none;
     display: inline-block;
-    transition: opacity 0.15s ease;
+    box-sizing: border-box;
+    width: 100%; /* Stretches blocks wide on phones for responsive ease */
+    transition: background-color 0.15s ease, transform 0.1s;
 }
 
-    .btn:hover {
-        opacity: 0.9;
+    .btn:active {
+        transform: scale(0.98);
     }
 
-/* Specific UI Button Color Palettes */
+@media (min-width: 480px) {
+    .btn {
+        width: auto; /* Shrinks back down cleanly to natural content sizes on large panels */
+    }
+}
+
+/* Custom Profile Button Color Palettes */
 .btn-action-toggle {
     background-color: #0076df;
     color: #ffffff;
 }
 
 .btn-save {
-    background-color: #0076df;
+    background-color: #006bde; /* Deep rich blue action submit trigger */
     color: #ffffff;
 }
 
 .btn-cancel {
-    background-color: #0076df;
-    color: #ffffff;
+    background-color: #333333; /* Dark muted back-out fallback block */
+    color: #aaaaaa;
     line-height: 1.5;
 }
 
+    .btn-cancel:hover {
+        background-color: #444444;
+        color: #ffffff;
+    }
+
 .btn-reset {
-    background-color: #0076df;
-    color: #ffffff;
+    background-color: transparent;
+    color: #aaaaaa;
+    border: 1px solid #333333;
 }
 
-/* Collapsible Password Box Slider State */
+    .btn-reset:hover {
+        border-color: #444444;
+        color: #ffffff;
+    }
+
+/* Collapsible Password Drawer Panel System */
 .password-sliding-drawer {
     margin-top: 15px;
-    padding: 20px;
-    background-color: #fcfcfc;
-    border: 1px dashed #dddddd;
+    padding: 20px 15px;
+    background-color: #151515;
+    border: 1px dashed #333333;
     border-radius: 6px;
+    box-sizing: border-box;
     transition: all 0.3s ease-in-out;
+}
+
+@media (min-width: 768px) {
+    .password-sliding-drawer {
+        padding: 20px;
+    }
 }
 
 .hidden-drawer {
@@ -152,18 +231,19 @@
 }
 
 .drawer-title {
-    font-size: 16px;
-    color: #333333;
+    font-size: 15px;
+    color: #ffffff;
     margin: 0 0 15px 0;
     font-weight: 600;
 }
 
 /* Field Validation Error Layouts */
 .validation-error {
-    color: #d93025;
+    color: #ff4d4d; /* Bright neon alert error text logic popups */
     font-size: 12px;
-    margin-top: 4px;
+    margin-top: 5px;
     display: block;
+    font-weight: 500;
 }
 
 .status-message-container {

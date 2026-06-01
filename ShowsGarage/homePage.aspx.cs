@@ -101,7 +101,7 @@ namespace ShowsGarage
             {
                 Session["Cart_ProductID_" + productId] = 1;
             }
-            Response.Redirect("~/Web_Files/Client/Pages/cart.aspx");
+            Response.Redirect("~/Web_Files/Client/Pages/productDetails.aspx");
         }
         private void BindBlogGrid()
         {
