@@ -41,7 +41,7 @@
                                 <h4><%# Eval("BrandName") %></h4>
                                 <h5><%# Eval("Title") %></h5>
                                 <p>Rs.<%# Eval("SellingPrice") %></p>
-                                <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CommandArgument='<%# Eval("ProductID") %>' OnClick="btnAddToCart_Click" OnClientClick="event.stopPropagation();" CssClass="my-gallery-cart-btn" />
+                                <asp:Button ID="btnAddToCart" runat="server" Text="View" CommandArgument='<%# Eval("ProductID") %>' OnClick="btnAddToCart_Click" OnClientClick="event.stopPropagation();" CssClass="my-gallery-cart-btn" />
                             </div>
                         </div>
                     </a>

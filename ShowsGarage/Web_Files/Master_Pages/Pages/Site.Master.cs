@@ -50,6 +50,11 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
             Session.Clear();
             Response.Redirect("~/homePage.aspx");
         }
+
+        protected void btnFooterJoin_Click(object sender, EventArgs e)
+        {
+            txtFooterEmail.Text = string.Empty;
+        }
     }
 
 }

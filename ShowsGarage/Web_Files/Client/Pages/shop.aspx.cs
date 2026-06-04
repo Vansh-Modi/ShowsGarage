@@ -12,6 +12,11 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["UserID"] == null || Session["UserEmail"] == null)
+            {
+                Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx");
+                return;
+            }
             if (!IsPostBack)
             {
                 BindCategories();

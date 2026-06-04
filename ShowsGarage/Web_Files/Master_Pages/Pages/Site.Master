@@ -85,8 +85,8 @@
 
                     <div class="footer-section">
                         <h4>Collections</h4>
-                        <a href="Collections.aspx?brand=HotWheels">Hot Wheels</a>
-                        <a href="Collections.aspx?brand=MiniGT">Mini GT</a>
+                        <a href="../../Client/Pages/shop.aspx">Hot Wheels</a>
+                        <a href="../../Client/Pages/shop.aspx">Mini GT</a>
                     </div>
 
                     <div class="footer-section">
@@ -101,7 +101,7 @@
                         <p>Join the garage for new case drops and exclusive diecast news.</p>
                         <div class="newsletter-container">
                             <asp:TextBox ID="txtFooterEmail" runat="server" CssClass="footer-input" placeholder="Your Email Address"></asp:TextBox>
-                            <asp:LinkButton ID="btnFooterJoin" runat="server" CssClass="footer-btn">
+                            <asp:LinkButton ID="btnFooterJoin" runat="server" CssClass="footer-btn" OnClick="btnFooterJoin_Click">
                                 JOIN
                             </asp:LinkButton>
                         </div>
