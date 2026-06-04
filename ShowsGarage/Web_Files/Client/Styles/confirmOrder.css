@@ -1,0 +1,179 @@
+﻿/* ==========================================================================
+   Show's Garage - Dedicated Order Success Style Framework
+   ========================================================================== */
+
+.shop-theme-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #0d0d0d;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #ffffff;
+    box-sizing: border-box;
+}
+
+.success-layout-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 10px;
+}
+
+.shop-content-container {
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.success-narrow-container {
+    max-width: 600px;
+}
+
+/* Core Box Card Container Structure */
+.success-card {
+    background-color: #141414;
+    border: 1px solid #222222;
+    border-radius: 10px;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .success-card {
+        padding: 50px 40px;
+    }
+}
+
+/* Checkmark Graphic Ring Element */
+.success-checkmark-ring {
+    width: 70px;
+    height: 70px;
+    background-color: rgba(46, 189, 89, 0.1);
+    border: 2px solid #2ebd59;
+    color: #2ebd59;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    user-select: none;
+}
+
+/* Headings and Core Label Elements */
+.success-main-heading {
+    font-size: 26px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 12px 0;
+    color: #ffffff;
+    text-align: center;
+}
+
+.success-meta-text {
+    color: #aaaaaa;
+    font-size: 14px;
+    margin: 0 0 25px 0;
+    line-height: 1.4;
+}
+
+.success-order-id {
+    color: #0076df;
+    font-size: 16px;
+    display: block;
+    margin-top: 6px;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+}
+
+/* Informational Pipeline Content Panel */
+.success-info-panel {
+    background-color: #111111;
+    border: 1px solid #222222;
+    border-left: 4px solid #ff5722;
+    padding: 20px;
+    border-radius: 6px;
+    text-align: left;
+    box-sizing: border-box;
+    margin-bottom: 30px;
+}
+
+.info-panel-title {
+    color: #ff5722;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0 0 12px 0;
+    letter-spacing: 0.5px;
+}
+
+.info-panel-list {
+    color: #cccccc;
+    font-size: 13px;
+    margin: 0;
+    padding-left: 18px;
+    line-height: 1.6;
+}
+
+    .info-panel-list li {
+        margin-bottom: 8px;
+    }
+
+        .info-panel-list li:last-child {
+            margin-bottom: 0;
+        }
+
+/* Context Helpers Utility Text Parameters */
+.text-green {
+    color: #2ebd59;
+    font-weight: 600;
+}
+
+.success-disclaimer {
+    color: #666666;
+    font-size: 12px;
+    line-height: 1.4;
+    margin-bottom: 25px;
+}
+
+/* Call to Action Navigation Button Structure */
+.success-actions-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn-success-home {
+    background-color: #ff5722;
+    color: #ffffff;
+    width: 100%;
+    display: block;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-weight: 700;
+    padding: 15px;
+    font-size: 15px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+    .btn-success-home:hover {
+        background-color: #f4511e;
+        box-shadow: 0 4px 14px rgba(255, 87, 34, 0.25);
+    }
+
+    .btn-success-home:active {
+        transform: scale(0.98);
+        box-shadow: 0 2px 6px rgba(255, 87, 34, 0.15);
+    }
