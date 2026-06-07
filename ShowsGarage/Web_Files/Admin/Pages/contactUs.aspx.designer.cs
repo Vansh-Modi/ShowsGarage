@@ -11,25 +11,34 @@ namespace ShowsGarage.Web_Files.Admin
 {
 
 
-    public partial class admin_users
+    public partial class admin_support
     {
 
         /// <summary>
-        /// lblAdminStatus control.
+        /// lblSupportStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblAdminStatus;
+        protected global::System.Web.UI.WebControls.Label lblSupportStatus;
 
         /// <summary>
-        /// rptUsersRegistry control.
+        /// pnlNoTickets control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptUsersRegistry;
+        protected global::System.Web.UI.WebControls.Panel pnlNoTickets;
+
+        /// <summary>
+        /// rptSupportTickets control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptSupportTickets;
     }
 }

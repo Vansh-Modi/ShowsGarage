@@ -55,6 +55,18 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
         {
             txtFooterEmail.Text = string.Empty;
         }
+
+        protected void ibLogo_Click(object sender, ImageClickEventArgs e)
+        {
+            if (Session["UserRole"].ToString() == "Admin")
+            {
+                Response.Redirect("~/dashboard.aspx");
+            }
+            else
+            {
+                Response.Redirect("~/homePage.aspx");
+            }
+        }
     }
 
 }

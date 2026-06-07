@@ -18,7 +18,7 @@
                 <div id="nav-bar">
                     <div class="header-top">
                         <div id="logo-section">
-                            <asp:ImageButton ID="ibLogo" runat="server" ImageUrl="~/Web_Files/Images/icons/Show's Garage Logo(Master Page BG).png" PostBackUrl="~/homePage.aspx" CssClass="logo-img" CausesValidation="False" />
+                            <asp:ImageButton ID="ibLogo" runat="server" ImageUrl="~/Web_Files/Images/icons/Show's Garage Logo(Master Page BG).png" PostBackUrl="~/homePage.aspx" CssClass="logo-img" CausesValidation="False" OnClick="ibLogo_Click" />
                         </div>
 
                         <div id="search-bar">
@@ -62,7 +62,7 @@
                                 <li><a href="../../../Web_Files/Admin/Pages/users.aspx">Users</a></li>
                                 <li><a href="../../../Web_Files/Admin/Pages/reports.aspx">P/L Report</a></li>
                                 <li><a href="../../../Web_Files/Admin/Pages/expenses.aspx">Expenses</a></li>
-                                <li><a href="../../../Web_Files/Admin/Pages/attributes.aspx">Site Settings</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/siteSettings.aspx">Site Settings</a></li>
                                 <li><a href="../../../Web_Files/Admin/Pages/orders.aspx">Orders</a></li>
                             </ul>
                         </nav>

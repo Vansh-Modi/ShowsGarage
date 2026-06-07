@@ -249,7 +249,10 @@
       <DependentUpon>ShowsGarageData.mdf</DependentUpon>
     </Content>
     <Content Include="Web.config" />
-    <Content Include="Web_Files\Admin\Pages\account.aspx" />
+    <Content Include="Web_Files\Admin\Pages\blog.aspx" />
+    <Content Include="Web_Files\Admin\Pages\siteSettings.aspx" />
+    <Content Include="Web_Files\Admin\Styles\blog.css" />
+    <Content Include="Web_Files\Admin\Styles\siteSettings.css" />
     <Content Include="Web_Files\Client\Pages\confirmOrder.aspx" />
     <Content Include="Web_Files\Client\Pages\payment.aspx" />
     <Content Include="Web_Files\Client\Styles\confirmOrder.css" />
@@ -301,19 +304,19 @@
     <Compile Include="homePage.aspx.designer.cs">
       <DependentUpon>homePage.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Web_Files\Admin\Pages\account.aspx.cs">
-      <DependentUpon>account.aspx</DependentUpon>
+    <Compile Include="Web_Files\Admin\Pages\blog.aspx.cs">
+      <DependentUpon>blog.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web_Files\Admin\Pages\account.aspx.designer.cs">
-      <DependentUpon>account.aspx</DependentUpon>
+    <Compile Include="Web_Files\Admin\Pages\blog.aspx.designer.cs">
+      <DependentUpon>blog.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Web_Files\Admin\Pages\attributes.aspx.cs">
-      <DependentUpon>attributes.aspx</DependentUpon>
+    <Compile Include="Web_Files\Admin\Pages\contactUs.aspx.cs">
+      <DependentUpon>contactUs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web_Files\Admin\Pages\attributes.aspx.designer.cs">
-      <DependentUpon>attributes.aspx</DependentUpon>
+    <Compile Include="Web_Files\Admin\Pages\contactUs.aspx.designer.cs">
+      <DependentUpon>contactUs.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web_Files\Admin\Pages\dashboard.aspx.cs">
       <DependentUpon>dashboard.aspx</DependentUpon>
@@ -349,6 +352,13 @@
     </Compile>
     <Compile Include="Web_Files\Admin\Pages\reports.aspx.designer.cs">
       <DependentUpon>reports.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\siteSettings.aspx.cs">
+      <DependentUpon>siteSettings.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Admin\Pages\siteSettings.aspx.designer.cs">
+      <DependentUpon>siteSettings.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web_Files\Admin\Pages\users.aspx.cs">
       <DependentUpon>users.aspx</DependentUpon>
@@ -472,14 +482,14 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <Content Include="homePage.aspx" />
-    <Content Include="Web_Files\Admin\Pages\attributes.aspx" />
+    <Content Include="Web_Files\Admin\Pages\contactUs.aspx" />
     <Content Include="Web_Files\Admin\Pages\dashboard.aspx" />
     <Content Include="Web_Files\Admin\Pages\expenses.aspx" />
     <Content Include="Web_Files\Admin\Pages\orders.aspx" />
     <Content Include="Web_Files\Admin\Pages\products.aspx" />
     <Content Include="Web_Files\Admin\Pages\reports.aspx" />
     <Content Include="Web_Files\Admin\Pages\users.aspx" />
-    <Content Include="Web_Files\Admin\Styles\attributes.css" />
+    <Content Include="Web_Files\Admin\Styles\contactUs.css" />
     <Content Include="Web_Files\Admin\Styles\dashboard.css" />
     <Content Include="Web_Files\Admin\Styles\expenses.css" />
     <Content Include="Web_Files\Admin\Styles\orders.css" />

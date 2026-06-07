@@ -1,2 +1,450 @@
-﻿body {
+﻿/* ==========================================================================
+   Show's Garage - Administrative Orders Dashboard Layout Style Sheet
+   ========================================================================== */
+
+.admin-orders-vertical-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+}
+
+.admin-order-master-card {
+    background-color: #141414;
+    border: 1px solid #222222;
+    border-radius: 8px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Header Meta Bar Layout */
+.admin-order-card-header {
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #222222;
+    padding: 16px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-meta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+@media (min-width: 768px) {
+    .id-right-align {
+        margin-left: auto;
+    }
+}
+
+.meta-label {
+    color: #555555;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.meta-value {
+    color: #cccccc;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+    .meta-value.text-green {
+        color: #2ebd59;
+        font-weight: 700;
+    }
+
+.id-code-highlight {
+    font-family: monospace;
+    font-size: 15px;
+    color: #0076df;
+    font-weight: 700;
+}
+
+/* Status Badges */
+.admin-status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.adm-badge-yellow {
+    background-color: rgba(255, 193, 7, 0.08);
+    border: 1px solid #ffc107;
+    color: #ffc107;
+}
+
+.adm-badge-blue {
+    background-color: rgba(0, 118, 223, 0.08);
+    border: 1px solid #0076df;
+    color: #0076df;
+}
+
+.adm-badge-green {
+    background-color: rgba(46, 189, 89, 0.08);
+    border: 1px solid #2ebd59;
+    color: #2ebd59;
+}
+
+.adm-badge-gray {
+    background-color: #1c1c1c;
+    border: 1px solid #333;
+    color: #888;
+}
+
+/* Main Card Content Layouts */
+.admin-order-card-body {
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.admin-shipping-logistics-summary {
+    font-size: 13px;
+    color: #aaaaaa;
+    background-color: #0d0d0d;
+    padding: 12px 16px;
+    border-radius: 5px;
+    border: 1px solid #1c1c1c;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+    .admin-shipping-logistics-summary strong {
+        color: #666666;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+    }
+
+.payment-meta-footer-row {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.monospace-white {
+    font-family: monospace;
+    color: #fff;
+}
+
+/* Custom Interactive Sub-Navigation Filtering Strip Bar */
+.admin-filter-strip {
+    background-color: #141414;
+    border: 1px solid #222222;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.filter-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-strip-label {
+    font-size: 13px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.admin-filter-dropdown {
+    background-color: #1c1c1c;
+    border: 1px solid #2d2d2d;
+    border-radius: 4px;
+    color: #ffffff;
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+.filter-strip-hint {
+    font-size: 12px;
+    color: #555;
+}
+
+/* Inline Payment Modification Interactive Panel Box */
+.payment-inline-edit-box {
+    background-color: #161616;
+    border: 1px dashed #333333;
+    border-radius: 4px;
+    padding: 14px;
+    margin-top: 15px;
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+.edit-fields-row {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-width: 250px;
+}
+
+.inline-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+    .inline-input-group label {
+        font-size: 10px;
+        color: #666666;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+.inline-text-box {
+    background-color: #0d0d0d;
+    border: 1px solid #2d2d2d;
+    color: #ffffff;
+    padding: 8px 10px;
+    font-size: 13px;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+}
+
+    .inline-text-box:focus {
+        border-color: #0076df;
+    }
+
+.btn-inline-save {
+    background-color: #0076df;
+    color: #ffffff;
+    border: none;
+    padding: 9px 18px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background-color 0.15s ease;
+}
+
+    .btn-inline-save:hover {
+        background-color: #0086ff;
+    }
+
+.btn-toggle-edit {
+    font-size: 12px;
+    color: #0076df;
+    text-decoration: none;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+    .btn-toggle-edit:hover {
+        text-decoration: underline;
+        color: #0096ff;
+    }
+
+/* Purchased Item Manifest Line Form lists mappings */
+.admin-purchased-items-list {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+}
+
+.items-list-section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #444444;
+    letter-spacing: 0.5px;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+}
+
+.admin-item-manifest-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #1c1c1c;
+    gap: 15px;
+}
+
+    .admin-item-manifest-row:last-child {
+        border-bottom: none;
+    }
+
+.manifest-item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.manifest-item-title {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.manifest-item-specs {
+    font-size: 12px;
+    color: #666666;
+}
+
+.manifest-item-pricing {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    text-align: right;
+}
+
+.manifest-item-qty {
+    color: #888888;
+    font-size: 13px;
+}
+
+.manifest-item-price {
+    color: #eeeeee;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 90px;
+}
+
+/* Manual Receipt Verification Workspace Panels Container */
+.admin-receipt-verification-panel {
+    background-color: #1a1a1a;
+    border: 1px solid #262626;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+.verification-details-side {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    min-width: 280px;
+}
+
+.admin-receipt-thumbnail-preview {
+    max-width: 65px;
+    max-height: 85px;
+    width: auto;
+    height: auto;
+    display: block;
+    border: 2px solid #333333;
+    border-radius: 4px;
+    background-color: #0d0d0d;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+    .admin-receipt-thumbnail-preview:hover {
+        border-color: #0076df;
+    }
+
+.reference-string-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.reference-string-label {
+    color: #777777;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.reference-string-value {
+    color: #ffffff;
+    font-family: monospace;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+
+.verification-instructions-hint {
+    margin: 2px 0 0 0;
+    font-size: 12px;
+    color: #555555;
+    line-height: 1.4;
+}
+
+/* Management Terminal Trigger Buttons Execution Panels */
+.verification-actions-side {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-btn-action {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: filter 0.15s ease, transform 0.1s ease;
+    text-align: center;
+}
+
+    .admin-btn-action:hover {
+        filter: brightness(1.1);
+    }
+
+    .admin-btn-action:active {
+        transform: scale(0.98);
+    }
+
+.btn-action-approve {
+    background-color: #2ebd59;
+    color: #ffffff;
+}
+
+.btn-action-reject {
+    background-color: #ff3333;
+    color: #ffffff;
+}
+
+/* Selection Arrow Icon Overrides for Admin dropdown boxes */
+.select-arrow-fix {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 32px !important;
 }

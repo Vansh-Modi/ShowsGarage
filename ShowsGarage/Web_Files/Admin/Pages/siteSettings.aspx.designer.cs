@@ -11,7 +11,7 @@ namespace ShowsGarage.Web_Files.Admin
 {
 
 
-    public partial class admin_expenses
+    public partial class admin_settings
     {
 
         /// <summary>
@@ -24,102 +24,147 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
-        /// hfActiveExpenseID control.
+        /// txtLogoTitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfActiveExpenseID;
+        protected global::System.Web.UI.WebControls.TextBox txtLogoTitle;
 
         /// <summary>
-        /// litFormTitle control.
+        /// fileLogo control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litFormTitle;
+        protected global::System.Web.UI.WebControls.FileUpload fileLogo;
 
         /// <summary>
-        /// txtTitle control.
+        /// txtEmail control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtTitle;
+        protected global::System.Web.UI.WebControls.TextBox txtEmail;
 
         /// <summary>
-        /// txtAmount control.
+        /// txtPhone control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAmount;
+        protected global::System.Web.UI.WebControls.TextBox txtPhone;
 
         /// <summary>
-        /// ddlExpenseType control.
+        /// txtCopyright control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlExpenseType;
+        protected global::System.Web.UI.WebControls.TextBox txtCopyright;
 
         /// <summary>
-        /// ddlOrdersLink control.
+        /// txtHeroTitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlOrdersLink;
+        protected global::System.Web.UI.WebControls.TextBox txtHeroTitle;
 
         /// <summary>
-        /// txtRemarks control.
+        /// txtHeroSubtitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtRemarks;
+        protected global::System.Web.UI.WebControls.TextBox txtHeroSubtitle;
 
         /// <summary>
-        /// btnSaveExpense control.
+        /// fileHeroImg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSaveExpense;
+        protected global::System.Web.UI.WebControls.FileUpload fileHeroImg;
 
         /// <summary>
-        /// btnCancelEdit control.
+        /// txtCurrentHeroPath control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCancelEdit;
+        protected global::System.Web.UI.WebControls.TextBox txtCurrentHeroPath;
 
         /// <summary>
-        /// lblTotalExpensesSum control.
+        /// txtShippingCharges control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTotalExpensesSum;
+        protected global::System.Web.UI.WebControls.TextBox txtShippingCharges;
 
         /// <summary>
-        /// rptExpensesLedger control.
+        /// txtUpiID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptExpensesLedger;
+        protected global::System.Web.UI.WebControls.TextBox txtUpiID;
+
+        /// <summary>
+        /// txtBankDetails control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtBankDetails;
+
+        /// <summary>
+        /// fileQrCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload fileQrCode;
+
+        /// <summary>
+        /// divQrContainer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divQrContainer;
+
+        /// <summary>
+        /// imgQrPreview control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Image imgQrPreview;
+
+        /// <summary>
+        /// btnSaveSettings control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSaveSettings;
     }
 }

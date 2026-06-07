@@ -11,7 +11,7 @@ namespace ShowsGarage.Web_Files.Admin
 {
 
 
-    public partial class admin_expenses
+    public partial class admin_blogs
     {
 
         /// <summary>
@@ -24,13 +24,13 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
-        /// hfActiveExpenseID control.
+        /// hfActiveBlogID control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfActiveExpenseID;
+        protected global::System.Web.UI.WebControls.HiddenField hfActiveBlogID;
 
         /// <summary>
         /// litFormTitle control.
@@ -51,49 +51,49 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.TextBox txtTitle;
 
         /// <summary>
-        /// txtAmount control.
+        /// txtExcerpt control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAmount;
+        protected global::System.Web.UI.WebControls.TextBox txtExcerpt;
 
         /// <summary>
-        /// ddlExpenseType control.
+        /// fileBlogImg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlExpenseType;
+        protected global::System.Web.UI.WebControls.FileUpload fileBlogImg;
 
         /// <summary>
-        /// ddlOrdersLink control.
+        /// txtCurrentImgPath control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlOrdersLink;
+        protected global::System.Web.UI.WebControls.TextBox txtCurrentImgPath;
 
         /// <summary>
-        /// txtRemarks control.
+        /// txtContent control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtRemarks;
+        protected global::System.Web.UI.WebControls.TextBox txtContent;
 
         /// <summary>
-        /// btnSaveExpense control.
+        /// btnSaveBlog control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSaveExpense;
+        protected global::System.Web.UI.WebControls.Button btnSaveBlog;
 
         /// <summary>
         /// btnCancelEdit control.
@@ -105,21 +105,12 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.Button btnCancelEdit;
 
         /// <summary>
-        /// lblTotalExpensesSum control.
+        /// rptBlogsLedger control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTotalExpensesSum;
-
-        /// <summary>
-        /// rptExpensesLedger control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptExpensesLedger;
+        protected global::System.Web.UI.WebControls.Repeater rptBlogsLedger;
     }
 }

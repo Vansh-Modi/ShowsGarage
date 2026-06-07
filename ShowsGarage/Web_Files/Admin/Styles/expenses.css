@@ -1,2 +1,132 @@
-﻿body {
+﻿/* ==========================================================================
+   Show's Garage - Dedicated Administrative Financial Ledger CSS Elements
+   ========================================================================== */
+
+.expenses-split-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+@media (min-width: 992px) {
+    .expenses-split-grid {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.9fr);
+    }
+}
+
+.settings-input.numeric-emphasis {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ff5722;
+    font-family: monospace;
+}
+
+.select-arrow-fix {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 18px;
+    padding-right: 40px !important;
+}
+
+.ledger-grand-total {
+    font-size: 14px;
+    color: #aaaaaa;
+    font-weight: 600;
+}
+
+.total-red-highlight {
+    color: #ff3333;
+    font-size: 18px;
+    font-weight: 800;
+    font-family: monospace;
+    margin-left: 6px;
+}
+
+.ledger-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+    .admin-ledger-table th {
+        background-color: #1a1a1a;
+        color: #888888;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        padding: 12px 14px;
+        border-bottom: 2px solid #222222;
+    }
+
+    .admin-ledger-table td {
+        padding: 14px;
+        border-bottom: 1px solid #1c1c1c;
+        vertical-align: top;
+    }
+
+    .admin-ledger-table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.01);
+    }
+
+.cell-date {
+    color: #666666;
+    font-family: monospace;
+    white-space: nowrap;
+}
+
+.cell-title {
+    color: #ffffff;
+    line-height: 1.4;
+}
+
+.order-link-tag {
+    display: inline-block;
+    color: #0076df;
+    font-size: 11px;
+    background-color: rgba(0, 118, 223, 0.06);
+    border: 1px dashed rgba(0, 118, 223, 0.3);
+    padding: 2px 6px;
+    border-radius: 30px;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+.cell-notes {
+    color: #777777;
+    font-size: 12px;
+    margin: 6px 0 0 0;
+    font-style: italic;
+    white-space: pre-wrap;
+}
+
+.cell-category .cat-pill {
+    display: inline-block;
+    background-color: #1c1c1c;
+    border: 1px solid #2d2d2d;
+    color: #aaaaaa;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.cell-cost {
+    text-align: right;
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: #ff6666;
+    white-space: nowrap;
 }
