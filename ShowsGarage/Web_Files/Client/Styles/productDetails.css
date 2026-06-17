@@ -1,175 +1,197 @@
 ﻿/* ==========================================================================
-   Specialized Product Details Panel Design Overrides
+   Show's Garage - Product Detail Presentation View Workspace Styling
    ========================================================================== */
-.shop-theme-wrapper {
-    background-color: #004d51; /* Dark Teal canvas theme base */
-    min-height: 100vh;
-    padding: 20px 15px; /* Comfortable breathing room on mobile screen edges */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    box-sizing: border-box;
-}
 
-@media (min-width: 768px) {
-    .shop-theme-wrapper {
-        padding: 40px 30px;
-    }
-}
-
-.shop-content-container {
-    width: 100%;
-    margin: 0 auto;
+.details-max-width {
+    max-width: 1050px !important;
 }
 
 .details-back-container {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
-/* Master container for the detail layout */
+.btn-layout-back {
+    color: #666666;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+    .btn-layout-back:hover {
+        color: #ff5722;
+    }
+
+/* Core Multi-Column Structural Grid Blocks Splitter */
 .product-details-layout-container {
     display: flex;
-    flex-direction: column; /* Stacks vertically on mobile frames */
-    background-color: #1a1a1a; /* Dark charcoal card panel background */
-    padding: 24px 20px; /* Enhanced internal text padding */
-    border-radius: 12px;
-    border: 1px solid #2a2a2a;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    gap: 25px;
+    flex-direction: column;
+    gap: 35px;
+    width: 100%;
 }
 
 @media (min-width: 768px) {
     .product-details-layout-container {
-        flex-direction: row; /* Sideways row layout on tablet/desktop viewports */
-        padding: 35px;
-        gap: 40px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+        align-items: start;
+        gap: 50px;
     }
 }
 
-/* Product Photo Panel */
-.details-image-panel {
-    flex: 1;
-    background: #ffffff; /* Bright white photo canvas contrast */
-    padding: 15px;
+/* Showcase Graphic Panels */
+.main-showcase-image-frame {
+    width: 100%;
+    background-color: #141414;
+    border: 1px solid #222222;
     border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .details-main-img {
     width: 100%;
-    max-height: 300px; /* Caps image size on mobile so it doesn't push text down */
+    height: auto;
+    max-height: 440px;
     object-fit: contain;
+    display: block;
+    border-radius: 4px;
 }
 
-@media (min-width: 768px) {
-    .details-main-img {
-        max-height: 450px;
-    }
-}
-
-/* Text Information Column */
+/* Text & Data Column Blocks Typography Layout */
 .details-content-column {
-    flex: 1.2;
-    text-align: left;
     display: flex;
     flex-direction: column;
 }
 
 .details-brand-label {
-    color: #0076df; /* High-visibility blue badge theme text */
+    color: #666666;
     font-size: 13px;
-    text-transform: uppercase;
     font-weight: 700;
-    letter-spacing: 1.5px;
-    display: block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     margin-bottom: 6px;
 }
 
 .details-product-title {
-    color: #ffffff; /* Swapped to pure high contrast white text for dark theme */
-    font-size: 24px;
-    margin: 0 0 10px 0;
-    font-weight: 700;
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0 0 15px 0;
     line-height: 1.2;
 }
 
-@media (min-width: 768px) {
-    .details-product-title {
-        font-size: 32px;
-        margin: 0 0 14px 0;
-    }
+/* Status badging indicator strips layout tags */
+.details-inventory-status-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.details-scale-badge {
+    background-color: #1c1c1c;
+    border: 1px solid #2d2d2d;
+    color: #0076df;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.details-stock-badge-indicator {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.3px;
+}
+
+.stock-available-badge {
+    background-color: rgba(46, 189, 89, 0.08);
+    border: 1px solid rgba(46, 189, 89, 0.2);
+    color: #2ebd59;
+}
+
+.stock-out-badge {
+    background-color: rgba(244, 67, 54, 0.08);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+    color: #f44336;
 }
 
 .details-price-display {
-    color: #2ebd59; /* Crisp toxic green currency indicator matching layout image */
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 20px;
+    color: #2ebd59;
+    font-family: monospace;
+    font-size: 26px;
+    font-weight: 800;
+    border-bottom: 1px solid #1a1a1a;
     padding-bottom: 15px;
-    border-bottom: 1px solid #2a2a2a; /* Clean separation line */
+    margin-bottom: 20px;
 }
 
-@media (min-width: 768px) {
-    .details-price-display {
-        font-size: 28px;
-    }
-}
-
-/* 
-   FIXED DESCRIPTION BLOCK 
-   Cleans up the text collapse seen in image_0e12e7.png
-*/
+/* Detail Features Description Narrative Body */
 .details-description-text {
-    color: #dddddd; /* Lighter soft gray text for easy nighttime reading */
-    font-size: 15px;
-    line-height: 1.7; /* Adds clean breathing room spacing between lines */
     margin-bottom: 30px;
-    letter-spacing: 0.3px;
-    max-width: 650px; /* Prevents text lines from getting too wide or unreadable */
-    word-wrap: break-word;
-    white-space: pre-line; /* Preserves database line breaks or spacing automatically */
 }
 
-@media (min-width: 768px) {
-    .details-description-text {
-        font-size: 16px;
-        line-height: 1.8;
-    }
-}
-
-.details-action-row {
-    margin-top: auto; /* Aligns buy button along the bottom margin on desktops */
-}
-
-/* High-Visibility Interactive CTA Button Elements */
-.btn-add-to-cart-large {
-    background-color: #ff5722 !important; /* Standout high-visibility premium orange highlight */
-    color: #ffffff !important;
-    font-size: 16px !important;
-    font-weight: 700 !important;
-    padding: 14px 35px !important;
-    border-radius: 6px !important;
-    width: 100%; /* Spreads edge-to-edge on mobile for quick finger tapping */
-    box-sizing: border-box;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.2s, transform 0.1s;
+.description-section-heading {
+    color: #444444;
+    font-size: 11px;
     text-transform: uppercase;
+    font-weight: 700;
     letter-spacing: 0.5px;
+    margin: 0 0 10px 0;
+}
+
+.description-paragraph-content {
+    margin: 0;
+    color: #aaaaaa;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Actions Functional Triggers Links Buttons Row Elements */
+.btn-add-to-cart-large {
+    background-color: #ff5722 !important;
+    color: #ffffff !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 320px;
+    padding: 14px 0 !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(255, 87, 34, 0.25) !important;
+    transition: background-color 0.15s ease !important;
 }
 
     .btn-add-to-cart-large:hover {
         background-color: #f4511e !important;
     }
 
-    .btn-add-to-cart-large:active {
-        transform: scale(0.98); /* Tactile press animation look */
+/* Disabled out-of-stock modifier design class layout mapping rules overrides */
+.btn-add-disabled {
+    background-color: #1a1a1a !important;
+    border: 1px solid #2d2d2d !important;
+    color: #555555 !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
+@media (max-width: 600px) {
+    .details-product-title {
+        font-size: 24px;
     }
 
-@media (min-width: 480px) {
     .btn-add-to-cart-large {
-        width: auto; /* Shrinks back down cleanly on tablet/desktop viewports */
-        display: inline-block;
+        max-width: 100%;
     }
 }

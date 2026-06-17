@@ -1,21 +1,21 @@
-﻿using System;
+﻿/* ==========================================================================
+   Show's Garage - Dynamic Client Scale Model Details Control Panel Engine
+   ========================================================================== */
+
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Windows;
-//using System.Windows.Forms;
-
 
 namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class productDetails : System.Web.UI.Page
     {
-        string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
-
-        public object MessageBox { get; private set; }
+        private string connStr => System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Security Gate: Redirect users to login if they try to access details directly without an active session
             if (Session["UserID"] == null || Session["UserEmail"] == null)
             {
                 Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx");
@@ -24,7 +24,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             if (!IsPostBack)
             {
-                // Read straight from the Request stream inside the initial execution block
+                // Read straight from the QueryString parameter token on initial load
                 string productIdStr = Request.QueryString["id"];
 
                 if (string.IsNullOrEmpty(productIdStr))
@@ -38,11 +38,17 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void LoadProductInformation(string productId)
         {
+            // FIXED: Added Scale and forced NULL StockQuantity to evaluate as 0 safely
+            string query = @"
+                SELECT Title, Description, SellingPrice, BrandName, Scale, ImagePath, 
+                       ISNULL(StockQuantity, 0) AS StockQuantity 
+                FROM Products 
+                WHERE ProductID = @prodID";
+
             try
             {
                 using (SqlConnection con = new SqlConnection(connStr))
                 {
-                    string query = "SELECT Title, Description, SellingPrice, BrandName, ImagePath FROM Products WHERE ProductID = @prodID";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@prodID", productId.Trim());
@@ -53,11 +59,39 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             if (reader.Read())
                             {
                                 lblProductName.Text = reader["Title"].ToString();
-                                lblDescription.Text = reader["Description"].ToString();
                                 lblManufacturer.Text = reader["BrandName"].ToString();
 
+                                string scaleText = reader["Scale"].ToString();
+                                lblScaleDisplay.Text = string.IsNullOrEmpty(scaleText) ? "N/A" : scaleText;
+
+                                lblDescription.Text = string.IsNullOrEmpty(reader["Description"].ToString()) ?
+                                    "No technical description constraints provided for this diecast model replica." : reader["Description"].ToString();
+
                                 decimal price = Convert.ToDecimal(reader["SellingPrice"]);
-                                lblPrice.Text = string.Format("{0:N2}", price);
+                                lblPrice.Text = string.Format("{0:N0}", price);
+
+                                // FIXED: Fetch StockQuantity and explicitly disable Add to Cart if 0
+                                int currentStockCount = Convert.ToInt32(reader["StockQuantity"]);
+
+                                if (currentStockCount <= 0)
+                                {
+                                    lblStockBadge.Text = "Out of Stock";
+                                    lblStockBadge.CssClass = "details-stock-badge-indicator stock-out-badge";
+
+                                    // Lock down control properties to freeze user clicks
+                                    btnAddToCart.Text = "Sold Out";
+                                    btnAddToCart.Enabled = false;
+                                    btnAddToCart.CssClass = "btn-add-to-cart-large btn-add-disabled";
+                                }
+                                else
+                                {
+                                    lblStockBadge.Text = "In Stock (" + currentStockCount + " Units)";
+                                    lblStockBadge.CssClass = "details-stock-badge-indicator stock-available-badge";
+
+                                    btnAddToCart.Text = "Add to Cart";
+                                    btnAddToCart.Enabled = true;
+                                    btnAddToCart.CssClass = "btn-add-to-cart-large";
+                                }
 
                                 string imageUrl = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : "";
                                 if (!string.IsNullOrEmpty(imageUrl))
@@ -66,7 +100,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                                 }
                                 else
                                 {
-                                    imgProduct.ImageUrl = ResolveUrl("/Assets/images/no-image.png");
+                                    imgProduct.ImageUrl = ResolveUrl("~/Assets/images/default-model.png");
                                 }
                             }
                             else
@@ -85,17 +119,16 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
-            // 1. GATEWAY: Enforce strict authentication before interacting with the database
+            lblDetailStatus.Visible = false;
+
             if (Session["UserID"] == null)
             {
                 string targetUrl = Request.RawUrl;
-                Response.Redirect("~/Web_Files/Client/Pages/login.aspx?returnUrl=" + Server.UrlEncode(targetUrl));
+                Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx?returnUrl=" + Server.UrlEncode(targetUrl));
                 return;
             }
 
             int currentUserId = Convert.ToInt32(Session["UserID"]);
-
-            // 2. THE FIX: Pull the ID directly from the Request QueryString during the postback event execution
             string prodIdStr = Request.QueryString["id"];
 
             if (string.IsNullOrEmpty(prodIdStr) || !int.TryParse(prodIdStr.Trim(), out int currentProductId))
@@ -104,14 +137,33 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 return;
             }
 
-            // 3. DATABASE OPERATIONS: Direct mapping to your [dbo].[Cart] table schema
             try
             {
                 using (SqlConnection con = new SqlConnection(connStr))
                 {
                     con.Open();
 
-                    // Check if the item already exists in this user's cart
+                    // SERVER-SIDE STOCK CHECK: Extra boundary defense check before touching cart updates
+                    string verifyStockSql = "SELECT ISNULL(StockQuantity, 0) FROM Products WHERE ProductID = @productID";
+                    using (SqlCommand cmdStock = new SqlCommand(verifyStockSql, con))
+                    {
+                        cmdStock.Parameters.AddWithValue("@productID", currentProductId);
+                        int activeWholesaleStock = Convert.ToInt32(cmdStock.ExecuteScalar());
+
+                        if (activeWholesaleStock <= 0)
+                        {
+                            lblDetailStatus.Text = "⚠️ This item has just sold out and cannot be requested for addition.";
+                            lblDetailStatus.Visible = true;
+
+                            // Dynamically mirror state change onto UI controls immediately
+                            btnAddToCart.Text = "Sold Out";
+                            btnAddToCart.Enabled = false;
+                            btnAddToCart.CssClass = "btn-add-to-cart-large btn-add-disabled";
+                            return;
+                        }
+                    }
+
+                    // Check if the item already exists in this specific user's cart records
                     string checkQuery = "SELECT CartID, Quantity FROM Cart WHERE UserID = @userID AND ProductID = @productID";
                     int existingCartId = 0;
                     int currentQuantity = 0;
@@ -133,7 +185,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
                     if (existingCartId > 0)
                     {
-                        // MATCH FOUND: Increment the quantity structurally
+                        // Increment item line tracking quantity cleanly
                         string updateQuery = "UPDATE Cart SET Quantity = @quantity WHERE CartID = @cartID";
                         using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                         {
@@ -144,8 +196,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     }
                     else
                     {
-                        // FRESH PIECE: Insert a brand new row mapping exactly to your table schema
-                        // Let IDENTITY handle CartID and GETDATE() handle AddedAt automatically
+                        // Insert clean row item mapping directly back to database structures layout
                         string insertQuery = "INSERT INTO Cart (UserID, ProductID, Quantity) VALUES (@userID, @productID, 1)";
                         using (SqlCommand insertCmd = new SqlCommand(insertQuery, con))
                         {
@@ -155,13 +206,12 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         }
                     }
                 }
-                // 4. PIPELINE ROUTING: Advance to Step 1 of the checkout funnel
+
                 Response.Redirect("cart.aspx");
             }
-            catch (Exception ax)
+            catch (Exception ex)
             {
-                // Fail-safe protection: log the exception if needed and keep user safely on details page or redirect
-                Debug.WriteLine(ax);
+                Debug.WriteLine(ex);
                 Response.Redirect("cart.aspx");
             }
         }

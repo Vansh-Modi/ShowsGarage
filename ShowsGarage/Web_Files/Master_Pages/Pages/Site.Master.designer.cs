@@ -150,6 +150,33 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
         protected global::System.Web.UI.WebControls.ContentPlaceHolder ContentPlaceHolder1;
 
         /// <summary>
+        /// litFooterBrandTitle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litFooterBrandTitle;
+
+        /// <summary>
+        /// lnkFooterEmail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkFooterEmail;
+
+        /// <summary>
+        /// lnkFooterPhone control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkFooterPhone;
+
+        /// <summary>
         /// txtFooterEmail control.
         /// </summary>
         /// <remarks>
@@ -166,5 +193,14 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton btnFooterJoin;
+
+        /// <summary>
+        /// litCopyrightDisplay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litCopyrightDisplay;
     }
 }

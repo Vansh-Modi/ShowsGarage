@@ -18,14 +18,13 @@
                 <div id="nav-bar">
                     <div class="header-top">
                         <div id="logo-section">
-                            <asp:ImageButton ID="ibLogo" runat="server" ImageUrl="~/Web_Files/Images/icons/Show's Garage Logo(Master Page BG).png" PostBackUrl="~/homePage.aspx" CssClass="logo-img" CausesValidation="False" OnClick="ibLogo_Click" />
+                            <asp:ImageButton ID="ibLogo" runat="server" CssClass="logo-img" CausesValidation="False" OnClick="ibLogo_Click" />
                         </div>
 
                         <div id="search-bar">
                             <asp:TextBox ID="txtSearch" runat="server" placeholder="Search car"></asp:TextBox>
                             <asp:ImageButton ID="imgSearch" runat="server" ImageUrl="~/Web_Files/Images/icons/search-icon.png" CssClass="search-icon" ImageAlign="Middle" />
                         </div>
-
 
                         <div id="utility-buttons">
                             <asp:Panel ID="Panel1" runat="server" CssClass="icon-group">
@@ -49,7 +48,7 @@
                                 <li><a href="../../../homePage.aspx">Home</a></li>
                                 <li><a href="../../../Web_Files/Client/Pages/shop.aspx">Collections</a></li>
                                 <li><a href="../../../Web_Files/Client/Pages/myOrders.aspx">Orders</a></li>
-                                <li><a href="../../../Web_Files/Client/Pages/cart.aspx">About Us</a></li>
+                                <li><a href="../../../Web_Files/Client/Pages/cart.aspx">Cart</a></li>
                             </ul>
                         </nav>
                     </asp:Panel>
@@ -57,13 +56,11 @@
                     <asp:Panel ID="pnlAdminNav" runat="server" Visible="false">
                         <nav id="admin-nav">
                             <ul>
-                                <li><a href="../../../Web_Files/Admin/Pages/dashboard.aspx">Dashboard</a></li>
-                                <li><a href="../../../Web_Files/Admin/Pages/products.aspx">Inventory</a></li>
-                                <li><a href="../../../Web_Files/Admin/Pages/users.aspx">Users</a></li>
-                                <li><a href="../../../Web_Files/Admin/Pages/reports.aspx">P/L Report</a></li>
-                                <li><a href="../../../Web_Files/Admin/Pages/expenses.aspx">Expenses</a></li>
-                                <li><a href="../../../Web_Files/Admin/Pages/siteSettings.aspx">Site Settings</a></li>
                                 <li><a href="../../../Web_Files/Admin/Pages/orders.aspx">Orders</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/products.aspx">Inventory</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/reports.aspx">P/L Report</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/blog.aspx">Blog</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/siteSettings.aspx">Site Settings</a></li>
                             </ul>
                         </nav>
                     </asp:Panel>
@@ -77,23 +74,23 @@
             <footer>
                 <div class="footer-content">
                     <div class="footer-section">
-                        <h4 class="gold-text">SHOWS GARAGE</h4>
+                        <h4 class="gold-text">
+                            <asp:Literal ID="litFooterBrandTitle" runat="server"></asp:Literal></h4>
                         <p>Your premium destination for precision collectibles.</p>
-                        <div class="social-links">
-                        </div>
+                        <div class="social-links"></div>
                     </div>
 
                     <div class="footer-section">
-                        <h4>Collections</h4>
-                        <a href="../../Client/Pages/shop.aspx">Hot Wheels</a>
-                        <a href="../../Client/Pages/shop.aspx">Mini GT</a>
+                        <h4>Policies</h4>
+                        <a href="/Web_Files/Others/privacy.aspx">Privacy Policy</a>
+                        <a href="/Web_Files/Others/Shipping.aspx">Shipping Info</a>
                     </div>
 
                     <div class="footer-section">
                         <h4>Customer Service</h4>
                         <a href="/Web_Files/Others/contactUs.aspx">Contact Us</a>
-                        <a href="/Web_Files/Others/Shipping.aspx">Shipping Info</a>
-                        <a href="/Web_Files/Others/privacy.aspx">Privacy Policy</a>
+                        <a id="lnkFooterEmail" runat="server">Email Support</a>
+                        <a id="lnkFooterPhone" runat="server">Call Us</a>
                     </div>
 
                     <div class="footer-section">
@@ -101,19 +98,17 @@
                         <p>Join the garage for new case drops and exclusive diecast news.</p>
                         <div class="newsletter-container">
                             <asp:TextBox ID="txtFooterEmail" runat="server" CssClass="footer-input" placeholder="Your Email Address"></asp:TextBox>
-                            <asp:LinkButton ID="btnFooterJoin" runat="server" CssClass="footer-btn" OnClick="btnFooterJoin_Click">
-                                JOIN
-                            </asp:LinkButton>
+                            <asp:LinkButton ID="btnFooterJoin" runat="server" CssClass="footer-btn" OnClick="btnFooterJoin_Click">JOIN</asp:LinkButton>
                         </div>
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    &copy; 2026 Shows Garage | Crafted for Hobbyists <a href="/Web_Files/Master_Pages/Pages/DeveloperProfile.aspx" class="developer-link">Vansh Modi</a>
+                    <asp:Literal ID="litCopyrightDisplay" runat="server" Mode="PassThrough"></asp:Literal>
+                    | Crafted for Hobbyists <a href="/Web_Files/Master_Pages/Pages/DeveloperProfile.aspx" class="developer-link">Vansh Modi</a>
                     <script>
                         console.log("%c🚀 Shows Garage %cBuilt by Vansh Modi",
                             "color: #D4AF37; font-size: 20px; font-weight: bold;",
                             "color: #005461; font-size: 14px;");
-                        console.log("Contact: vanshmodi268@gmail.com | Version: 1.0.0");
                     </script>
                 </div>
             </footer>

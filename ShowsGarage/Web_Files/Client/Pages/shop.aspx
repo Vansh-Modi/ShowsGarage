@@ -1,7 +1,30 @@
 ﻿<%@ Page Title="Shop | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="shop.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.shop" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <title>Shop | Show's Garage</title>
-    <link href="/Web_Files/Client/Styles/shop.css?v=1" rel="stylesheet" type="text/css" />
+    <link href="/Web_Files/Client/Styles/shop.css?v=2" rel="stylesheet" type="text/css" />
+    <style>
+        /* Out of Stock Styling Modifiers */
+        .product-gallery-card.sold-out {
+            opacity: 0.75;
+        }
+        .btn-sold-out {
+            background-color: #222222 !important;
+            color: #777777 !important;
+            border: 1px solid #333333 !important;
+            cursor: not-allowed !important;
+            pointer-events: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -23,11 +46,10 @@
                 </asp:Repeater>
             </div>
 
-            <!-- The core layout container -->
             <div class="products-gallery-grid">
                 <asp:Repeater ID="rptProducts" runat="server">
                     <ItemTemplate>
-                        <div class="product-gallery-card">
+                        <div class='<%# Convert.ToInt32(Eval("StockQuantity")) <= 0 ? "product-gallery-card sold-out" : "product-gallery-card" %>'>
                             <a href='productDetails.aspx?id=<%# Eval("ProductID") %>' class="card-clickable-area">
                                 <div class="product-image-frame">
                                     <img src='<%# ResolveUrl(Eval("ImagePath") != DBNull.Value && !string.IsNullOrEmpty(Eval("ImagePath").ToString()) ? Eval("ImagePath").ToString() : "/Assets/images/no-image.png") %>' alt='<%# Eval("Title") %>' class="product-gallery-img" />
@@ -39,7 +61,10 @@
                                 </div>
                             </a>
                             <div class="card-action-block">
-                                <a href='productDetails.aspx?id=<%# Eval("ProductID") %>' class="btn btn-add-to-cart">View Details</a>
+                                <%# Convert.ToInt32(Eval("StockQuantity")) <= 0 ? 
+                                    "<span class='btn-sold-out'>Out of Stock</span>" : 
+                                    "<a href='productDetails.aspx?id=" + Eval("ProductID") + "' class='btn btn-add-to-cart'>View Details</a>" 
+                                %>
                             </div>
                         </div>
                     </ItemTemplate>

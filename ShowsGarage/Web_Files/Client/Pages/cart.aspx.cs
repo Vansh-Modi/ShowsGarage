@@ -17,11 +17,13 @@ namespace ShowsGarage.Web_Files.Client.Pages
             }
         }
 
+        // Inside your cart.aspx.cs file:
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserID"] == null || Session["UserEmail"] == null)
+            // Secure boundary gate protects the personal cart rows layout
+            if (Session["UserID"] == null)
             {
-                Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx");
+                Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
                 return;
             }
 

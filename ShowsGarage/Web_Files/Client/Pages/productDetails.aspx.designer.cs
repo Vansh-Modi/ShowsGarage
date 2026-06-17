@@ -15,6 +15,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
     {
 
         /// <summary>
+        /// lblDetailStatus control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblDetailStatus;
+
+        /// <summary>
         /// imgProduct control.
         /// </summary>
         /// <remarks>
@@ -40,6 +49,24 @@ namespace ShowsGarage.Web_Files.Client.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblProductName;
+
+        /// <summary>
+        /// lblScaleDisplay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblScaleDisplay;
+
+        /// <summary>
+        /// lblStockBadge control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblStockBadge;
 
         /// <summary>
         /// lblPrice control.

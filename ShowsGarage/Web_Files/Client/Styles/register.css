@@ -1,123 +1,185 @@
-﻿/* --- LOGIN PAGE SPECIFIC STYLES --- */
+﻿/* ==========================================================================
+   Show's Garage - Premium Club Account Registration System Stylesheet
+   ========================================================================== */
 
-.auth-wrapper {
+/* Universal structural alignment across client accounts viewports */
+.auth-theme-wrapper {
+    width: 100%;
+    min-height: calc(100vh - 160px); /* Centers card cleanly between master header & footer */
+    background-color: #0d0d0d;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 60px 20px;
+    padding: 40px 15px;
     box-sizing: border-box;
 }
 
-.auth-card {
-    background-color: #0c2B4E; /* Your Custom Navy Tint */
+.auth-centered-container {
     width: 100%;
-    max-width: 420px;
-    padding: 45px;
-    border-radius: 20px;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
 }
 
-.auth-header h2 {
-    color: #D4AF37;
-    font-size: 26px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
+.auth-card-width {
+    width: 100%;
+    max-width: 480px; /* Structured form center block column width */
+}
+
+/* Card Presentation Headers Typography */
+.auth-header-block {
     text-align: center;
-    margin-top: 0;
-}
-
-.auth-header p {
-    color: #aec6c9;
-    font-size: 13px;
-    margin-bottom: 35px;
-    text-align: center;
-}
-
-.input-group {
     margin-bottom: 25px;
-    text-align: left;
+    border-bottom: 1px solid #1c1c1c;
+    padding-bottom: 15px;
 }
 
-    .input-group label {
-        display: block;
-        color: #FAEAB1;
-        font-size: 10px;
-        font-weight: bold;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-        letter-spacing: 1.5px;
-    }
-
-.auth-input {
-    width: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 14px;
+.auth-main-heading {
     color: #ffffff;
-    border-radius: 8px;
-    outline: none;
-    box-sizing: border-box;
-    font-size: 16px;
-}
-
-    .auth-input:focus {
-        border-color: #D4AF37;
-        background: rgba(0, 0, 0, 0.4);
-    }
-
-.auth-btn {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, #D4AF37 0%, #FAEAB1 100%);
-    color: #1a1a1a;
-    border: none;
-    border-radius: 8px;
-    font-weight: 900;
+    font-size: 24px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 0.5px;
+    margin: 0 0 6px 0;
+}
+
+.auth-subtitle-text {
+    color: #666666;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* Inline verification verification fields layout row adjustments */
+.auth-inline-input-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+}
+
+.auth-flex-input {
+    flex: 1.8 !important;
+}
+
+.btn-inline-action {
+    flex: 1 !important;
+    background-color: #1a1a1a;
+    border: 1px solid #2d2d2d;
+    color: #aaaaaa;
+    padding: 12px 0;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.2s ease;
 }
 
-    .auth-btn:hover {
-        transform: translateY(-3px);
-        filter: brightness(1.1);
+    .btn-inline-action:hover {
+        background-color: #222222;
+        color: #ffffff;
+        border-color: #444444;
     }
 
-.auth-footer {
-    margin-top: 35px;
-    padding-top: 25px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+.auth-resend-link-box {
+    margin-top: 6px;
+    text-align: right;
+}
+
+.auth-resend-btn {
+    color: #FAEAB1;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+    .auth-resend-btn:hover {
+        color: #ffffff;
+    }
+
+/* Main Form Operational Actions Trigger Box Submissions Button */
+.auth-primary-submit-btn {
+    width: 100%;
+    background-color: #ff5722 !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 14px 0 !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(255, 87, 34, 0.2);
+    transition: background-color 0.15s ease !important;
+}
+
+    .auth-primary-submit-btn:hover {
+        background-color: #f4511e !important;
+    }
+
+/* ASP.NET Dynamic Validator Errors Output Modifiers */
+.auth-error-message {
+    color: #ff3333 !important;
+    font-size: 12px !important;
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Footers Account Redirection Links Panels Elements */
+.auth-footer-routing-box {
     text-align: center;
+    margin-top: 15px;
+    border-top: 1px solid #1c1c1c;
+    padding-top: 15px;
 }
 
-    .auth-footer p {
-        color: #aec6c9;
-        font-size: 13px;
+.auth-footer-text {
+    color: #888888;
+    font-size: 13px;
+    margin: 0;
+}
+
+.auth-redirect-link {
+    color: #0076df;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+    .auth-redirect-link:hover {
+        text-decoration: underline;
+        color: #0096ff;
     }
 
-    .auth-footer a {
-        color: #FAEAB1;
-        text-decoration: none;
-        font-weight: 600;
+.auth-system-alert-text {
+    color: #ff3333;
+    font-family: monospace;
+    font-size: 13px;
+    margin-top: 10px;
+    display: block;
+}
+
+/* ==========================================================================
+   Mobile Display Compatibility Adjustments Viewports Breakpoints
+   ========================================================================== */
+@media (max-width: 480px) {
+    .auth-theme-wrapper {
+        padding: 20px 10px;
     }
 
-        .auth-footer a:hover {
-            color: #D4AF37;
-            text-decoration: underline;
-        }
-
-/* MOBILE ADJUSTMENT FOR LOGIN CARD */
-@media (max-width: 600px) {
-    .auth-card {
-        padding: 30px 20px;
+    .settings-card-panel {
+        padding: 20px 15px !important;
     }
 
-    .auth-header h2 {
-        font-size: 22px;
+    .auth-inline-input-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .btn-inline-action {
+        width: 100% !important;
     }
 }

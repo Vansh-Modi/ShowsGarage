@@ -1,15 +1,15 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="contactUs.aspx.cs" Inherits="ShowsGarage.Web_Files.Others.contactUs" %>
+﻿<%@ Page Title="Contact Us | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="contactUs.aspx.cs" Inherits="ShowsGarage.Web_Files.Others.contactUs" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <title>Show's Garage | Contact Us </title>
-</asp:Content>
-<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <style>
-        /* Base Container Styles */
-        a{
-            color : #aec6c9;
+    
+    <style type="text/css">
+        /* Base Container Styles (Your Exact Original CSS Layout Preserved) */
+        a {
+            color: #aec6c9;
             text-decoration: none;
         }
+        
         .garage-content {
             background: #121212;
             color: #aec6c9;
@@ -31,7 +31,6 @@
             font-size: 1.8rem;
         }
 
-        /* Desktop Grid (Default) */
         .contact-grid {
             display: grid;
             grid-template-columns: 1.5fr 1fr;
@@ -42,12 +41,12 @@
             margin-bottom: 20px;
         }
 
-            .input-group label {
-                display: block;
-                margin-bottom: 8px;
-                color: #fff;
-                font-weight: bold;
-            }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-weight: bold;
+        }
 
         .garage-input {
             width: 100%;
@@ -56,15 +55,15 @@
             border: 1px solid #444;
             color: #fff;
             border-radius: 8px;
-            box-sizing: border-box; /* Ensures padding doesn't break width */
+            box-sizing: border-box;
             transition: 0.3s ease;
         }
 
-            .garage-input:focus {
-                border-color: #FAEAB1;
-                outline: none;
-                background: #252525;
-            }
+        .garage-input:focus {
+            border-color: #FAEAB1;
+            outline: none;
+            background: #252525;
+        }
 
         .garage-btn {
             background: #FAEAB1;
@@ -80,16 +79,16 @@
             letter-spacing: 1px;
         }
 
-            .garage-btn:hover {
-                background: #e0d19d;
-                transform: translateY(-2px);
-            }
+        .garage-btn:hover {
+            background: #e0d19d;
+            transform: translateY(-2px);
+        }
 
         .info-card {
             background: #1e1e1e;
             padding: 25px;
             border-radius: 12px;
-            border-top: 4px solid #FAEAB1; /* Changed to top for mobile flow */
+            border-top: 4px solid #FAEAB1;
             height: fit-content;
         }
 
@@ -101,7 +100,7 @@
             }
 
             .contact-grid {
-                grid-template-columns: 1fr; /* Stacks the columns */
+                grid-template-columns: 1fr;
                 gap: 40px;
             }
 
@@ -111,51 +110,61 @@
             }
 
             .info-card {
-                order: 2; /* Puts the contact info below the form on mobile */
+                order: 2;
                 text-align: center;
             }
 
             .garage-btn {
-                padding: 18px; /* Larger hit area for thumbs */
+                padding: 18px;
             }
         }
     </style>
+</asp:Content>
 
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="garage-content">
         <h2 class="garage-header">Get In Touch</h2>
+        
+        <asp:Label ID="lblStatusAlert" runat="server" CssClass="admin-alert-banner" Visible="false" Style="margin-bottom: 25px; display: block; font-weight: bold;"></asp:Label>
+
         <div class="contact-grid">
-            <!-- Form Section -->
             <div class="form-section">
                 <div class="input-group">
-                    <label>Full Name<asp:RequiredFieldValidator ID="rfvName" runat="server" ControlToValidate="txtContactName" Display="Dynamic" ErrorMessage="Enter Name" ForeColor="Red"></asp:RequiredFieldValidator>
+                    <label>Full Name 
+                        <asp:RequiredFieldValidator ID="rfvName" runat="server" ControlToValidate="txtContactName" Display="Dynamic" ErrorMessage="Enter Name" ForeColor="Red" ValidationGroup="ContactGroup"></asp:RequiredFieldValidator>
                     </label>
-                    &nbsp;<asp:TextBox ID="txtContactName" runat="server" CssClass="garage-input" placeholder="Your Name" CausesValidation="True"></asp:TextBox>
+                    <asp:TextBox ID="txtContactName" runat="server" CssClass="garage-input" placeholder="Your Name"></asp:TextBox>
                 </div>
+                
                 <div class="input-group">
-                    <label>Email Address<asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtContactEmail" Display="Dynamic" ErrorMessage="Enter Email" ForeColor="Red"></asp:RequiredFieldValidator>
+                    <label>Email Address 
+                        <asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtContactEmail" Display="Dynamic" ErrorMessage="Enter Email" ForeColor="Red" ValidationGroup="ContactGroup"></asp:RequiredFieldValidator>
                     </label>
-                    &nbsp;<asp:TextBox ID="txtContactEmail" runat="server" CssClass="garage-input" placeholder="name@example.com" CausesValidation="True" TextMode="Email"></asp:TextBox>
+                    <asp:TextBox ID="txtContactEmail" runat="server" CssClass="garage-input" placeholder="name@example.com" TextMode="Email"></asp:TextBox>
                 </div>
+                
                 <div class="input-group">
-                    <label>Message<asp:RequiredFieldValidator ID="rfvMessage" runat="server" ControlToValidate="txtMessage" Display="Dynamic" ErrorMessage="Enter Message" ForeColor="Red"></asp:RequiredFieldValidator>
+                    <label>Message 
+                        <asp:RequiredFieldValidator ID="rfvMessage" runat="server" ControlToValidate="txtMessage" Display="Dynamic" ErrorMessage="Enter Message" ForeColor="Red" ValidationGroup="ContactGroup"></asp:RequiredFieldValidator>
                     </label>
-                    &nbsp;<asp:TextBox ID="txtMessage" runat="server" CssClass="garage-input" TextMode="MultiLine" Rows="5" placeholder="Tell us about your car..." CausesValidation="True"></asp:TextBox>
+                    <asp:TextBox ID="txtMessage" runat="server" CssClass="garage-input" TextMode="MultiLine" Rows="5" placeholder="Tell us about your car..."></asp:TextBox>
                 </div>
-                <asp:Button ID="btnSendMessage" runat="server" Text="SEND MESSAGE" CssClass="garage-btn" OnClick="btnSendMessage_Click" />
+                
+                <asp:Button ID="btnSendMessage" runat="server" Text="SEND MESSAGE" CssClass="garage-btn" OnClick="btnSendMessage_Click" ValidationGroup="ContactGroup" />
             </div>
 
-            <!-- Info Section -->
             <div class="info-card">
                 <h4 style="color: #fff; margin-top: 0; font-size: 1.2rem;">
                     <asp:Label ID="lblError" runat="server"></asp:Label>
                 </h4>
                 <h4 style="color: #fff; margin-top: 0; font-size: 1.2rem;">Garage Hub</h4>
-                <p>📍<a href="https://www.google.com/maps/dir//Avadh+Carolina,+Silent+Zone+Rd,+Gaviyer,+Surat,+Dumas,+Gujarat+394550/@21.2049469,72.7688223,15z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3be052b0b5a735b5:0x1067fd7cd32c301c!2m2!1d72.7216156!2d21.1250289?entry=ttu&g_ep=EgoyMDI2MDUxMC4wIKXMDSoASAFQAw%3D%3D">Surat, Gujarat, India</a></p>
-                <p>📧 <a href="vanshmodi268@gmail.com">vanshmodi268@gmail.com</a></p>
-                <p>📞 +91 99986 77425</p>
-                <%--<asp:Label ID="Label1" runat="server" Text="Label"></asp:Label>--%>
+                <p>📍 <a href="https://maps.google.com" target="_blank" style="color: #aec6c9;">Surat, Gujarat, India</a></p>
+                
+                <p>📧 <asp:HyperLink ID="hlEmail" runat="server" ForeColor="#AEC6C9"></asp:HyperLink></p>
+                <p>📞 <asp:HyperLink ID="hlPhone" runat="server" ForeColor="#AEC6C9"></asp:HyperLink></p>
+                
                 <hr style="border: 0; border-top: 1px solid #444; margin: 20px 0;">
-                <p style="font-size: 14px; color: #FAEAB1; font-style: italic;">
+                <p style="font-size: 14px; color: #FAEAB1; font-style: italic; margin: 0;">
                     "Precision performance for the modern driver."
                 </p>
             </div>

@@ -15,6 +15,15 @@ namespace ShowsGarage.Web_Files.Others
     {
 
         /// <summary>
+        /// lblStatusAlert control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblStatusAlert;
+
+        /// <summary>
         /// rfvName control.
         /// </summary>
         /// <remarks>
@@ -85,5 +94,23 @@ namespace ShowsGarage.Web_Files.Others
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblError;
+
+        /// <summary>
+        /// hlEmail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink hlEmail;
+
+        /// <summary>
+        /// hlPhone control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink hlPhone;
     }
 }
