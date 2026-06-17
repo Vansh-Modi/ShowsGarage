@@ -142,18 +142,20 @@ namespace ShowsGarage.Web_Files.Admin
             string description = txtDescription.Text.Trim();
             bool isNewArrival = chkIsNewArrival.Checked;
 
-            if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(categoryVal) || string.IsNullOrEmpty(txtSellingPrice.Text.Trim()) || string.IsNullOrEmpty(txtCostPrice.Text.Trim()))
+            // Updated Input Validation checking for the newly added MRP field box control
+            if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(categoryVal) || string.IsNullOrEmpty(txtSellingPrice.Text.Trim()) || string.IsNullOrEmpty(txtCostPrice.Text.Trim()) || string.IsNullOrEmpty(txtMRP.Text.Trim()))
             {
-                DisplayStatusFeedback("⚠️ Title, Category configuration, and both financial valuation properties are strictly required.", false);
+                DisplayStatusFeedback("⚠️ Title, Category configuration, MRP field, and both financial valuation properties are strictly required.", false);
                 return;
             }
 
             int stock = 0;
             int.TryParse(txtStockQuantity.Text.Trim(), out stock);
 
-            decimal costPrice = 0, sellingPrice = 0;
+            decimal costPrice = 0, sellingPrice = 0, mrpValue = 0;
             decimal.TryParse(txtCostPrice.Text.Trim(), out costPrice);
             decimal.TryParse(txtSellingPrice.Text.Trim(), out sellingPrice);
+            decimal.TryParse(txtMRP.Text.Trim(), out mrpValue); // Parse numeric collection from textual formatting box
 
             bool isEditing = !string.IsNullOrEmpty(hfActiveProductID.Value);
             string finalImgRelativePath = isEditing ? txtCurrentImgPath.Text : "/Assets/images/default-model.png";
@@ -187,14 +189,15 @@ namespace ShowsGarage.Web_Files.Admin
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
+                // UPDATED TRANSACTIONS: Incorporating [MRP] field allocations directly into runtime queries
                 string sql = isEditing ?
                     @"UPDATE [dbo].[Products] 
                       SET Title = @Title, BrandName = @BrandName, CategoryID = @CategoryID, Scale = @Scale, 
-                          Description = @Description, SellingPrice = @SellingPrice, CostPrice = @CostPrice, 
+                          Description = @Description, SellingPrice = @SellingPrice, CostPrice = @CostPrice, MRP = @MRP,
                           StockQuantity = @StockQuantity, ImagePath = @ImagePath, IsNewArrival = @IsNewArrival
                       WHERE ProductID = @ProductID" :
-                    @"INSERT INTO [dbo].[Products] (Title, BrandName, CategoryID, Scale, Description, SellingPrice, CostPrice, StockQuantity, ImagePath, IsNewArrival, CreatedAt)
-                      VALUES (@Title, @BrandName, @CategoryID, @Scale, @Description, @SellingPrice, @CostPrice, @StockQuantity, @ImagePath, @IsNewArrival, @CreatedAt)";
+                    @"INSERT INTO [dbo].[Products] (Title, BrandName, CategoryID, Scale, Description, SellingPrice, CostPrice, MRP, StockQuantity, ImagePath, IsNewArrival, CreatedAt)
+                      VALUES (@Title, @BrandName, @CategoryID, @Scale, @Description, @SellingPrice, @CostPrice, @MRP, @StockQuantity, @ImagePath, @IsNewArrival, @CreatedAt)";
 
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
@@ -205,6 +208,7 @@ namespace ShowsGarage.Web_Files.Admin
                     cmd.Parameters.AddWithValue("@Description", string.IsNullOrEmpty(description) ? (object)DBNull.Value : description);
                     cmd.Parameters.AddWithValue("@SellingPrice", sellingPrice);
                     cmd.Parameters.AddWithValue("@CostPrice", costPrice);
+                    cmd.Parameters.AddWithValue("@MRP", mrpValue); // Map the freshly computed data item row property
                     cmd.Parameters.AddWithValue("@StockQuantity", stock);
                     cmd.Parameters.AddWithValue("@ImagePath", finalImgRelativePath);
                     cmd.Parameters.AddWithValue("@IsNewArrival", isNewArrival);
@@ -264,6 +268,10 @@ namespace ShowsGarage.Web_Files.Admin
                                 txtStockQuantity.Text = reader["StockQuantity"].ToString();
                                 txtCostPrice.Text = string.Format("{0:F2}", reader["CostPrice"]);
                                 txtSellingPrice.Text = string.Format("{0:F2}", reader["SellingPrice"]);
+
+                                // NEW FIELD READER: Populates the product form interface with database values
+                                txtMRP.Text = string.Format("{0:F2}", reader["MRP"]);
+
                                 txtCurrentImgPath.Text = reader["ImagePath"].ToString();
                                 chkIsNewArrival.Checked = Convert.ToBoolean(reader["IsNewArrival"]);
                                 txtDescription.Text = reader["Description"].ToString();
@@ -345,7 +353,7 @@ namespace ShowsGarage.Web_Files.Admin
                         ResetCategoryFormPanel();
                         LoadCategoriesDropdownSelector();
                         LoadCategoriesManagementLedger();
-                        LoadInventoryItemsMatrixGrid(); // Refresh grid layout references
+                        LoadInventoryItemsMatrixGrid();
                     }
                     catch (Exception ex)
                     {
@@ -432,6 +440,7 @@ namespace ShowsGarage.Web_Files.Admin
             txtStockQuantity.Text = "";
             txtCostPrice.Text = "";
             txtSellingPrice.Text = "";
+            txtMRP.Text = ""; // Flush value out of control form field block
             txtCurrentImgPath.Text = "";
             txtDescription.Text = "";
             chkIsNewArrival.Checked = true;
@@ -459,7 +468,7 @@ namespace ShowsGarage.Web_Files.Admin
 
         protected void btnCancelEdit_Click(object sender, EventArgs e)
         {
-
+            ResetProductFormPanel();
         }
     }
 }

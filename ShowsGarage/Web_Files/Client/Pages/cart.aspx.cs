@@ -39,11 +39,12 @@ namespace ShowsGarage.Web_Files.Client.Pages
             int userId = Convert.ToInt32(Session["UserID"]);
             DataTable dtCart = new DataTable();
 
+            // UPDATED SQL: Explicitly added p.MRP to your selection mapping layout
             string query = @"
-                SELECT c.ProductID, p.BrandName, p.Title, p.SellingPrice, c.Quantity, p.ImagePath
-                FROM Cart c 
-                INNER JOIN Products p ON c.ProductID = p.ProductID 
-                WHERE c.UserID = @UserID";
+        SELECT c.ProductID, p.BrandName, p.Title, p.SellingPrice, p.MRP, c.Quantity, p.ImagePath
+        FROM Cart c 
+        INNER JOIN Products p ON c.ProductID = p.ProductID 
+        WHERE c.UserID = @UserID";
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
@@ -59,7 +60,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             Session["Cart"] = dtCart;
         }
-
         private void CalculateAndBindCart()
         {
             DataTable dtCart = Session["Cart"] as DataTable;
@@ -83,7 +83,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             {
                 if (row.RowState == DataRowState.Deleted) continue;
 
-                decimal price = Convert.ToDecimal(row["SellingPrice"]);
+                decimal price = Convert.ToDecimal(row["MRP"]);
                 int qty = Convert.ToInt32(row["Quantity"]);
                 cartTotal += (price * qty);
                 totalItemsCount += qty;

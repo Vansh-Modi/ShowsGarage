@@ -50,7 +50,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             using (SqlConnection con = new SqlConnection(connStr))
             {
                 string query = @"
-                    SELECT ProductID, Title, BrandName, SellingPrice, ImagePath, 
+                    SELECT ProductID, Title, BrandName, MRP, SellingPrice, ImagePath, 
                            ISNULL(StockQuantity, 0) AS StockQuantity 
                     FROM Products";
 

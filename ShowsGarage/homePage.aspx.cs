@@ -56,7 +56,7 @@ namespace ShowsGarage
 
         private void LoadGalleryData()
         {
-            string query = "SELECT ProductID, ImagePath, BrandName, Title, SellingPrice FROM [dbo].[Products] ORDER BY CreatedAt DESC";
+            string query = "SELECT ProductID, ImagePath, BrandName, Title, MRP FROM [dbo].[Products] ORDER BY CreatedAt DESC";
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))

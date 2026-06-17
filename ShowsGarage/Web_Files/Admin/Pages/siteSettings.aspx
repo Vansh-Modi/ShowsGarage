@@ -82,6 +82,11 @@
                             </div>
 
                             <div class="form-group full-width">
+                                <label class="settings-label label-highlight">Flat App Platform Convenience Fee (Rs.)</label>
+                                <asp:TextBox ID="txtPlatformFee" runat="server" CssClass="settings-input numeric-input" placeholder="0.00"></asp:TextBox>
+                            </div>
+
+                            <div class="form-group full-width">
                                 <label class="settings-label label-highlight">Merchant UPI Handle Address</label>
                                 <asp:TextBox ID="txtUpiID" runat="server" CssClass="settings-input upi-input" placeholder="username@bank"></asp:TextBox>
                             </div>

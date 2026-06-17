@@ -3,7 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <title>Product Details | Show's Garage</title>
     <link href="/Web_Files/Client/Styles/shop.css?v=2" rel="stylesheet" type="text/css" />
-    <link href="/Web_Files/Client/Styles/product-details.css?v=1" rel="stylesheet" type="text/css" />
+    <link href="/Web_Files/Client/Styles/productDetails.css?v=1" rel="stylesheet" type="text/css" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">

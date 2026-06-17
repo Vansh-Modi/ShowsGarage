@@ -5,12 +5,12 @@
     <link href="/Web_Files/Admin/Styles/siteSettings.css?v=2" rel="stylesheet" type="text/css" />
     <link href="/Web_Files/Admin/Styles/products.css?v=3" rel="stylesheet" type="text/css" />
     <style>
-        /* Contextual Mode Toggle Elements Styling */
         .category-management-link-wrapper {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .btn-mode-toggle {
             font-size: 11px;
             color: #0076df;
@@ -19,7 +19,12 @@
             text-transform: uppercase;
             cursor: pointer;
         }
-        .btn-mode-toggle:hover { text-decoration: underline; color: #0096ff; }
+
+            .btn-mode-toggle:hover {
+                text-decoration: underline;
+                color: #0096ff;
+            }
+
         .category-bullet-row {
             display: flex;
             justify-content: space-between;
@@ -30,19 +35,40 @@
             border-radius: 4px;
             margin-bottom: 10px;
         }
-        .cat-title-text { color: #ffffff; font-size: 13px; font-weight: 600; }
-        .cat-action-links a, .cat-action-links input[type="submit"] {
-            font-size: 11px; color: #666; text-decoration: none; margin-left: 6px; cursor: pointer; background: none; border: none; padding: 0;
+
+        .cat-title-text {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
         }
-        .cat-action-links .cat-edit-link:hover { color: #0076df; text-decoration: underline; }
-        .cat-action-links .cat-delete-link:hover { color: #ff3333; text-decoration: underline; }
+
+        .cat-action-links a, .cat-action-links input[type="submit"] {
+            font-size: 11px;
+            color: #666;
+            text-decoration: none;
+            margin-left: 6px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .cat-action-links .cat-edit-link:hover {
+            color: #0076df;
+            text-decoration: underline;
+        }
+
+        .cat-action-links .cat-delete-link:hover {
+            color: #ff3333;
+            text-decoration: underline;
+        }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="admin-theme-wrapper">
         <main class="admin-content-container wide-fluid-layout">
-            
+
             <div class="admin-controls-bar">
                 <h1 class="admin-main-heading">
                     <asp:Literal ID="litPageMainHeading" runat="server" Text="Garage Inventory Matrix"></asp:Literal>
@@ -58,11 +84,12 @@
             <asp:HiddenField ID="hfActiveCategoryID" runat="server" Value="" />
 
             <div class="products-split-grid">
-                
+
                 <asp:Panel ID="pnlProductFormLayout" runat="server" CssClass="product-form-panel-column">
                     <div class="settings-card-panel">
-                        <h2 class="settings-card-title"><asp:Literal ID="litFormTitle" runat="server" Text="Add New Scale Model"></asp:Literal></h2>
-                        
+                        <h2 class="settings-card-title">
+                            <asp:Literal ID="litFormTitle" runat="server" Text="Add New Scale Model"></asp:Literal></h2>
+
                         <div class="settings-form-grid">
                             <div class="form-group full-width">
                                 <label class="settings-label">Model Replica Title</label>
@@ -98,6 +125,11 @@
                             </div>
 
                             <div class="form-group half-width">
+                                <label class="settings-label">Factory Print MRP (Rs.)</label>
+                                <asp:TextBox ID="txtMRP" runat="server" CssClass="settings-input numeric-mrp" placeholder="0.00"></asp:TextBox>
+                            </div>
+
+                            <div class="form-group full-width">
                                 <label class="settings-label">Retail Selling Price (Rs.)</label>
                                 <asp:TextBox ID="txtSellingPrice" runat="server" CssClass="settings-input numeric-sell" placeholder="0.00"></asp:TextBox>
                             </div>
@@ -108,9 +140,11 @@
                                 <asp:TextBox ID="txtCurrentImgPath" runat="server" CssClass="settings-input path-fallback-label" Enabled="false" Visible="false"></asp:TextBox>
                             </div>
 
-                            <div class="form-group full-width checkbox-row-adjustment">
-                                <asp:CheckBox ID="chkIsNewArrival" runat="server" Checked="true" />
-                                <label for="<%= chkIsNewArrival.ClientID %>" class="checkbox-custom-label">Flag as New Arrival Display Item</label>
+                            <div class="form-group full-width" style="display: flex; align-items: center; gap: 8px; margin: 10px 0;">
+                                <asp:CheckBox ID="chkIsNewArrival" runat="server" Checked="true" Style="margin: 0; cursor: pointer;" />
+                                <label for="<%= chkIsNewArrival.ClientID %>" class="checkbox-custom-label" style="margin: 0; cursor: pointer; font-size: 13px; color: #ccc; line-height: 1;">
+                                    Flag as New Arrival Display Item
+                                </label>
                             </div>
 
                             <div class="form-group full-width">
@@ -129,23 +163,24 @@
                 <asp:Panel ID="pnlCategoryFormLayout" runat="server" CssClass="product-form-panel-column" Visible="false">
                     <div class="settings-card-panel">
                         <div class="category-management-link-wrapper" style="border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 20px;">
-                            <h2 class="settings-card-title" style="margin:0; padding:0; border:none;"><asp:Literal ID="litCategoryFormTitle" runat="server" Text="Create New Store Category"></asp:Literal></h2>
-                            <asp:LinkButton ID="lnkReturnToProductMode" runat="server" CssClass="btn-mode-toggle" OnClick="lnkReturnToProductMode_Click" Style="color:#ff5722;" CausesValidation="false">← Back to Products</asp:LinkButton>
+                            <h2 class="settings-card-title" style="margin: 0; padding: 0; border: none;">
+                                <asp:Literal ID="litCategoryFormTitle" runat="server" Text="Create New Store Category"></asp:Literal></h2>
+                            <asp:LinkButton ID="lnkReturnToProductMode" runat="server" CssClass="btn-mode-toggle" OnClick="lnkReturnToProductMode_Click" Style="color: #ff5722;" CausesValidation="false">← Back to Products</asp:LinkButton>
                         </div>
 
                         <div class="settings-form-grid">
-                            <div class="form-group full-width" style="margin-bottom:10px;">
+                            <div class="form-group full-width" style="margin-bottom: 10px;">
                                 <label class="settings-label label-highlight">Category Classification Name</label>
                                 <asp:TextBox ID="txtCategoryName" runat="server" CssClass="settings-input" placeholder="e.g., Diecast 1:18 Premium, JDM Special Edition"></asp:TextBox>
                             </div>
 
-                            <div class="summary-actions-block full-width processing-buttons-row" style="margin-bottom:20px;">
-                                <asp:Button ID="btnSaveCategory" runat="server" Text="Save Category" CssClass="btn-settings-save" OnClick="btnSaveCategory_Click" style="background-color:#0076df;" />
+                            <div class="summary-actions-block full-width processing-buttons-row" style="margin-bottom: 20px;">
+                                <asp:Button ID="btnSaveCategory" runat="server" Text="Save Category" CssClass="btn-settings-save" OnClick="btnSaveCategory_Click" Style="background-color: #0076df;" />
                                 <asp:Button ID="btnCancelCategoryEdit" runat="server" Text="Cancel" CssClass="btn-settings-cancel" OnClick="btnCancelCategoryEdit_Click" Visible="false" />
                             </div>
                         </div>
 
-                        <h3 class="settings-label" style="margin-bottom:12px; display:block;">Active Shell Categories Ledger</h3>
+                        <h3 class="settings-label" style="margin-bottom: 12px; display: block;">Active Shell Categories Ledger</h3>
                         <div class="category-live-ledger-stack">
                             <asp:Repeater ID="rptCategoriesList" runat="server" OnItemCommand="rptCategoriesList_ItemCommand">
                                 <ItemTemplate>
@@ -153,7 +188,7 @@
                                         <span class="cat-title-text"><%# Eval("CategoryName") %></span>
                                         <div class="cat-action-links">
                                             <asp:LinkButton ID="btnEditCat" runat="server" Text="Edit ✎" CssClass="cat-edit-link" CommandName="EditCategory" CommandArgument='<%# Eval("CategoryID") %>' CausesValidation="false"></asp:LinkButton>
-                                            <span style="color:#222;">|</span>
+                                            <span style="color: #222;">|</span>
                                             <asp:LinkButton ID="btnDeleteCat" runat="server" Text="Delete 🗑" CssClass="cat-delete-link" CommandName="DeleteCategory" CommandArgument='<%# Eval("CategoryID") %>' OnClientClick="return confirm('Warning: Deleting this category will detach it from all assigned scale model catalog products. Proceed?');" CausesValidation="false"></asp:LinkButton>
                                         </div>
                                     </div>
@@ -166,7 +201,7 @@
                 <div class="product-grid-display-column">
                     <div class="settings-card-panel premium-border">
                         <h2 class="settings-card-title">Live Garage Inventory Index</h2>
-                        
+
                         <div class="inventory-table-responsive-wrapper">
                             <asp:Repeater ID="rptInventoryMatrix" runat="server" OnItemCommand="rptInventoryMatrix_ItemCommand">
                                 <HeaderTemplate>
@@ -191,13 +226,13 @@
                                         <td>
                                             <span class="inv-item-title"><%# Eval("Title") %></span>
                                             <div class="inv-item-sub-meta">
-                                                Label: <strong><%# Eval("BrandName") %></strong> | Prop: <strong style="color:#0076df;"><%# Eval("Scale") %></strong>
+                                                Label: <strong><%# Eval("BrandName") %></strong> | Prop: <strong style="color: #0076df;"><%# Eval("Scale") %></strong>
                                                 <%# Convert.ToBoolean(Eval("IsNewArrival")) ? "<span class='new-arrival-inline-pill'>New</span>" : "" %>
                                             </div>
                                         </td>
                                         <td style="vertical-align: middle;"><span class="inv-category-tag"><%# Eval("CategoryName") %></span></td>
                                         <td class="inv-financials-cell">
-                                            <span class="sell-cost-display">S: Rs.<%# string.Format("{0:N0}", Eval("SellingPrice")) %></span><span class="base-cost-display">C: Rs.<%# string.Format("{0:N0}", Eval("CostPrice")) %></span></td>
+                                            <span class="sell-cost-display" style="color: #25D366;">S: Rs.<%# string.Format("{0:N0}", Eval("SellingPrice")) %></span><span class="mrp-cost-display" style="color: #ffcc00; display: block; font-size: 11px;">M: Rs.<%# string.Format("{0:N0}", Eval("MRP")) %></span><span class="base-cost-display">C: Rs.<%# string.Format("{0:N0}", Eval("CostPrice")) %></span></td>
                                         <td style="text-align: center; vertical-align: middle;">
                                             <span class='<%# Convert.ToInt32(Eval("StockQuantity")) <= 0 ? "stock-badge stock-empty" : "stock-badge stock-healthy" %>'>
                                                 <%# Eval("StockQuantity") %>
@@ -205,13 +240,13 @@
                                         </td>
                                         <td class="inv-actions-cell" style="text-align: center; vertical-align: middle;">
                                             <asp:LinkButton ID="lnkEdit" runat="server" CssClass="inv-btn-link edit-trigger" CommandName="EditProduct" CommandArgument='<%# Eval("ProductID") %>' CausesValidation="false">Edit</asp:LinkButton>
-                                            <span style="color:#222; margin:0 2px;">|</span>
+                                            <span style="color: #222; margin: 0 2px;">|</span>
                                             <asp:LinkButton ID="lnkDelete" runat="server" CssClass="inv-btn-link delete-trigger" CommandName="DeleteProduct" CommandArgument='<%# Eval("ProductID") %>' OnClientClick="return confirm('Are you sure you want to delete this scale model from your store listing completely?');" CausesValidation="false">Delete</asp:LinkButton>
                                         </td>
                                     </tr>
                                 </ItemTemplate>
                                 <FooterTemplate>
-                                        </tbody>
+                                    </tbody>
                                     </table>
                                 </FooterTemplate>
                             </asp:Repeater>

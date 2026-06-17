@@ -30,7 +30,7 @@
                                 <div class="cart-item-details">
                                     <span class="cart-item-brand"><%# Eval("BrandName") %></span>
                                     <h3 class="cart-item-title"><%# Eval("Title") %></h3>
-                                    <span class="cart-item-price">Rs.<%# string.Format("{0:N0}", Eval("SellingPrice")) %></span>
+                                    <span class="cart-item-price">Rs.<%# string.Format("{0:N0}", Eval("MRP")) %></span>
                                 </div>
 
                                 <div class="cart-item-actions">
@@ -42,7 +42,7 @@
                                     
                                     <div class="item-subtotal-block">
                                         <span class="subtotal-label">Total:</span>
-                                        <span class="subtotal-amount">Rs.<%# string.Format("{0:N0}", Convert.ToDecimal(Eval("SellingPrice")) * Convert.ToInt32(Eval("Quantity"))) %></span>
+                                        <span class="subtotal-amount">Rs.<%# string.Format("{0:N0}", Convert.ToDecimal(Eval("MRP")) * Convert.ToInt32(Eval("Quantity"))) %></span>
                                     </div>
 
                                     <asp:LinkButton ID="btnRemove" runat="server" CommandName="RemoveItem" CommandArgument='<%# Eval("ProductID") %>' CssClass="cart-remove-btn">

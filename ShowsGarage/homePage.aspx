@@ -36,7 +36,7 @@
                         <div class="my-gallery-card-body">
                             <h4><%# Eval("BrandName") %></h4>
                             <h5><%# Eval("Title") %></h5>
-                            <p class="gallery-price-tag">Rs.<%# string.Format("{0:N0}", Eval("SellingPrice")) %></p>
+                            <p class="gallery-price-tag">Rs.<%# string.Format("{0:N0}", Eval("MRP")) %></p>
                             
                             <asp:Button ID="btnAddToCart" runat="server" Text="View Model Details" CommandArgument='<%# Eval("ProductID") %>' OnClick="btnAddToCart_Click" CssClass="my-gallery-cart-btn" />
                         </div>

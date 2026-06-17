@@ -34,7 +34,9 @@ namespace ShowsGarage.Web_Files.Admin
         {
             // Verifies that a row with SiteSettingId = 1 exists so that the site doesn't throw null errors
             string countCheck = "SELECT COUNT(*) FROM [dbo].[SiteSettings] WHERE [SiteSettingId] = 1";
-            string insertSeed = "INSERT INTO [dbo].[SiteSettings] (LogoTitle, ShippingCharges, UpiID, BankAccountDetails) VALUES ('Show''s Garage', 0.00, 'garage@upi', 'Enter Bank Wire Layout Details');";
+
+            // Baseline seed handles setting initial defaults including the PlatformFee column
+            string insertSeed = "INSERT INTO [dbo].[SiteSettings] (LogoTitle, ShippingCharges, PlatformFees, UpiID, BankAccountDetails) VALUES ('Show''s Garage', 0.00, 0.00, 'garage@upi', 'Enter Bank Wire Layout Details');";
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
@@ -79,6 +81,9 @@ namespace ShowsGarage.Web_Files.Admin
                                 txtBankDetails.Text = reader["BankAccountDetails"].ToString();
                                 txtShippingCharges.Text = string.Format("{0:F2}", reader["ShippingCharges"]);
 
+                                // Fetch and present the customized Platform Fee field
+                                txtPlatformFee.Text = string.Format("{0:F2}", reader["PlatformFees"]);
+
                                 string qrPath = reader["QrCodePath"].ToString();
                                 if (!string.IsNullOrEmpty(qrPath))
                                 {
@@ -108,7 +113,12 @@ namespace ShowsGarage.Web_Files.Admin
                     decimal.TryParse(txtShippingCharges.Text.Trim(), out shippingCharges);
                 }
 
-                // Inside btnSaveSettings_Click method:
+                decimal platformFee = 15.00m;
+                if (!string.IsNullOrEmpty(txtPlatformFee.Text.Trim()))
+                {
+                    decimal.TryParse(txtPlatformFee.Text.Trim(), out platformFee);
+                }
+
                 using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
                     conn.Open();
@@ -177,22 +187,23 @@ namespace ShowsGarage.Web_Files.Admin
                         }
                     }
 
-                    // 5. Run the complete update statement including the [Logo] field
+                    // 5. Run the complete update statement including PlatformFee
                     string updateSql = @"
-        UPDATE [dbo].[SiteSettings]
-        SET Logo = @Logo,
-            LogoTitle = @LogoTitle,
-            Email = @Email,
-            PhoneNumber = @Phone,
-            Copyright = @Copyright,
-            HeroTitle = @HeroTitle,
-            HeroSubtitle = @HeroSubtitle,
-            HeroImg = @HeroImg,
-            UpiID = @UpiID,
-            BankAccountDetails = @BankDetails,
-            ShippingCharges = @ShippingCharges,
-            QrCodePath = @QrCodePath
-        WHERE [SiteSettingId] = 1";
+                        UPDATE [dbo].[SiteSettings]
+                        SET Logo = @Logo,
+                            LogoTitle = @LogoTitle,
+                            Email = @Email,
+                            PhoneNumber = @Phone,
+                            Copyright = @Copyright,
+                            HeroTitle = @HeroTitle,
+                            HeroSubtitle = @HeroSubtitle,
+                            HeroImg = @HeroImg,
+                            UpiID = @UpiID,
+                            BankAccountDetails = @BankDetails,
+                            ShippingCharges = @ShippingCharges,
+                            PlatformFees = @PlatformFee,
+                            QrCodePath = @QrCodePath
+                        WHERE [SiteSettingId] = 1";
 
                     using (SqlCommand cmd = new SqlCommand(updateSql, conn))
                     {
@@ -207,6 +218,7 @@ namespace ShowsGarage.Web_Files.Admin
                         cmd.Parameters.AddWithValue("@UpiID", txtUpiID.Text.Trim());
                         cmd.Parameters.AddWithValue("@BankDetails", txtBankDetails.Text.Trim());
                         cmd.Parameters.AddWithValue("@ShippingCharges", shippingCharges);
+                        cmd.Parameters.AddWithValue("@PlatformFee", platformFee);
                         cmd.Parameters.AddWithValue("@QrCodePath", currentQrPath);
 
                         cmd.ExecuteNonQuery();
@@ -214,7 +226,7 @@ namespace ShowsGarage.Web_Files.Admin
                 }
 
                 DisplayAlert("✓ System parameters, metrics, branding logs, and settings records updated successfully.", true);
-                LoadCurrentStoreConfigurations(); // Re-index live data mappings
+                LoadCurrentStoreConfigurations(); // Re-index updated database attributes
             }
             catch (Exception ex)
             {

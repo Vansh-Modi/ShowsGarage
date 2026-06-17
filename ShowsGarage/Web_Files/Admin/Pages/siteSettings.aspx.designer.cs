@@ -114,6 +114,15 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.TextBox txtShippingCharges;
 
         /// <summary>
+        /// txtPlatformFee control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtPlatformFee;
+
+        /// <summary>
         /// txtUpiID control.
         /// </summary>
         /// <remarks>

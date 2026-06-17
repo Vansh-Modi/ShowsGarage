@@ -8,6 +8,10 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class checkout : System.Web.UI.Page
     {
+        // Global variables to hold dynamic metrics from SiteSettings
+        private decimal dynamicPlatformFee = 0;
+        private decimal dynamicShippingFee = 0;
+
         private string ConnectionString
         {
             get
@@ -33,50 +37,90 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     return;
                 }
 
+                // Inject the dynamic configuration columns directly into the data matrix for the Repeater Eval expressions
+                LoadSiteSettings();
+                InjectFeesIntoDataTable(dtCart);
+
                 BindCheckoutReview(dtCart);
             }
         }
 
-        private decimal GetShippingCharges()
+        private void LoadSiteSettings()
         {
-            decimal shippingFee = 0;
-            string query = "SELECT TOP 1 ISNULL(ShippingCharges, 0) FROM [dbo].[SiteSettings]";
+            // Query pulls both user-configured admin fields simultaneously from your database
+            string query = "SELECT TOP 1 ISNULL(ShippingCharges, 0), ISNULL(PlatformFees, 0.00) FROM [dbo].[SiteSettings]";
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     conn.Open();
-                    object result = cmd.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        shippingFee = Convert.ToDecimal(result);
+                        if (reader.Read())
+                        {
+                            dynamicShippingFee = Convert.ToDecimal(reader[0]);
+                            dynamicPlatformFee = Convert.ToDecimal(reader[1]);
+                        }
+                        else
+                        {
+                            // Fallback defaults if table row values are uninitialized
+                            dynamicShippingFee = 60.00m;
+                            dynamicPlatformFee = 15.00m;
+                        }
                     }
                 }
             }
-            return shippingFee;
+        }
+
+        private void InjectFeesIntoDataTable(DataTable dtCart)
+        {
+            // Appends a temporary column so that your frontend markup can safely parse <%# Eval("PlatformFees") %> without errors
+            if (!dtCart.Columns.Contains("PlatformFees"))
+            {
+                dtCart.Columns.Add("PlatformFees", typeof(decimal));
+            }
+
+            foreach (DataRow row in dtCart.Rows)
+            {
+                row["PlatformFees"] = dynamicPlatformFee;
+            }
+            dtCart.AcceptChanges();
         }
 
         private void BindCheckoutReview(DataTable dtCart)
         {
-            decimal itemsSubtotal = 0;
+            decimal mrpSubtotal = 0;
+            decimal brokerageSubtotal = 0;
+            decimal cumulativePlatformFees = 0;
             int itemQuantityCounter = 0;
 
             foreach (DataRow row in dtCart.Rows)
             {
-                decimal price = Convert.ToDecimal(row["SellingPrice"]);
+                decimal sellingPrice = Convert.ToDecimal(row["SellingPrice"]);
+                decimal mrpPrice = Convert.ToDecimal(row["MRP"]); // Pulled smoothly from our updated cart query pipeline
                 int qty = Convert.ToInt32(row["Quantity"]);
-                itemsSubtotal += (price * qty);
+
+                // Apply your formula: Sourcing = SellingPrice - MRP - PlatformFee
+                decimal calculatedBrokeragePerUnit = sellingPrice - mrpPrice - dynamicPlatformFee;
+
+                mrpSubtotal += (mrpPrice * qty);
+                brokerageSubtotal += (calculatedBrokeragePerUnit * qty);
+                cumulativePlatformFees += (dynamicPlatformFee * qty);
                 itemQuantityCounter += qty;
             }
 
-            decimal shippingFee = GetShippingCharges();
-            decimal grandTotal = itemsSubtotal + shippingFee;
+            // Grand Total Summing calculations
+            decimal grandTotal = mrpSubtotal + brokerageSubtotal + cumulativePlatformFees + dynamicShippingFee;
 
             rptCheckoutItems.DataSource = dtCart;
             rptCheckoutItems.DataBind();
 
-            lblShippingFee.Text = string.Format("{0:N0}", shippingFee);
+            // Format strings cleanly into your updated UI Labels components
+            lblMRPSubtotal.Text = string.Format("{0:N0}", mrpSubtotal);
+            lblBrokerageSubtotal.Text = string.Format("{0:N0}", brokerageSubtotal);
+            lblPlatformFee.Text = string.Format("{0:N0}", cumulativePlatformFees);
+            lblShippingFee.Text = string.Format("{0:N0}", dynamicShippingFee);
             lblCheckoutItemsCount.Text = itemQuantityCounter.ToString();
             lblCheckoutGrandTotal.Text = string.Format("{0:N0}", grandTotal);
         }
@@ -107,15 +151,17 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             try
             {
-                // 1. Calculate order cost + live shipping fee rate
-                decimal orderAmount = 0;
+                // Re-load settings metrics to guarantee total sum matches
+                LoadSiteSettings();
+
+                decimal totalOrderAmount = 0;
                 foreach (DataRow row in dtCart.Rows)
                 {
-                    orderAmount += Convert.ToDecimal(row["SellingPrice"]) * Convert.ToInt32(row["Quantity"]);
+                    totalOrderAmount += Convert.ToDecimal(row["SellingPrice"]) * Convert.ToInt32(row["Quantity"]);
                 }
 
-                decimal shippingFee = GetShippingCharges();
-                orderAmount += shippingFee; // Final amount with shipping included
+                // Add shipping fee variable to generate final cumulative aggregate total
+                totalOrderAmount += dynamicShippingFee;
 
                 using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
@@ -124,7 +170,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     {
                         try
                         {
-                            // A. Insert master tracking details into [dbo].[Orders]
+                            // A. Insert tracking row down into [dbo].[Orders]
                             string insertOrderQuery = @"
                                 INSERT INTO [dbo].[Orders] (UserID, OrderDate, TotalAmount, Status, ShippingAddress, PaymentMethod) 
                                 OUTPUT INSERTED.OrderID
@@ -136,7 +182,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             {
                                 cmdOrder.Parameters.AddWithValue("@UserID", userId);
                                 cmdOrder.Parameters.AddWithValue("@OrderDate", DateTime.Now);
-                                cmdOrder.Parameters.AddWithValue("@TotalAmount", orderAmount);
+                                cmdOrder.Parameters.AddWithValue("@TotalAmount", totalOrderAmount);
                                 cmdOrder.Parameters.AddWithValue("@Status", "Awaiting Payment");
                                 cmdOrder.Parameters.AddWithValue("@ShippingAddress", address + ", " + city + " (Phone: " + phone + ", Name: " + fullName + ")");
                                 cmdOrder.Parameters.AddWithValue("@PaymentMethod", "ONLINE");
@@ -144,7 +190,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                                 generatedOrderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
                             }
 
-                            // B. Insert child items mapping details array into [dbo].[OrderDetails]
+                            // B. Insert separate mapped lines elements inside [dbo].[OrderDetails]
                             string insertItemsQuery = @"
                                 INSERT INTO [dbo].[OrderDetails] (OrderID, ProductID, Quantity, UnitPrice) 
                                 VALUES (@OrderID, @ProductID, @Quantity, @UnitPrice)";
@@ -164,14 +210,13 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
                             transaction.Commit();
 
-                            // Pass configuration indexing values to your manual verification terminal page
+                            // Track session index down into verification billing module
                             Session["ActiveCheckoutOrderID"] = generatedOrderId;
                             Response.Redirect("payment.aspx");
                         }
                         catch (Exception innerEx)
                         {
                             transaction.Rollback();
-                            // Captures explicit low-level database constraints failure logs for review
                             throw new Exception("SQL Transaction Inner Exception: " + innerEx.Message, innerEx);
                         }
                     }
@@ -179,7 +224,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
             }
             catch (Exception ex)
             {
-                // Outputs exact error path breakdown string directly to front-end status label component
                 lblStatusMessage.Text = "❌ Process Error: " + ex.Message + (ex.InnerException != null ? " | Details: " + ex.InnerException.Message : "");
                 lblStatusMessage.Visible = true;
             }
