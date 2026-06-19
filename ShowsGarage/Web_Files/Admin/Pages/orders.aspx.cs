@@ -33,7 +33,12 @@ namespace ShowsGarage.Web_Files.Admin
         private void LoadSystemOrdersDashboard(string filterStatus)
         {
             string query = @"
-                SELECT OrderID, UserID, OrderDate, TotalAmount, Status, ShippingAddress, PaymentMethod, PaymentScreenshotPath, TransactionReference 
+                SELECT OrderID, UserID, OrderDate, TotalAmount, Status, ShippingAddress, PaymentMethod, 
+                       ISNULL(PaymentScreenshotPath, '') as PaymentScreenshotPath, 
+                       ISNULL(TransactionReference, '') as TransactionReference,
+                       ISNULL(TrackingPartner, '') as TrackingPartner, 
+                       ISNULL(TrackingNumber, '') as TrackingNumber, 
+                       EstimatedDeliveryDate
                 FROM [dbo].[Orders] ";
 
             if (filterStatus != "ALL")
@@ -42,7 +47,7 @@ namespace ShowsGarage.Web_Files.Admin
             }
             else
             {
-                query += " ORDER BY CASE WHEN Status = 'Awaiting Verification' THEN 1 ELSE 2 END, OrderDate DESC";
+                query += " ORDER BY CASE WHEN Status = 'Awaiting Verification' THEN 1 WHEN Status = 'Approved' THEN 2 WHEN Status = 'Shipped' THEN 3 ELSE 4 END, OrderDate DESC";
             }
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
@@ -85,7 +90,6 @@ namespace ShowsGarage.Web_Files.Admin
                     lblStatusBadge.CssClass = "admin-status-badge " + GetCssBadgeClass(status);
                 }
 
-                // Set value for inline drop down selector edit mode state
                 DropDownList ddlEditStatus = (DropDownList)e.Item.FindControl("ddlEditStatus");
                 if (ddlEditStatus != null)
                 {
@@ -134,11 +138,14 @@ namespace ShowsGarage.Web_Files.Admin
                 int orderId = Convert.ToInt32(e.CommandArgument);
                 TextBox txtRef = (TextBox)e.Item.FindControl("txtEditTxnRef");
                 DropDownList ddlStat = (DropDownList)e.Item.FindControl("ddlEditStatus");
+                TextBox txtPartner = (TextBox)e.Item.FindControl("txtCourierPartner");
+                TextBox txtTrackNo = (TextBox)e.Item.FindControl("txtTrackingNumber");
+                TextBox txtEstDate = (TextBox)e.Item.FindControl("txtEstDeliveryDate");
 
-                if (txtRef != null && ddlStat != null)
+                if (txtRef != null && ddlStat != null && txtPartner != null && txtTrackNo != null && txtEstDate != null)
                 {
-                    ExecuteInlinePaymentUpdate(orderId, txtRef.Text.Trim(), ddlStat.SelectedValue);
-                    DisplayStatusAlert($"✓ Order metadata fields for entry #{orderId} updated successfully inside systems tracking grids.", true);
+                    ExecuteInlineLogisticsUpdate(orderId, txtRef.Text.Trim(), ddlStat.SelectedValue, txtPartner.Text.Trim(), txtTrackNo.Text.Trim(), txtEstDate.Text.Trim());
+                    DisplayStatusAlert($"✓ Order tracking parameters and logs metadata for entry #{orderId} updated successfully inside registers.", true);
                     LoadSystemOrdersDashboard(ddlStatusFilter.SelectedValue);
                 }
             }
@@ -158,9 +165,8 @@ namespace ShowsGarage.Web_Files.Admin
             }
         }
 
-        private void ExecuteInlinePaymentUpdate(int orderId, string cleanTxnRef, string targetStatus)
+        private void ExecuteInlineLogisticsUpdate(int orderId, string cleanTxnRef, string targetStatus, string partner, string trackNo, string estDateStr)
         {
-            // First, determine if we are executing a new manual cancellation via inline selection override
             string currentStatus = "";
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
@@ -172,19 +178,34 @@ namespace ShowsGarage.Web_Files.Admin
 
             if (targetStatus == "Cancelled" && !currentStatus.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
             {
-                // Process cancellation routines including stock rollbacks
                 ExecuteOrderRejectionWithStockRollback(orderId);
             }
 
-            // Apply standard text updates parameters override safely
-            string sql = "UPDATE [dbo].[Orders] SET TransactionReference = @TxnRef, Status = @Status WHERE OrderID = @OrderID";
+            string sql = @"
+                UPDATE [dbo].[Orders] 
+                SET TransactionReference = @TxnRef, 
+                    Status = @Status, 
+                    TrackingPartner = @TrackingPartner, 
+                    TrackingNumber = @TrackingNumber, 
+                    EstimatedDeliveryDate = @EstDate 
+                WHERE OrderID = @OrderID";
+
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@TxnRef", cleanTxnRef);
                     cmd.Parameters.AddWithValue("@Status", targetStatus);
+                    cmd.Parameters.AddWithValue("@TrackingPartner", string.IsNullOrEmpty(partner) ? (object)DBNull.Value : partner);
+                    cmd.Parameters.AddWithValue("@TrackingNumber", string.IsNullOrEmpty(trackNo) ? (object)DBNull.Value : trackNo);
+
+                    if (string.IsNullOrEmpty(estDateStr))
+                        cmd.Parameters.AddWithValue("@EstDate", DBNull.Value);
+                    else
+                        cmd.Parameters.AddWithValue("@EstDate", Convert.ToDateTime(estDateStr));
+
                     cmd.Parameters.AddWithValue("@OrderID", orderId);
+
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
@@ -215,7 +236,6 @@ namespace ShowsGarage.Web_Files.Admin
                 {
                     try
                     {
-                        // 1. Fetch metadata configuration amount from order row before changing anything
                         decimal totalInvoiceAmount = 0;
                         string orderDataSql = "SELECT TotalAmount, Status FROM [dbo].[Orders] WHERE OrderID = @OrderID";
                         using (SqlCommand cmdFetchOrder = new SqlCommand(orderDataSql, conn, trans))
@@ -225,7 +245,6 @@ namespace ShowsGarage.Web_Files.Admin
                             {
                                 if (orderReader.Read())
                                 {
-                                    // If order was already cancelled, do not repeat the stock restoration process
                                     if (orderReader["Status"].ToString().Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
                                     {
                                         orderReader.Close();
@@ -238,7 +257,6 @@ namespace ShowsGarage.Web_Files.Admin
                             }
                         }
 
-                        // 2. Flip parent tracking row metrics indicator state to Cancelled
                         string cancelOrderSql = "UPDATE [dbo].[Orders] SET Status = 'Cancelled' WHERE OrderID = @OrderID";
                         using (SqlCommand cmdCancel = new SqlCommand(cancelOrderSql, conn, trans))
                         {
@@ -246,7 +264,6 @@ namespace ShowsGarage.Web_Files.Admin
                             cmdCancel.ExecuteNonQuery();
                         }
 
-                        // 3. Index all quantities purchased under this transaction mapping array from OrderDetails
                         string getLineItemsSql = "SELECT ProductID, Quantity FROM [dbo].[OrderDetails] WHERE OrderID = @OrderID";
                         DataTable dtLines = new DataTable();
                         using (SqlCommand cmdFetch = new SqlCommand(getLineItemsSql, conn, trans))
@@ -256,7 +273,6 @@ namespace ShowsGarage.Web_Files.Admin
                             da.Fill(dtLines);
                         }
 
-                        // 4. Execute direct inventory restoration mathematical updates queries loops inside Products
                         string restoreInventorySql = "UPDATE [dbo].[Products] SET StockQuantity = StockQuantity + @Quantity WHERE ProductID = @ProductID";
                         foreach (DataRow line in dtLines.Rows)
                         {
@@ -268,7 +284,6 @@ namespace ShowsGarage.Web_Files.Admin
                             }
                         }
 
-                        // 5. CRITICAL: Automatically inject an outbound payout log row inside your actual [dbo].[Expenses] schema layout table!
                         string insertRefundExpenseSql = @"
                             INSERT INTO [dbo].[Expenses] (Title, Amount, ExpenseType, ExpenseDate, OrderID, Remarks)
                             VALUES (@Title, @Amount, @ExpenseType, @ExpenseDate, @OrderID, @Remarks)";
@@ -277,10 +292,10 @@ namespace ShowsGarage.Web_Files.Admin
                         {
                             cmdExpense.Parameters.AddWithValue("@Title", $"Customer Refund Payout for Cancelled Order #{orderId}");
                             cmdExpense.Parameters.AddWithValue("@Amount", totalInvoiceAmount);
-                            cmdExpense.Parameters.AddWithValue("@ExpenseType", "Damaged Return"); // Exact match with item selection type definitions
+                            cmdExpense.Parameters.AddWithValue("@ExpenseType", "Damaged Return");
                             cmdExpense.Parameters.AddWithValue("@ExpenseDate", DateTime.Now);
                             cmdExpense.Parameters.AddWithValue("@OrderID", orderId);
-                            cmdExpense.Parameters.AddWithValue("@Remarks", $"PENDING MANUAL TRANSFER: Order rejected on admin dashboard on {DateTime.Now:dd MMM yyyy}. Remit payment manually back to client profile details.");
+                            cmdExpense.Parameters.AddWithValue("@Remarks", $"PENDING MANUAL TRANSFER: Order rejected on admin dashboard on {DateTime.Now:dd MMM yyyy}. Remit payment.");
 
                             cmdExpense.ExecuteNonQuery();
                         }
@@ -303,6 +318,8 @@ namespace ShowsGarage.Web_Files.Admin
                 case "awaiting payment": return "adm-badge-yellow";
                 case "awaiting verification": return "adm-badge-blue";
                 case "approved": return "adm-badge-green";
+                case "shipped": return "adm-badge-green";
+                case "delivered": return "adm-badge-green"; // Green highlighting theme for completion
                 case "cancelled": return "adm-badge-gray";
                 default: return "adm-badge-gray";
             }

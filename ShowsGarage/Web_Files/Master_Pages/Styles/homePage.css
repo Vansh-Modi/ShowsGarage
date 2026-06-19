@@ -1,8 +1,41 @@
 ﻿/* ==========================================================================
-   Show's Garage - Core Homepage View Layout Engine
+   Show's Garage - Core Homepage View Layout Engine (Unified System)
    ========================================================================== */
 
-/* 1. Hero Dynamic Presentation Overlay Banner Box */
+/* --- 1. Global Viewport & Container Resets --- */
+.my-gallery-container,
+.my-blog-container,
+.my-faq-container {
+    max-width: 1400px !important;
+    margin: 60px auto !important;
+    padding: 0 15px !important;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.my-gallery-header,
+.my-blog-header,
+.my-faq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 12px;
+}
+
+.my-gallery-title,
+.my-blog-title,
+.my-faq-title {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+/* --- 2. Hero Dynamic Presentation Overlay Banner Box --- */
 .my-hero-wrapper {
     position: relative;
     width: 100%;
@@ -73,32 +106,7 @@
         background-color: #f4511e !important;
     }
 
-/* 2. Collections Gallery Layout Container Grids */
-.my-gallery-container, .my-blog-container {
-    max-width: 1400px !important;
-    margin: 60px auto !important;
-    padding: 0 15px !important;
-    box-sizing: border-box;
-}
-
-.my-gallery-header, .my-blog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    border-bottom: 2px solid #1a1a1a;
-    padding-bottom: 12px;
-}
-
-.my-gallery-title, .my-blog-title {
-    color: #ffffff;
-    font-size: 22px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0;
-}
-
+/* --- 3. Collections Gallery Grid Control Matrix --- */
 .my-gallery-toggle-btn {
     background-color: #141414 !important;
     color: #aaaaaa !important;
@@ -213,7 +221,139 @@
     border-color: #0076df !important;
 }
 
-/* 3. Global News Blog Grid Mapping Cards */
+/* --- 4. Sourcing Trust Badges & Fulfillment Metrics Row --- */
+.shipping-badges-row {
+    display: flex;
+    justify-content: space-between; /* Evenly distributes space across the row */
+    align-items: flex-start; /* Aligns icons perfectly at the top */
+    flex-direction: row; /* CRITICAL: Enforces side-by-side row behavior */
+    gap: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+    background: #070707;
+    padding: 24px 20px;
+    border-radius: 6px;
+    border: 1px solid #111;
+    box-sizing: border-box;
+}
+
+.badge-box-item {
+    flex: 1; /* Forces all 3 columns to be the exact same width */
+    min-width: 0; /* Prevents box text overflow layout breaking */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers icons and text inside each block */
+}
+
+    .badge-box-item svg {
+        width: 28px !important; /* Adjusted to scale cleanly */
+        height: 28px !important;
+        max-width: 28px;
+        max-height: 28px;
+        fill: #ff5722;
+        margin: 0 0 12px 0; /* Clean bottom padding below the icon */
+        display: block;
+    }
+
+    .badge-box-item h4 {
+        color: #fff;
+        font-size: 14px;
+        margin: 0 0 6px 0; /* Balanced heading gap spacing */
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .badge-box-item p {
+        color: #888;
+        font-size: 12px;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+/* --- 5. Interactive FAQ Accordion Module --- */
+.faq-accordion-stack {
+    width: 100%;
+}
+
+.faq-accordion-item {
+    border: 1px solid #222;
+    background: #111;
+    margin-bottom: 12px;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+    .faq-accordion-item:hover {
+        border-color: #0076df;
+        background: #141414;
+    }
+
+.faq-trigger-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.faq-title-text {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .faq-title-text svg {
+        width: 16px;
+        height: 16px;
+        fill: #0076df;
+    }
+
+.faq-arrow-icon {
+    color: #666;
+    font-size: 14px;
+    transition: transform 0.2s;
+}
+
+.faq-content-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background: #080808;
+}
+
+.faq-inner-text {
+    padding: 20px;
+    font-size: 13px;
+    color: #cccccc;
+    line-height: 1.6;
+    border-top: 1px solid #1a1a1a;
+}
+
+/* Accordion Active Interactive State Bindings */
+.faq-accordion-item.active {
+    border-color: #25D366;
+    background: #111;
+}
+
+    .faq-accordion-item.active .faq-arrow-icon {
+        transform: rotate(180deg);
+        color: #25D366;
+    }
+
+    .faq-accordion-item.active .faq-title-text {
+        color: #25D366;
+    }
+
+        .faq-accordion-item.active .faq-title-text svg {
+            fill: #25D366;
+        }
+
+/* --- 6. Global News Blog Grid Mapping Cards --- */
 .my-blog-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -290,9 +430,9 @@
 /* ==========================================================================
    Responsive Viewport Scale Constraints Adjustments Overrides
    ========================================================================== */
-
 @media (max-width: 992px) {
-    .gallery-grid-3, .my-blog-grid {
+    .gallery-grid-3,
+    .my-blog-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
@@ -305,8 +445,17 @@
     }
 }
 
+@media (max-width: 768px) {
+    .shipping-badges-row {
+        flex-direction: column;
+        gap: 25px;
+    }
+}
+
 @media (max-width: 600px) {
-    .gallery-grid-2, .gallery-grid-3, .my-blog-grid {
+    .gallery-grid-2,
+    .gallery-grid-3,
+    .my-blog-grid {
         grid-template-columns: 1fr;
     }
 

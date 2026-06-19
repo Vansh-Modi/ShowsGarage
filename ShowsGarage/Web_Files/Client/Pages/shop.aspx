@@ -57,8 +57,7 @@
                                 <div class="product-details-block">
                                     <h3 class="product-title-text"><%# Eval("BrandName") %></h3>
                                     <p class="product-subtitle-text"><%# Eval("Title") %></p>
-                                    <span class="product-price-tag">Rs.<%# string.Format("{0:N0}", Eval("MRP")) %></span>
-                                </div>
+                                    <span class="product-price-tag">Rs.<%# string.Format("{0:N0}", Eval("SellingPrice")) %></span></div>
                             </a>
                             <div class="card-action-block">
                                 <%# Convert.ToInt32(Eval("StockQuantity")) <= 0 ? 

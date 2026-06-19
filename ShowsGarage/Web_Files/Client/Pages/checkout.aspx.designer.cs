@@ -15,6 +15,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
     {
 
         /// <summary>
+        /// ScriptManager1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.ScriptManager ScriptManager1;
+
+        /// <summary>
         /// lblStatusMessage control.
         /// </summary>
         /// <remarks>
@@ -51,6 +60,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.TextBox txtAddress;
 
         /// <summary>
+        /// updPaymentSection control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel updPaymentSection;
+
+        /// <summary>
         /// txtCity control.
         /// </summary>
         /// <remarks>
@@ -60,13 +78,22 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.TextBox txtCity;
 
         /// <summary>
-        /// txtPaymentDisplay control.
+        /// ddlPaymentMode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPaymentDisplay;
+        protected global::System.Web.UI.WebControls.DropDownList ddlPaymentMode;
+
+        /// <summary>
+        /// lblPaymentWarning control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblPaymentWarning;
 
         /// <summary>
         /// rptCheckoutItems control.
@@ -87,31 +114,13 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.Label lblCheckoutItemsCount;
 
         /// <summary>
-        /// lblMRPSubtotal control.
+        /// lblItemsSubtotal control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMRPSubtotal;
-
-        /// <summary>
-        /// lblBrokerageSubtotal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblBrokerageSubtotal;
-
-        /// <summary>
-        /// lblPlatformFee control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblPlatformFee;
+        protected global::System.Web.UI.WebControls.Label lblItemsSubtotal;
 
         /// <summary>
         /// lblShippingFee control.

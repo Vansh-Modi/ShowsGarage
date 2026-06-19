@@ -253,7 +253,9 @@
     <Content Include="Web_Files\Admin\Pages\siteSettings.aspx" />
     <Content Include="Web_Files\Admin\Styles\blog.css" />
     <Content Include="Web_Files\Admin\Styles\siteSettings.css" />
+    <Content Include="Web_Files\Client\Pages\blogDetails.aspx" />
     <Content Include="Web_Files\Client\Pages\confirmOrder.aspx" />
+    <Content Include="Web_Files\Client\Pages\orderDetails.aspx" />
     <Content Include="Web_Files\Client\Pages\payment.aspx" />
     <Content Include="Web_Files\Client\Styles\confirmOrder.css" />
     <Content Include="Web_Files\Client\Styles\payment.css" />
@@ -367,6 +369,13 @@
     <Compile Include="Web_Files\Admin\Pages\users.aspx.designer.cs">
       <DependentUpon>users.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Web_Files\Client\Pages\blogDetails.aspx.cs">
+      <DependentUpon>blogDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\blogDetails.aspx.designer.cs">
+      <DependentUpon>blogDetails.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Web_Files\Client\Pages\cart.aspx.cs">
       <DependentUpon>cart.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -387,6 +396,13 @@
     </Compile>
     <Compile Include="Web_Files\Client\Pages\confirmOrder.aspx.designer.cs">
       <DependentUpon>confirmOrder.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\orderDetails.aspx.cs">
+      <DependentUpon>orderDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web_Files\Client\Pages\orderDetails.aspx.designer.cs">
+      <DependentUpon>orderDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web_Files\Client\Pages\payment.aspx.cs">
       <DependentUpon>payment.aspx</DependentUpon>

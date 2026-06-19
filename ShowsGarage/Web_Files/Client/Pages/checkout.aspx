@@ -6,6 +6,8 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
     <div class="shop-theme-wrapper">
         <main class="shop-content-container">
 
@@ -14,13 +16,10 @@
                 <a href="cart.aspx" class="btn btn-filter-pill">← Return to Cart</a>
             </div>
 
-            <!-- Validation/Status Messages Block -->
             <asp:Label ID="lblStatusMessage" runat="server" CssClass="status-msg-error" Visible="false"></asp:Label>
 
-            <!-- Main Checkout Structural Container -->
             <div class="cart-layout-container">
 
-                <!-- Left Panel: Billing & Shipping Forms -->
                 <div class="cart-items-column">
                     <div class="checkout-form-card">
                         <h2 class="form-section-title">Shipping & Billing Information</h2>
@@ -41,34 +40,40 @@
                                 <asp:TextBox ID="txtAddress" runat="server" CssClass="form-input text-area" TextMode="MultiLine" Rows="3" placeholder="House/Apartment number, Street Name, Area..."></asp:TextBox>
                             </div>
 
-                            <div class="form-group half-width">
-                                <label class="form-label">City</label>
-                                <asp:TextBox ID="txtCity" runat="server" CssClass="form-input" placeholder="Surat / Mumbai / Bangalore"></asp:TextBox>
-                            </div>
+                            <asp:UpdatePanel ID="updPaymentSection" runat="server" UpdateMode="Conditional" RenderMode="Block" class="full-width" style="display: contents;">
+                                <ContentTemplate>
+                                    <div class="form-group half-width">
+                                        <label class="form-label">City</label>
+                                        <asp:TextBox ID="txtCity" runat="server" CssClass="form-input" placeholder="Surat / Mumbai / Bangalore" AutoPostBack="True" OnTextChanged="txtCity_TextChanged"></asp:TextBox>
+                                    </div>
 
-                            <div class="form-group half-width">
-                                <label class="form-label">Payment Mode</label>
-                                <asp:TextBox ID="txtPaymentDisplay" runat="server" CssClass="form-input" Text="Online Transfer (UPI / QR / Bank)" Enabled="false" Style="background-color: #1a1a1a; color: #0076df; font-weight: 600; border-color: #222;"></asp:TextBox>
-                            </div>
+                                    <div class="form-group half-width">
+                                        <label class="form-label">Payment Mode</label>
+                                        <asp:DropDownList ID="ddlPaymentMode" runat="server" CssClass="form-input" Style="background-color: #1a1a1a; color: #0076df; font-weight: 600; border-color: #222;">
+                                            <asp:ListItem Value="ONLINE" Selected="True">Online Transfer (UPI / QR / Bank)</asp:ListItem>
+                                            <asp:ListItem Value="COD">Cash-on-Delivery</asp:ListItem>
+                                        </asp:DropDownList>
+                                        <asp:Label ID="lblPaymentWarning" runat="server" ForeColor="#ffcc00" Font-Size="10px" Style="display:block; margin-top:4px;" Visible="false" />
+                                    </div>
+                                </ContentTemplate>
+                            </asp:UpdatePanel>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Panel: Order Review & Sticky Summary Block -->
                 <div class="cart-summary-column">
-
-                    <div class="sg-compliance-alert" style="background-color: rgba(255, 204, 0, 0.08); border-left: 4px solid #ffcc00; padding: 15px; margin-bottom: 20px; border-radius: 4px; text-align: left;">
+                    
+                    <%--<div class="sg-compliance-alert" style="background-color: rgba(255, 204, 0, 0.08); border-left: 4px solid #ffcc00; padding: 15px; margin-bottom: 20px; border-radius: 4px; text-align: left;">
                         <div style="display: flex; align-items: flex-start;">
                             <span style="font-size: 1.2em; margin-right: 10px; line-height: 1;">⚠️</span>
                             <div style="font-size: 12px; color: #e6b800; line-height: 1.5;">
                                 <strong style="color: #ffffff; display: block; margin-bottom: 4px; font-size: 13px;">Collector's Brokerage & Tax Declaration</strong>
                                 This platform operates strictly as an independent Die-Cast Sourcing Brokerage. Items are procured on an individual proxy contract basis. The physical product is passed to you at its factory retail MRP; extra charges represent our curation labor fees.
-                <br />
-                                <br />
+                                <br /><br />
                                 <span style="font-style: italic; font-weight: bold; color: #ffdd66;">Tax Note: The sourcing supplier is an unregistered micro-entity under Section 24 of the CGST Act, 2017. No Tax Invoice or GST input credit will be issued.</span>
                             </div>
                         </div>
-                    </div>
+                    </div>--%>
 
                     <div class="summary-card">
                         <h2 class="summary-card-title">Review Your Order</h2>
@@ -79,12 +84,7 @@
                                     <div class="checkout-mini-item" style="border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 10px;">
                                         <div class="mini-item-info">
                                             <span class="mini-item-title" style="display: block; font-weight: 600;"><%# Eval("Title") %></span>
-                                            <span class="mini-item-meta" style="font-size: 11px; color: #888; display: block; margin-top: 2px;">Qty: <%# Eval("Quantity") %>
-                                                <br />
-                                                • Base MRP: Rs.<%# string.Format("{0:N0}", Eval("MRP")) %>
-                                                <br />
-                                                • Sourcing Fee: Rs.<%# string.Format("{0:N0}", Convert.ToDecimal(Eval("SellingPrice")) - Convert.ToDecimal(Eval("MRP")) - Convert.ToDecimal(Eval("PlatformFees"))) %>
-                                            </span>
+                                            <span class="mini-item-meta" style="font-size: 11px; color: #888; display: block; margin-top: 2px;">Qty: <%# Eval("Quantity") %></span>
                                         </div>
                                         <span class="mini-item-subtotal" style="font-weight: 600; color: #ffffff;">Rs.<%# string.Format("{0:N0}", Convert.ToDecimal(Eval("SellingPrice")) * Convert.ToInt32(Eval("Quantity"))) %></span>
                                     </div>
@@ -98,18 +98,8 @@
                         </div>
 
                         <div class="summary-data-row" style="color: #aaa;">
-                            <span>Item Reimbursements (MRP Total):</span>
-                            <span>Rs.<asp:Label ID="lblMRPSubtotal" runat="server" Text="0"></asp:Label></span>
-                        </div>
-
-                        <div class="summary-data-row" style="color: #aaa;">
-                            <span>Brokerage Sourcing Margin:</span>
-                            <span>Rs.<asp:Label ID="lblBrokerageSubtotal" runat="server" Text="0"></asp:Label></span>
-                        </div>
-
-                        <div class="summary-data-row" style="color: #aaa;">
-                            <span>Platform Convenience Fee:</span>
-                            <span>Rs.<asp:Label ID="lblPlatformFee" runat="server" Text="0"></asp:Label></span>
+                            <span>Subtotal (Items Total):</span>
+                            <span>Rs.<asp:Label ID="lblItemsSubtotal" runat="server" Text="0"></asp:Label></span>
                         </div>
 
                         <div class="summary-data-row">
@@ -135,6 +125,7 @@
                                 Payment is verified manually by our garage team. Your order will sit as <span style="color: #ffffff; font-weight: 600;">"Awaiting Verification"</span> until the transaction hits our statement ledger.
                             </p>
                         </div>
+                        
                         <div class="summary-actions-block">
                             <asp:Button ID="btnPageNavigation" runat="server" Text="Continue to Payment →" CssClass="btn btn-checkout-large" OnClick="btnPageNavigation_Click" />
                         </div>

@@ -8,7 +8,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class checkout : System.Web.UI.Page
     {
-        // Global variables to hold dynamic metrics from SiteSettings
         private decimal dynamicPlatformFee = 0;
         private decimal dynamicShippingFee = 0;
 
@@ -37,18 +36,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     return;
                 }
 
-                // Inject the dynamic configuration columns directly into the data matrix for the Repeater Eval expressions
                 LoadSiteSettings();
                 InjectFeesIntoDataTable(dtCart);
-
                 BindCheckoutReview(dtCart);
             }
         }
 
         private void LoadSiteSettings()
         {
-            // Query pulls both user-configured admin fields simultaneously from your database
-            string query = "SELECT TOP 1 ISNULL(ShippingCharges, 0), ISNULL(PlatformFees, 0.00) FROM [dbo].[SiteSettings]";
+            string query = "SELECT TOP 1 ISNULL(ShippingCharges, 0), ISNULL(PlatformFees, 15.00) FROM [dbo].[SiteSettings]";
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
@@ -64,7 +60,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         }
                         else
                         {
-                            // Fallback defaults if table row values are uninitialized
                             dynamicShippingFee = 60.00m;
                             dynamicPlatformFee = 15.00m;
                         }
@@ -75,7 +70,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void InjectFeesIntoDataTable(DataTable dtCart)
         {
-            // Appends a temporary column so that your frontend markup can safely parse <%# Eval("PlatformFees") %> without errors
             if (!dtCart.Columns.Contains("PlatformFees"))
             {
                 dtCart.Columns.Add("PlatformFees", typeof(decimal));
@@ -90,39 +84,66 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void BindCheckoutReview(DataTable dtCart)
         {
-            decimal mrpSubtotal = 0;
-            decimal brokerageSubtotal = 0;
-            decimal cumulativePlatformFees = 0;
+            decimal itemsSubtotal = 0;
             int itemQuantityCounter = 0;
 
             foreach (DataRow row in dtCart.Rows)
             {
                 decimal sellingPrice = Convert.ToDecimal(row["SellingPrice"]);
-                decimal mrpPrice = Convert.ToDecimal(row["MRP"]); // Pulled smoothly from our updated cart query pipeline
                 int qty = Convert.ToInt32(row["Quantity"]);
 
-                // Apply your formula: Sourcing = SellingPrice - MRP - PlatformFee
-                decimal calculatedBrokeragePerUnit = sellingPrice - mrpPrice - dynamicPlatformFee;
-
-                mrpSubtotal += (mrpPrice * qty);
-                brokerageSubtotal += (calculatedBrokeragePerUnit * qty);
-                cumulativePlatformFees += (dynamicPlatformFee * qty);
+                // Calculate cumulative sum based on standard item retail listing price
+                itemsSubtotal += (sellingPrice * qty);
                 itemQuantityCounter += qty;
             }
 
-            // Grand Total Summing calculations
-            decimal grandTotal = mrpSubtotal + brokerageSubtotal + cumulativePlatformFees + dynamicShippingFee;
+            // Clean Display Summing: Total Items Cost + Delivery Fee
+            decimal grandTotal = itemsSubtotal + dynamicShippingFee;
 
             rptCheckoutItems.DataSource = dtCart;
             rptCheckoutItems.DataBind();
 
-            // Format strings cleanly into your updated UI Labels components
-            lblMRPSubtotal.Text = string.Format("{0:N0}", mrpSubtotal);
-            lblBrokerageSubtotal.Text = string.Format("{0:N0}", brokerageSubtotal);
-            lblPlatformFee.Text = string.Format("{0:N0}", cumulativePlatformFees);
+            // Render clean, un-split variables onto the frontend
+            lblItemsSubtotal.Text = string.Format("{0:N0}", itemsSubtotal);
             lblShippingFee.Text = string.Format("{0:N0}", dynamicShippingFee);
             lblCheckoutItemsCount.Text = itemQuantityCounter.ToString();
             lblCheckoutGrandTotal.Text = string.Format("{0:N0}", grandTotal);
+        }
+
+        protected void txtCity_TextChanged(object sender, EventArgs e)
+        {
+            string cityInput = txtCity.Text.Trim().ToLower();
+            lblPaymentWarning.Visible = false;
+
+            if (cityInput != "surat" && !string.IsNullOrEmpty(cityInput))
+            {
+                ddlPaymentMode.SelectedValue = "ONLINE";
+
+                ListItem codItem = ddlPaymentMode.Items.FindByValue("COD");
+                if (codItem != null)
+                {
+                    ddlPaymentMode.Items.Remove(codItem);
+                }
+
+                lblPaymentWarning.Text = "⚠️ Cash-on-Delivery is only available within Surat city limits.";
+                lblPaymentWarning.Visible = true;
+            }
+            else
+            {
+                if (ddlPaymentMode.Items.FindByValue("COD") == null)
+                {
+                    ddlPaymentMode.Items.Add(new ListItem("Cash-on-Delivery", "COD"));
+                }
+            }
+
+            DataTable dtCart = Session["Cart"] as DataTable;
+            if (dtCart != null)
+            {
+                LoadSiteSettings();
+                BindCheckoutReview(dtCart);
+            }
+
+            updPaymentSection.Update();
         }
 
         protected void btnPageNavigation_Click(object sender, EventArgs e)
@@ -133,11 +154,19 @@ namespace ShowsGarage.Web_Files.Client.Pages
             string phone = txtPhone.Text.Trim();
             string address = txtAddress.Text.Trim();
             string city = txtCity.Text.Trim();
+            string selectedPaymentMode = ddlPaymentMode.SelectedValue;
             int userId = Convert.ToInt32(Session["UserID"]);
 
             if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(address) || string.IsNullOrEmpty(city))
             {
                 lblStatusMessage.Text = "⚠️ Please fill in all required delivery information fields before submitting.";
+                lblStatusMessage.Visible = true;
+                return;
+            }
+
+            if (city.Trim().ToLower() != "surat" && selectedPaymentMode == "COD")
+            {
+                lblStatusMessage.Text = "❌ Validation Breach: Cash-on-Delivery (COD) services are strictly closed for delivery destinations outside Surat city limits.";
                 lblStatusMessage.Visible = true;
                 return;
             }
@@ -151,7 +180,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             try
             {
-                // Re-load settings metrics to guarantee total sum matches
                 LoadSiteSettings();
 
                 decimal totalOrderAmount = 0;
@@ -160,7 +188,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     totalOrderAmount += Convert.ToDecimal(row["SellingPrice"]) * Convert.ToInt32(row["Quantity"]);
                 }
 
-                // Add shipping fee variable to generate final cumulative aggregate total
                 totalOrderAmount += dynamicShippingFee;
 
                 using (SqlConnection conn = new SqlConnection(ConnectionString))
@@ -170,7 +197,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     {
                         try
                         {
-                            // A. Insert tracking row down into [dbo].[Orders]
                             string insertOrderQuery = @"
                                 INSERT INTO [dbo].[Orders] (UserID, OrderDate, TotalAmount, Status, ShippingAddress, PaymentMethod) 
                                 OUTPUT INSERTED.OrderID
@@ -185,12 +211,11 @@ namespace ShowsGarage.Web_Files.Client.Pages
                                 cmdOrder.Parameters.AddWithValue("@TotalAmount", totalOrderAmount);
                                 cmdOrder.Parameters.AddWithValue("@Status", "Awaiting Payment");
                                 cmdOrder.Parameters.AddWithValue("@ShippingAddress", address + ", " + city + " (Phone: " + phone + ", Name: " + fullName + ")");
-                                cmdOrder.Parameters.AddWithValue("@PaymentMethod", "ONLINE");
+                                cmdOrder.Parameters.AddWithValue("@PaymentMethod", selectedPaymentMode);
 
                                 generatedOrderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
                             }
 
-                            // B. Insert separate mapped lines elements inside [dbo].[OrderDetails]
                             string insertItemsQuery = @"
                                 INSERT INTO [dbo].[OrderDetails] (OrderID, ProductID, Quantity, UnitPrice) 
                                 VALUES (@OrderID, @ProductID, @Quantity, @UnitPrice)";
@@ -210,7 +235,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
                             transaction.Commit();
 
-                            // Track session index down into verification billing module
                             Session["ActiveCheckoutOrderID"] = generatedOrderId;
                             Response.Redirect("payment.aspx");
                         }
@@ -224,7 +248,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             }
             catch (Exception ex)
             {
-                lblStatusMessage.Text = "❌ Process Error: " + ex.Message + (ex.InnerException != null ? " | Details: " + ex.InnerException.Message : "");
+                lblStatusMessage.Text = "❌ Process Error: " + ex.Message;
                 lblStatusMessage.Visible = true;
             }
         }

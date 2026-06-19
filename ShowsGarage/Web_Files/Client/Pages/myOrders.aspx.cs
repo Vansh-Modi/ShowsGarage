@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Client.Pages
@@ -18,6 +19,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Secure boundary gate protects the personal cart rows layout
             if (Session["UserID"] == null)
             {
                 Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx");
@@ -34,8 +36,14 @@ namespace ShowsGarage.Web_Files.Client.Pages
         {
             int userId = Convert.ToInt32(Session["UserID"]);
 
-            // Pull unique master orders for the logged-in user
-            string query = "SELECT OrderID, OrderDate, TotalAmount, Status, ShippingAddress FROM [dbo].[Orders] WHERE UserID = @UserID ORDER BY OrderDate DESC";
+            // Added PaymentScreenShot and TransactionReference selection targets to database pull row
+            string query = @"
+                SELECT OrderID, OrderDate, TotalAmount, Status, ShippingAddress, 
+                       ISNULL(PaymentScreenshotPath, '') as PaymentScreenShot, 
+                       ISNULL(TransactionReference, '') as TransactionReference 
+                FROM [dbo].[Orders] 
+                WHERE UserID = @UserID 
+                ORDER BY OrderDate DESC";
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
@@ -77,7 +85,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 int orderId = Convert.ToInt32(rowView["OrderID"]);
                 string status = rowView["Status"].ToString();
 
-                // 1. Color-code the status badge dynamically using CSS classes
+                // 1. Color-code the main status badge dynamically using CSS classes
                 Label lblStatusBadge = (Label)e.Item.FindControl("lblStatusBadge");
                 if (lblStatusBadge != null)
                 {
@@ -89,11 +97,47 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         lblStatusBadge.CssClass = "badge-status status-approved";
                     else if (status.Equals("Shipped", StringComparison.OrdinalIgnoreCase))
                         lblStatusBadge.CssClass = "badge-status status-shipped";
+                    else if (status.Equals("Delivered", StringComparison.OrdinalIgnoreCase))
+                        lblStatusBadge.CssClass = "badge-status status-approved"; // Green success highlight
                     else
                         lblStatusBadge.CssClass = "badge-status status-default";
                 }
 
-                // 2. Fetch all child items/products belonging to this specific OrderID
+                // 2. Drive the Timeline Step Tracker states based on the active state
+                HtmlGenericControl stepPlaced = (HtmlGenericControl)e.Item.FindControl("stepPlaced");
+                HtmlGenericControl stepVerified = (HtmlGenericControl)e.Item.FindControl("stepVerified");
+                HtmlGenericControl stepShipped = (HtmlGenericControl)e.Item.FindControl("stepShipped");
+
+                if (stepPlaced != null && stepVerified != null && stepShipped != null)
+                {
+                    if (status.Equals("Awaiting Payment", StringComparison.OrdinalIgnoreCase) || status.Equals("Awaiting Verification", StringComparison.OrdinalIgnoreCase))
+                    {
+                        stepPlaced.Attributes["class"] = "timeline-step active-step";
+                        stepVerified.Attributes["class"] = "timeline-step";
+                        stepShipped.Attributes["class"] = "timeline-step";
+                    }
+                    else if (status.Equals("Approved", StringComparison.OrdinalIgnoreCase) || status.Equals("Payment Verified", StringComparison.OrdinalIgnoreCase))
+                    {
+                        stepPlaced.Attributes["class"] = "timeline-step completed";
+                        stepVerified.Attributes["class"] = "timeline-step active-step";
+                        stepShipped.Attributes["class"] = "timeline-step";
+                    }
+                    else if (status.Equals("Shipped", StringComparison.OrdinalIgnoreCase))
+                    {
+                        stepPlaced.Attributes["class"] = "timeline-step completed";
+                        stepVerified.Attributes["class"] = "timeline-step completed";
+                        stepShipped.Attributes["class"] = "timeline-step active-step";
+                    }
+                    else if (status.Equals("Delivered", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Marks every checkpoint node completely green upon final drop-off verification
+                        stepPlaced.Attributes["class"] = "timeline-step completed";
+                        stepVerified.Attributes["class"] = "timeline-step completed";
+                        stepShipped.Attributes["class"] = "timeline-step completed active-step";
+                    }
+                }
+
+                // 3. Fetch all child items/products belonging to this specific OrderID
                 Repeater rptOrderItems = (Repeater)e.Item.FindControl("rptOrderItems");
                 if (rptOrderItems != null)
                 {

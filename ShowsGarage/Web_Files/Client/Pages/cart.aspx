@@ -42,7 +42,7 @@
                                     
                                     <div class="item-subtotal-block">
                                         <span class="subtotal-label">Total:</span>
-                                        <span class="subtotal-amount">Rs.<%# string.Format("{0:N0}", Convert.ToDecimal(Eval("MRP")) * Convert.ToInt32(Eval("Quantity"))) %></span>
+                                        <span class="subtotal-amount">Rs.<%# string.Format("{0:N0}", Convert.ToDecimal(Eval("SellingPrice")) * Convert.ToInt32(Eval("Quantity"))) %></span>
                                     </div>
 
                                     <asp:LinkButton ID="btnRemove" runat="server" CommandName="RemoveItem" CommandArgument='<%# Eval("ProductID") %>' CssClass="cart-remove-btn">

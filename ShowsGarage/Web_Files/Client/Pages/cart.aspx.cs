@@ -83,7 +83,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             {
                 if (row.RowState == DataRowState.Deleted) continue;
 
-                decimal price = Convert.ToDecimal(row["MRP"]);
+                decimal price = Convert.ToDecimal(row["SellingPrice"]);
                 int qty = Convert.ToInt32(row["Quantity"]);
                 cartTotal += (price * qty);
                 totalItemsCount += qty;

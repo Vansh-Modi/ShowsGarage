@@ -67,7 +67,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                                 lblDescription.Text = string.IsNullOrEmpty(reader["Description"].ToString()) ?
                                     "No technical description constraints provided for this diecast model replica." : reader["Description"].ToString();
 
-                                decimal price = Convert.ToDecimal(reader["MRP"]);
+                                decimal price = Convert.ToDecimal(reader["SellingPrice"]);
                                 lblPrice.Text = string.Format("{0:N0}", price);
 
                                 // FIXED: Fetch StockQuantity and explicitly disable Add to Cart if 0
