@@ -78,6 +78,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvEmail;
 
         /// <summary>
+        /// rfvEmailForOtp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvEmailForOtp;
+
+        /// <summary>
         /// revEmail control.
         /// </summary>
         /// <remarks>
@@ -85,6 +94,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RegularExpressionValidator revEmail;
+
+        /// <summary>
+        /// revEmailForOtp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator revEmailForOtp;
 
         /// <summary>
         /// txtPassword control.

@@ -32,7 +32,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void LoadMerchantDetailsFromSettings()
         {
-            // Pulls owner specifications directly from your existing SiteSettings structure
             string query = "SELECT TOP 1 QrCodePath, UpiID, BankAccountDetails FROM [dbo].[SiteSettings]";
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
@@ -46,7 +45,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         {
                             if (reader.Read())
                             {
-                                // Apply settings records directly into frontend text elements
                                 imgQrCode.ImageUrl = !string.IsNullOrEmpty(reader["QrCodePath"].ToString()) ? reader["QrCodePath"].ToString() : "/Assets/images/default-qr.png";
                                 litUpiId.Text = !string.IsNullOrEmpty(reader["UpiID"].ToString()) ? reader["UpiID"].ToString() : "Not Available";
                                 litBankDetails.Text = !string.IsNullOrEmpty(reader["BankAccountDetails"].ToString()) ? reader["BankAccountDetails"].ToString() : "Contact Support for Details";
@@ -69,7 +67,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             int userId = Convert.ToInt32(Session["UserID"]);
             string txnRef = txtTxnReference.Text.Trim();
 
-            // 1. Front-End Form Input Validation Rules
+            // 1. Basic Form Validations
             if (string.IsNullOrEmpty(txnRef))
             {
                 lblStatus.Text = "⚠️ Please enter your transaction UTR or reference number for account lookup.";
@@ -80,6 +78,26 @@ namespace ShowsGarage.Web_Files.Client.Pages
             if (!fileScreenshot.HasFile)
             {
                 lblStatus.Text = "⚠️ Please upload an image screenshot copy of your payment receipt.";
+                lblStatus.Visible = true;
+                return;
+            }
+
+            // --- FILE SIZE & SECURITY CONTROLS ---
+
+            // Limit Rule A: Content Length Cap (2MB max calculated as: 2 * 1024 * 1024 Bytes)
+            int maxAllowedBytes = 2 * 1024 * 1024;
+            if (fileScreenshot.PostedFile.ContentLength > maxAllowedBytes)
+            {
+                lblStatus.Text = "⚠️ Image upload rejected! Screenshot size exceeds the maximum limit of <b>2MB</b>.";
+                lblStatus.Visible = true;
+                return;
+            }
+
+            // Limit Rule B: Content-Type MIME Verification Mapping (Prevents spoofed structural bypasses)
+            string mimeType = fileScreenshot.PostedFile.ContentType.ToLower();
+            if (mimeType != "image/jpeg" && mimeType != "image/jpg" && mimeType != "image/png")
+            {
+                lblStatus.Text = "❌ Invalid file type. Only clean graphic images (.jpg, .jpeg, .png) are supported.";
                 lblStatus.Visible = true;
                 return;
             }

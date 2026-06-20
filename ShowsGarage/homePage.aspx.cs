@@ -126,5 +126,10 @@ namespace ShowsGarage
                 }
             }
         }
+
+        protected void rptGallery_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+
+        }
     }
 }

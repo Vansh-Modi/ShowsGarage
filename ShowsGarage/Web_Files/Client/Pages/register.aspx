@@ -1,14 +1,14 @@
 ﻿<%@ Page Title="Show's Garage | Registration" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="register.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.register" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="/Web_Files/Client/Styles/register.css?v=3" rel="stylesheet" type="text/css" runat="server" />
+    <link href="/Web_Files/Client/Styles/register.css?v=5" rel="stylesheet" type="text/css" runat="server" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="auth-theme-wrapper">
         <div class="auth-centered-container">
             <div class="auth-card-width">
-                
+
                 <div class="auth-header-block">
                     <h2 class="auth-main-heading">Join Club</h2>
                     <p class="auth-subtitle-text">Create your show's garage account</p>
@@ -30,9 +30,11 @@
 
                     <div class="input-group">
                         <label>Email Address</label>
-                        <asp:TextBox ID="txtEmail" runat="server" CssClass="auth-input" placeholder="Enter your email" AutoPostBack="True" TextMode="Email"></asp:TextBox>
+                        <asp:TextBox ID="txtEmail" runat="server" CssClass="auth-input" placeholder="Enter your email" AutoPostBack="false" TextMode="Email"></asp:TextBox>
                         <asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtEmail" CssClass="auth-error-message" Display="Dynamic" ErrorMessage="Email Required" ValidationGroup="RegGroup"></asp:RequiredFieldValidator>
+                        <asp:RequiredFieldValidator ID="rfvEmailForOtp" runat="server" ControlToValidate="txtEmail" CssClass="auth-error-message" Display="Dynamic" ErrorMessage="Email Required for OTP" ValidationGroup="OtpGroup"></asp:RequiredFieldValidator>
                         <asp:RegularExpressionValidator ID="revEmail" runat="server" Display="Dynamic" CssClass="auth-error-message" ErrorMessage="Invalid Email" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ValidationGroup="RegGroup" ControlToValidate="txtEmail"></asp:RegularExpressionValidator>
+                        <asp:RegularExpressionValidator ID="revEmailForOtp" runat="server" Display="Dynamic" CssClass="auth-error-message" ErrorMessage="Invalid Email" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ValidationGroup="OtpGroup" ControlToValidate="txtEmail"></asp:RegularExpressionValidator>
                     </div>
 
                     <div class="input-group">
@@ -53,10 +55,10 @@
                         <label>OTP</label>
                         <div class="auth-inline-input-row">
                             <asp:TextBox ID="txtOTP" runat="server" CssClass="auth-input auth-flex-input" placeholder="Enter OTP"></asp:TextBox>
-                            <asp:Button ID="btnGetOTP" runat="server" Text="Get OTP" CssClass="btn-inline-action" OnClick="btnGetOTP_Click" ValidationGroup="RegGroup" />
+                            <asp:Button ID="btnGetOTP" runat="server" Text="Get OTP" CssClass="btn-inline-action" OnClick="btnGetOTP_Click" ValidationGroup="OtpGroup" />
                         </div>
                         <div class="auth-resend-link-box">
-                            <asp:LinkButton ID="btnResendOTP" runat="server" Visible="false" OnClick="btnGetOTP_Click" CssClass="auth-resend-btn">
+                            <asp:LinkButton ID="btnResendOTP" runat="server" Visible="false" OnClick="btnGetOTP_Click" CssClass="auth-resend-btn" ValidationGroup="OtpGroup">
                                 Didn't get it? Resend OTP
                             </asp:LinkButton>
                         </div>

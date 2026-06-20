@@ -3,11 +3,20 @@
    ========================================================================== */
 
 .details-max-width {
-    max-width: 1050px !important;
+    max-width: 1140px !important; /* Slightly increased for better desktop breathing room */
+    margin: 0 auto;
+    width: 100%;
 }
 
 .details-back-container {
     margin-bottom: 25px;
+    padding: 0 15px; /* Keeps element aligned on mobile screens */
+}
+
+@media (min-width: 768px) {
+    .details-back-container {
+        padding: 0;
+    }
 }
 
 .btn-layout-back {
@@ -28,8 +37,10 @@
 .product-details-layout-container {
     display: flex;
     flex-direction: column;
-    gap: 35px;
+    gap: 30px;
     width: 100%;
+    padding: 0 15px;
+    box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
@@ -37,7 +48,14 @@
         display: grid;
         grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
         align-items: start;
-        gap: 50px;
+        gap: 40px;
+        padding: 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .product-details-layout-container {
+        gap: 55px; /* Wider gap for immersive desktop reading spaces */
     }
 }
 
@@ -47,17 +65,35 @@
     background-color: #141414;
     border: 1px solid #222222;
     border-radius: 8px;
-    padding: 20px;
+    padding: 15px;
     box-sizing: border-box;
+}
+
+@media (min-width: 480px) {
+    .main-showcase-image-frame {
+        padding: 20px;
+    }
 }
 
 .details-main-img {
     width: 100%;
     height: auto;
-    max-height: 440px;
+    max-height: 320px; /* Shorter limit to fit context folds nicely on tiny mobiles */
     object-fit: contain;
     display: block;
     border-radius: 4px;
+}
+
+@media (min-width: 480px) {
+    .details-main-img {
+        max-height: 400px;
+    }
+}
+
+@media (min-width: 768px) {
+    .details-main-img {
+        max-height: 440px;
+    }
 }
 
 /* Text & Data Column Blocks Typography Layout */
@@ -68,26 +104,44 @@
 
 .details-brand-label {
     color: #666666;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 6px;
 }
 
+@media (min-width: 768px) {
+    .details-brand-label {
+        font-size: 13px;
+    }
+}
+
 .details-product-title {
     color: #ffffff;
-    font-size: 30px;
+    font-size: 22px;
     font-weight: 800;
     margin: 0 0 15px 0;
-    line-height: 1.2;
+    line-height: 1.25;
+}
+
+@media (min-width: 480px) {
+    .details-product-title {
+        font-size: 26px;
+    }
+}
+
+@media (min-width: 768px) {
+    .details-product-title {
+        font-size: 30px;
+    }
 }
 
 /* Status badging indicator strips layout tags */
 .details-inventory-status-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 20px;
 }
@@ -96,19 +150,33 @@
     background-color: #1c1c1c;
     border: 1px solid #2d2d2d;
     color: #0076df;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    padding: 4px 10px;
+    padding: 4px 8px;
     border-radius: 4px;
 }
 
+@media (min-width: 480px) {
+    .details-scale-badge {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+}
+
 .details-stock-badge-indicator {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    padding: 4px 10px;
+    padding: 4px 8px;
     border-radius: 4px;
     letter-spacing: 0.3px;
+}
+
+@media (min-width: 480px) {
+    .details-stock-badge-indicator {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
 }
 
 .stock-available-badge {
@@ -126,11 +194,17 @@
 .details-price-display {
     color: #2ebd59;
     font-family: monospace;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     border-bottom: 1px solid #1a1a1a;
     padding-bottom: 15px;
     margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+    .details-price-display {
+        font-size: 26px;
+    }
 }
 
 /* Detail Features Description Narrative Body */
@@ -150,17 +224,26 @@
 .description-paragraph-content {
     margin: 0;
     color: #aaaaaa;
-    font-size: 14px;
+    font-size: 13.5px;
     line-height: 1.6;
 }
 
+@media (min-width: 768px) {
+    .description-paragraph-content {
+        font-size: 14px;
+    }
+}
+
 /* Actions Functional Triggers Links Buttons Row Elements */
+.details-action-row {
+    width: 100%;
+}
+
 .btn-add-to-cart-large {
     background-color: #ff5722 !important;
     color: #ffffff !important;
     border: none !important;
     width: 100% !important;
-    max-width: 320px;
     padding: 14px 0 !important;
     font-size: 14px !important;
     font-weight: 700 !important;
@@ -172,9 +255,15 @@
     transition: background-color 0.15s ease !important;
 }
 
-    .btn-add-to-cart-large:hover {
-        background-color: #f4511e !important;
+@media (min-width: 480px) {
+    .btn-add-to-cart-large {
+        max-width: 320px; /* Retains nice clean sizing boundaries on desktops */
     }
+}
+
+.btn-add-to-cart-large:hover {
+    background-color: #f4511e !important;
+}
 
 /* Disabled out-of-stock modifier design class layout mapping rules overrides */
 .btn-add-disabled {
@@ -186,12 +275,311 @@
     pointer-events: none;
 }
 
-@media (max-width: 600px) {
-    .details-product-title {
-        font-size: 24px;
+/* ==========================================================================
+   Show's Garage - Fulfillment & FAQ Styling (Dark Theme & Fully Fluid Responsive)
+   ========================================================================== */
+
+:root {
+    --faq-bg: #141414;
+    --faq-box-bg: #1c1c1c;
+    --faq-border: #2d2d2d;
+    --faq-text-main: #ffffff;
+    --faq-text-muted: #aaaaaa;
+    --faq-accent: #ff5722;
+    --faq-blue-accent: #0076df;
+    --faq-radius: 8px;
+    --transition-speed: 0.25s;
+}
+
+/* Main Container Layout spanning full content column wide below product details */
+.my-faq-container {
+    margin-top: 35px;
+    padding: 20px 15px; /* Compact padding space for smaller screen margins */
+    background-color: var(--faq-bg);
+    border: 1px solid var(--faq-border);
+    border-radius: var(--faq-radius);
+    clear: both;
+}
+
+@media (min-width: 480px) {
+    .my-faq-container {
+        padding: 25px;
+    }
+}
+
+@media (min-width: 768px) {
+    .my-faq-container {
+        margin-top: 50px;
+        padding: 35px;
+    }
+}
+
+.my-faq-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--faq-border);
+    padding-bottom: 15px;
+}
+
+.my-faq-title {
+    font-size: 1.25rem;
+    color: var(--faq-text-main);
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+@media (min-width: 768px) {
+    .my-faq-title {
+        font-size: 1.4rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Shipping Badges Section
+   -------------------------------------------------------------------------- */
+.shipping-badges-row {
+    display: grid;
+    grid-template-columns: 1fr; /* Pure linear stack flow format on small mobile frames */
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+@media (min-width: 540px) {
+    .shipping-badges-row {
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); /* Fluid responsive 2 or 3-col grids */
+        gap: 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .shipping-badges-row {
+        margin-bottom: 40px;
+    }
+}
+
+.badge-box-item {
+    background-color: var(--faq-box-bg);
+    border: 1px solid var(--faq-border);
+    border-radius: var(--faq-radius);
+    padding: 20px 15px;
+    text-align: center;
+    transition: transform var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+
+@media (min-width: 768px) {
+    .badge-box-item {
+        padding: 25px 20px;
+    }
+}
+
+.badge-box-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--faq-accent);
+}
+
+.badge-box-item svg {
+    width: 28px;
+    height: 28px;
+    fill: var(--faq-accent);
+    margin-bottom: 12px;
+}
+
+@media (min-width: 768px) {
+    .badge-box-item svg {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 15px;
+    }
+}
+
+.badge-box-item h4 {
+    font-size: 1rem;
+    color: var(--faq-text-main);
+    margin: 0 0 8px 0;
+    font-weight: 700;
+}
+
+@media (min-width: 768px) {
+    .badge-box-item h4 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+}
+
+.badge-box-item p {
+    font-size: 0.85rem;
+    color: var(--faq-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+    .badge-box-item p {
+        font-size: 0.88rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Accordion Stack Section
+   -------------------------------------------------------------------------- */
+.faq-accordion-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+@media (min-width: 768px) {
+    .faq-accordion-stack {
+        gap: 15px;
+    }
+}
+
+.faq-accordion-item {
+    border: 1px solid var(--faq-border);
+    border-radius: var(--faq-radius);
+    overflow: hidden;
+    background-color: var(--faq-bg);
+    transition: border-color var(--transition-speed) ease;
+}
+
+    .faq-accordion-item:hover {
+        border-color: #444444;
     }
 
-    .btn-add-to-cart-large {
-        max-width: 100%;
+/* Header Trigger */
+.faq-trigger-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background-color: var(--faq-box-bg);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--transition-speed) ease;
+}
+
+@media (min-width: 480px) {
+    .faq-trigger-header {
+        padding: 16px 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .faq-trigger-header {
+        padding: 18px 24px;
+    }
+}
+
+.faq-trigger-header:hover {
+    background-color: #252525;
+}
+
+.faq-title-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--faq-text-main);
+    line-height: 1.4;
+}
+
+@media (min-width: 480px) {
+    .faq-title-text {
+        font-size: 0.94rem;
+        gap: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .faq-title-text {
+        font-size: 0.98rem;
+        gap: 14px;
+    }
+}
+
+.faq-title-text svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--faq-text-muted);
+    flex-shrink: 0;
+    transition: fill var(--transition-speed) ease;
+}
+
+@media (min-width: 768px) {
+    .faq-title-text svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.faq-trigger-header:hover .faq-title-text svg {
+    fill: var(--faq-blue-accent);
+}
+
+/* Dropdown Arrow Indicator */
+.faq-arrow-icon {
+    font-size: 0.65rem;
+    color: var(--faq-text-muted);
+    transition: transform var(--transition-speed) ease, color var(--transition-speed) ease;
+    margin-left: 12px;
+}
+
+@media (min-width: 768px) {
+    .faq-arrow-icon {
+        font-size: 0.7rem;
+        margin-left: 15px;
+    }
+}
+
+.faq-trigger-header:hover .faq-arrow-icon {
+    color: var(--faq-text-main);
+}
+
+/* Active / Open state styling rules overrides */
+.faq-accordion-item.is-open {
+    border-color: var(--faq-border);
+}
+
+    .faq-accordion-item.is-open .faq-arrow-icon {
+        transform: rotate(180deg);
+        color: var(--faq-accent);
+    }
+
+    .faq-accordion-item.is-open .faq-trigger-header {
+        background-color: var(--faq-box-bg);
+    }
+
+/* Content Panel Animation Setup */
+.faq-content-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-speed) ease-in-out;
+    background-color: var(--faq-bg);
+}
+
+.faq-accordion-item.is-open .faq-content-panel {
+    max-height: 500px;
+}
+
+.faq-inner-text {
+    padding: 15px 16px;
+    font-size: 0.85rem;
+    color: var(--faq-text-muted);
+    line-height: 1.6;
+    border-top: 1px solid var(--faq-border);
+}
+
+@media (min-width: 480px) {
+    .faq-inner-text {
+        padding: 16px 20px;
+        font-size: 0.88rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .faq-inner-text {
+        padding: 20px 24px;
+        font-size: 0.92rem;
     }
 }
