@@ -22,7 +22,7 @@
                 <a href="products.aspx" class="quick-action-link">Add Products 🏎️</a>
                 <a href="expenses.aspx" class="quick-action-link">Log Expenses 💸</a>
                 <a href="contactUs.aspx" class="quick-action-link">Customer Inquiries 📬</a>
-                <a href="reports.aspx" class="quick-action-link">View P/L Analytics 📊</a>
+                <a href="reports.aspx" class="quick-action-link">P/L Analysis 📊</a>
             </div>
 
             <div class="dash-summary-cards-grid">

@@ -165,7 +165,7 @@
                         </div>
                         <div class="faq-content-panel">
                             <div class="faq-inner-text">
-                                We work with reliable national logistics carriers including Delhivery, Blue Dart, DTDC, and India Post to make sure your tracking updates are accurate and your models arrive safely.
+                                We work with reliable national logistics carriers including Tirupati, Nandan, India-Post, Delhivery, Blue Dart, DTDC, and India Post to make sure your tracking updates are accurate and your models arrive safely.
                             </div>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
                         </div>
                         <div class="faq-content-panel">
                             <div class="faq-inner-text">
-                                Due to the limited collector nature of diecast models, returns are only accepted if you receive a damaged model and provide an unedited unboxing video within 24 hours of delivery.
+                                Due to the limited collector nature of diecast models, returns are not accepted.
                             </div>
                         </div>
                     </div>

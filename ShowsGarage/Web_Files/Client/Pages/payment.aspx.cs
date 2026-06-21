@@ -2,6 +2,8 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Client.Pages
 {
@@ -26,7 +28,42 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             if (!IsPostBack)
             {
-                LoadMerchantDetailsFromSettings();
+                string paymentMethod = GetCurrentOrderPaymentMethod();
+
+                if (paymentMethod == "COD")
+                {
+                    // Configure UI layout for Cash on Delivery
+                    pnlOnlinePaymentDetails.Visible = false;
+                    pnlOnlineUploadForm.Visible = false;
+                    pnlCodConfirmation.Visible = true;
+                    btnSubmitProof.Text = "Confirm Cash on Delivery Order ✔";
+                }
+                else
+                {
+                    // Configure UI layout for Online Payments
+                    pnlOnlinePaymentDetails.Visible = true;
+                    pnlOnlineUploadForm.Visible = true;
+                    pnlCodConfirmation.Visible = false;
+                    btnSubmitProof.Text = "Submit Reference & Complete Order";
+                    LoadMerchantDetailsFromSettings();
+                }
+            }
+        }
+
+        private string GetCurrentOrderPaymentMethod()
+        {
+            int orderId = Convert.ToInt32(Session["ActiveCheckoutOrderID"]);
+            string query = "SELECT PaymentMethod FROM [dbo].[Orders] WHERE OrderID = @OrderID";
+
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@OrderID", orderId);
+                    conn.Open();
+                    object result = cmd.ExecuteScalar();
+                    return result != null ? result.ToString() : "ONLINE";
+                }
             }
         }
 
@@ -65,44 +102,12 @@ namespace ShowsGarage.Web_Files.Client.Pages
             lblStatus.Visible = false;
             int orderId = Convert.ToInt32(Session["ActiveCheckoutOrderID"]);
             int userId = Convert.ToInt32(Session["UserID"]);
-            string txnRef = txtTxnReference.Text.Trim();
 
-            // 1. Basic Form Validations
-            if (string.IsNullOrEmpty(txnRef))
-            {
-                lblStatus.Text = "⚠️ Please enter your transaction UTR or reference number for account lookup.";
-                lblStatus.Visible = true;
-                return;
-            }
+            string paymentMethod = GetCurrentOrderPaymentMethod();
+            string txnRef = "COD-ORDER";
+            string relativeDbStringPath = "COD";
+            string targetOrderStatus = "Awaiting Verification"; // Admin must approve both paths
 
-            if (!fileScreenshot.HasFile)
-            {
-                lblStatus.Text = "⚠️ Please upload an image screenshot copy of your payment receipt.";
-                lblStatus.Visible = true;
-                return;
-            }
-
-            // --- FILE SIZE & SECURITY CONTROLS ---
-
-            // Limit Rule A: Content Length Cap (2MB max calculated as: 2 * 1024 * 1024 Bytes)
-            int maxAllowedBytes = 2 * 1024 * 1024;
-            if (fileScreenshot.PostedFile.ContentLength > maxAllowedBytes)
-            {
-                lblStatus.Text = "⚠️ Image upload rejected! Screenshot size exceeds the maximum limit of <b>2MB</b>.";
-                lblStatus.Visible = true;
-                return;
-            }
-
-            // Limit Rule B: Content-Type MIME Verification Mapping (Prevents spoofed structural bypasses)
-            string mimeType = fileScreenshot.PostedFile.ContentType.ToLower();
-            if (mimeType != "image/jpeg" && mimeType != "image/jpg" && mimeType != "image/png")
-            {
-                lblStatus.Text = "❌ Invalid file type. Only clean graphic images (.jpg, .jpeg, .png) are supported.";
-                lblStatus.Visible = true;
-                return;
-            }
-
-            // Retrieve active items from session cache memory to process stock calculations
             DataTable dtCart = Session["Cart"] as DataTable;
             if (dtCart == null || dtCart.Rows.Count == 0)
             {
@@ -111,95 +116,135 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 return;
             }
 
+            // --- ONLINE METHOD VALIDATIONS & UPLOADS ---
+            if (paymentMethod != "COD")
+            {
+                txnRef = txtTxnReference.Text.Trim();
+
+                if (string.IsNullOrEmpty(txnRef))
+                {
+                    lblStatus.Text = "⚠️ Please enter your transaction UTR or reference number for account lookup.";
+                    lblStatus.Visible = true;
+                    return;
+                }
+
+                if (!fileScreenshot.HasFile)
+                {
+                    lblStatus.Text = "⚠️ Please upload an image screenshot copy of your payment receipt.";
+                    lblStatus.Visible = true;
+                    return;
+                }
+
+                int maxAllowedBytes = 2 * 1024 * 1024;
+                if (fileScreenshot.PostedFile.ContentLength > maxAllowedBytes)
+                {
+                    lblStatus.Text = "⚠️ Image upload rejected! Screenshot size exceeds the maximum limit of <b>2MB</b>.";
+                    lblStatus.Visible = true;
+                    return;
+                }
+
+                string mimeType = fileScreenshot.PostedFile.ContentType.ToLower();
+                if (mimeType != "image/jpeg" && mimeType != "image/jpg" && mimeType != "image/png")
+                {
+                    lblStatus.Text = "❌ Invalid file type. Only clean graphic images (.jpg, .jpeg, .png) are supported.";
+                    lblStatus.Visible = true;
+                    return;
+                }
+
+                try
+                {
+                    string extension = Path.GetExtension(fileScreenshot.FileName).ToLower();
+                    if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
+                    {
+                        string folderMapPath = Server.MapPath("~/Assets/uploads/receipts/");
+                        if (!Directory.Exists(folderMapPath)) { Directory.CreateDirectory(folderMapPath); }
+
+                        string cleanFileName = "Order_" + orderId + "_" + DateTime.Now.Ticks + extension;
+                        string fullServerSavePath = Path.Combine(folderMapPath, cleanFileName);
+
+                        fileScreenshot.SaveAs(fullServerSavePath);
+                        relativeDbStringPath = "/Assets/uploads/receipts/" + cleanFileName;
+                    }
+                    else
+                    {
+                        lblStatus.Text = "❌ Invalid file selection profiles. Only upload standard image configurations (.jpg, .jpeg, .png).";
+                        lblStatus.Visible = true;
+                        return;
+                    }
+                }
+                catch (Exception fileEx)
+                {
+                    lblStatus.Text = "❌ File Save Error: " + fileEx.Message;
+                    lblStatus.Visible = true;
+                    return;
+                }
+            }
+
+            // --- UNIFIED DATABASE TRANSACTION (Works for both COD & ONLINE) ---
             try
             {
-                string extension = Path.GetExtension(fileScreenshot.FileName).ToLower();
-                if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
+                using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
-                    // 2. Establish secure physical server directory target path
-                    string folderMapPath = Server.MapPath("~/Assets/uploads/receipts/");
-                    if (!Directory.Exists(folderMapPath)) { Directory.CreateDirectory(folderMapPath); }
-
-                    // Generate a distinct non-clashing custom file designation identifier name
-                    string cleanFileName = "Order_" + orderId + "_" + DateTime.Now.Ticks + extension;
-                    string fullServerSavePath = Path.Combine(folderMapPath, cleanFileName);
-
-                    // Commit image allocation asset onto disk architecture
-                    fileScreenshot.SaveAs(fullServerSavePath);
-                    string relativeDbStringPath = "/Assets/uploads/receipts/" + cleanFileName;
-
-                    // 3. Execute atomic database transactions updates across Orders, Products, and Cart rows
-                    using (SqlConnection conn = new SqlConnection(ConnectionString))
+                    conn.Open();
+                    using (SqlTransaction trans = conn.BeginTransaction())
                     {
-                        conn.Open();
-                        using (SqlTransaction trans = conn.BeginTransaction())
+                        try
                         {
-                            try
+                            // A. Update Status and paths in your [dbo].[Orders] table
+                            string updateOrderSql = @"
+                                UPDATE [dbo].[Orders] 
+                                SET Status = @Status, 
+                                    PaymentScreenshotPath = @ImgPath, 
+                                    TransactionReference = @TxnRef 
+                                WHERE OrderID = @OrderID";
+
+                            using (SqlCommand cmdOrder = new SqlCommand(updateOrderSql, conn, trans))
                             {
-                                // A. Update Status tracking metric flags in your [dbo].[Orders] table
-                                string updateOrderSql = @"
-                            UPDATE [dbo].[Orders] 
-                            SET Status = @Status, 
-                                PaymentScreenshotPath = @ImgPath, 
-                                TransactionReference = @TxnRef 
-                            WHERE OrderID = @OrderID";
-
-                                using (SqlCommand cmdOrder = new SqlCommand(updateOrderSql, conn, trans))
-                                {
-                                    cmdOrder.Parameters.AddWithValue("@Status", "Awaiting Verification");
-                                    cmdOrder.Parameters.AddWithValue("@ImgPath", relativeDbStringPath);
-                                    cmdOrder.Parameters.AddWithValue("@TxnRef", txnRef);
-                                    cmdOrder.Parameters.AddWithValue("@OrderID", orderId);
-                                    cmdOrder.ExecuteNonQuery();
-                                }
-
-                                // B. Loop through each item in the cart and deduct its stock from [dbo].[Products]
-                                string deductStockSql = @"
-                            UPDATE [dbo].[Products] 
-                            SET StockQuantity = StockQuantity - @Quantity 
-                            WHERE ProductID = @ProductID";
-
-                                foreach (DataRow row in dtCart.Rows)
-                                {
-                                    using (SqlCommand cmdStock = new SqlCommand(deductStockSql, conn, trans))
-                                    {
-                                        cmdStock.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
-                                        cmdStock.Parameters.AddWithValue("@ProductID", Convert.ToInt32(row["ProductID"]));
-
-                                        cmdStock.ExecuteNonQuery();
-                                    }
-                                }
-
-                                // C. Cleanse active User temporary items collection inside your database CartTable
-                                string deleteCartSql = "DELETE FROM Cart WHERE UserID = @UserID";
-                                using (SqlCommand cmdCart = new SqlCommand(deleteCartSql, conn, trans))
-                                {
-                                    cmdCart.Parameters.AddWithValue("@UserID", userId);
-                                    cmdCart.ExecuteNonQuery();
-                                }
-
-                                // Everything passed successfully, commit the transaction locks permanently
-                                trans.Commit();
+                                cmdOrder.Parameters.AddWithValue("@Status", targetOrderStatus);
+                                cmdOrder.Parameters.AddWithValue("@ImgPath", relativeDbStringPath);
+                                cmdOrder.Parameters.AddWithValue("@TxnRef", txnRef);
+                                cmdOrder.Parameters.AddWithValue("@OrderID", orderId);
+                                cmdOrder.ExecuteNonQuery();
                             }
-                            catch (Exception innerEx)
+
+                            // B. Deduct stock values from [dbo].[Products]
+                            string deductStockSql = @"
+                                UPDATE [dbo].[Products] 
+                                SET StockQuantity = StockQuantity - @Quantity 
+                                WHERE ProductID = @ProductID";
+
+                            foreach (DataRow row in dtCart.Rows)
                             {
-                                // Rollback everything safely if any single statement throws an exception
-                                trans.Rollback();
-                                throw new Exception("Database inventory adjustment operation rejected. Rolling back alterations.", innerEx);
+                                using (SqlCommand cmdStock = new SqlCommand(deductStockSql, conn, trans))
+                                {
+                                    cmdStock.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
+                                    cmdStock.Parameters.AddWithValue("@ProductID", Convert.ToInt32(row["ProductID"]));
+                                    cmdStock.ExecuteNonQuery();
+                                }
                             }
+
+                            // C. Cleanse active user items inside database Cart table
+                            string deleteCartSql = "DELETE FROM Cart WHERE UserID = @UserID";
+                            using (SqlCommand cmdCart = new SqlCommand(deleteCartSql, conn, trans))
+                            {
+                                cmdCart.Parameters.AddWithValue("@UserID", userId);
+                                cmdCart.ExecuteNonQuery();
+                            }
+
+                            trans.Commit();
+                        }
+                        catch (Exception innerEx)
+                        {
+                            trans.Rollback();
+                            throw new Exception("Database inventory adjustment operation rejected. Rolling back alterations.", innerEx);
                         }
                     }
+                }
 
-                    // 4. Flush user cache allocations properties and route cleanly to success landing page
-                    Session["Cart"] = null;
-                    Session["ActiveCheckoutOrderID"] = null;
-                    Response.Redirect("confirmOrder.aspx?id=" + orderId);
-                }
-                else
-                {
-                    lblStatus.Text = "❌ Invalid file selection profiles. Only upload standard image configurations (.jpg, .jpeg, .png).";
-                    lblStatus.Visible = true;
-                }
+                // Flush user session details and redirect to success landing page
+                Session["Cart"] = null;
+                Session["ActiveCheckoutOrderID"] = null;
+                Response.Redirect("confirmOrder.aspx?id=" + orderId);
             }
             catch (Exception ex)
             {

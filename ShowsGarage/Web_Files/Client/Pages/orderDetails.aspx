@@ -20,7 +20,7 @@
             
             <div class="shop-controls-bar">
                 <h1 class="shop-main-heading">Shipment Tracking Hub</h1>
-                <a href="my-orders.aspx" class="btn btn-filter-pill">← Back to History</a>
+                <a href="myOrders.aspx" class="btn btn-filter-pill">← Back to History</a>
             </div>
 
             <asp:Label ID="lblErrorMessage" runat="server" CssClass="status-msg-error" Visible="false" Style="display:block; margin: 15px 0;"></asp:Label>

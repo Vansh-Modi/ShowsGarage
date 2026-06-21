@@ -16,6 +16,7 @@
     margin: 0 auto;
     padding: 20px 15px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 /* Structural Layout Header Strip Elements */
@@ -26,6 +27,9 @@
     border-bottom: 2px solid #1a1a1a;
     padding-bottom: 15px;
     margin-bottom: 30px;
+    gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .admin-main-heading {
@@ -46,6 +50,7 @@
     padding: 6px 14px;
     border-radius: 20px;
     letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 /* System Dual Columns Grid Structuring Framework */
@@ -54,6 +59,7 @@
     grid-template-columns: 1fr;
     gap: 25px;
     align-items: start;
+    width: 100%;
 }
 
 @media (min-width: 992px) {
@@ -70,6 +76,7 @@
     padding: 20px;
     margin-bottom: 25px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 @media (min-width: 768px) {
@@ -92,6 +99,7 @@
     padding-bottom: 10px;
     border-bottom: 1px solid #222222;
     color: #ffffff;
+    text-align: left;
 }
 
     .settings-card-title.text-orange {
@@ -103,6 +111,7 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 18px;
+    width: 100%;
 }
 
 @media (min-width: 576px) {
@@ -119,6 +128,8 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .settings-label {
@@ -127,6 +138,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-align: left;
 }
 
     .settings-label.label-highlight {
@@ -194,10 +206,13 @@
     border: 1px dashed #2d2d2d;
     display: inline-block;
     text-align: left;
+    box-sizing: border-box;
 }
 
 .qr-img-thumb {
     max-width: 120px;
+    width: 100%;
+    height: auto;
     border-radius: 4px;
     background-color: #ffffff;
     padding: 4px;
@@ -219,6 +234,7 @@
     border-radius: 8px;
     padding: 15px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 .btn-settings-save {
@@ -238,6 +254,7 @@
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
     .btn-settings-save:hover {
@@ -259,6 +276,8 @@
     margin-bottom: 25px;
     text-align: left;
     border: 1px solid transparent;
+    box-sizing: border-box;
+    width: 100%;
 }
 
     .admin-alert-banner.alert-success {
@@ -272,3 +291,77 @@
         border-color: #ff3333;
         color: #ff6666;
     }
+
+/* ==========================================================================
+   📱 ADAPTIVE MOBILE CRISIS OVERRIDES (max-width: 600px)
+   ========================================================================== */
+@media screen and (max-width: 600px) {
+    .admin-content-container {
+        padding: 12px 10px;
+    }
+
+    .admin-controls-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .admin-pill-badge {
+        width: 100%;
+        text-align: center;
+    }
+
+    .settings-card-panel {
+        padding: 15px;
+    }
+
+    /* Force grids to act as full-width vertical stack blocks */
+    .settings-form-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    .form-group.half-width,
+    .form-group.full-width {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Set fields to 16px to prevent iOS Safari auto-zoom on field selections */
+    .settings-input {
+        font-size: 16px !important;
+        padding: 12px !important;
+    }
+
+        .settings-input.file-picker {
+            font-size: 13px !important;
+            padding: 10px 8px !important;
+        }
+
+        .settings-input.numeric-input {
+            font-size: 16px !important;
+        }
+
+    /* Full width optimization for the active preview system layout */
+    .current-qr-preview-box {
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
+
+    .qr-img-thumb {
+        margin: 0 auto;
+        max-width: 140px;
+    }
+
+    .action-submit-panel {
+        padding: 12px;
+    }
+
+    .btn-settings-save {
+        padding: 15px 10px !important;
+        font-size: 15px !important;
+    }
+}

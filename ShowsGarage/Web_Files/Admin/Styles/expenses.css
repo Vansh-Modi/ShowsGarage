@@ -7,6 +7,7 @@
     grid-template-columns: 1fr;
     gap: 25px;
     align-items: start;
+    width: 100%;
 }
 
 @media (min-width: 992px) {
@@ -49,6 +50,7 @@
 .ledger-table-container {
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth inertia scrolling for mobile Safari */
 }
 
 .admin-ledger-table {
@@ -129,4 +131,96 @@
     font-size: 14px;
     color: #ff6666;
     white-space: nowrap;
+}
+
+/* Action Hyperlinks in Table Data */
+.action-link {
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.edit-link {
+    color: #0076df;
+}
+
+    .edit-link:hover {
+        color: #005ec3;
+    }
+
+.delete-link {
+    color: #ff4d4d;
+}
+
+    .delete-link:hover {
+        color: #ff1a1a;
+    }
+
+/* ==========================================================================
+   📱 ADAPTIVE MOBILE BREAKPOINTS (max-width: 768px)
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+
+    /* 1. Header controls stacking */
+    .admin-controls-bar {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    /* 2. Form panel custom padding layout adjustments */
+    .settings-card-panel {
+        padding: 15px !important;
+    }
+
+    /* 3. Header row in historical data summary blocks */
+    .premium-border > div:first-child {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+
+    .ledger-grand-total {
+        width: 100%;
+        text-align: left;
+        font-size: 13px;
+    }
+
+    /* 4. Force form layouts to use full screen single column blocks */
+    .settings-form-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+        width: 100% !important;
+    }
+
+    .form-group.half-width,
+    .form-group.full-width {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* 5. Set font sizes to 16px to completely eliminate iOS Safari field auto-zooms */
+    .settings-input {
+        font-size: 16px !important;
+        padding: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 6. Admin Panel Save/Cancel Action items scaling */
+    .summary-actions-block {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+
+        .summary-actions-block input[type="submit"] {
+            width: 100% !important;
+            padding: 14px 10px !important;
+            font-size: 15px !important;
+            display: block !important;
+        }
 }

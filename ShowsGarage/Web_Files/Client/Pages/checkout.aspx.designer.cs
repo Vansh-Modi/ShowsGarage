@@ -33,6 +33,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.Label lblStatusMessage;
 
         /// <summary>
+        /// updMainCheckoutLayout control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel updMainCheckoutLayout;
+
+        /// <summary>
         /// txtFullName control.
         /// </summary>
         /// <remarks>
@@ -58,15 +67,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAddress;
-
-        /// <summary>
-        /// updPaymentSection control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updPaymentSection;
 
         /// <summary>
         /// txtCity control.
@@ -96,49 +96,49 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.Label lblPaymentWarning;
 
         /// <summary>
-        /// rptCheckoutItems control.
+        /// Repeater1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptCheckoutItems;
+        protected global::System.Web.UI.WebControls.Repeater Repeater1;
 
         /// <summary>
-        /// lblCheckoutItemsCount control.
+        /// Label1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCheckoutItemsCount;
+        protected global::System.Web.UI.WebControls.Label Label1;
 
         /// <summary>
-        /// lblItemsSubtotal control.
+        /// Label2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblItemsSubtotal;
+        protected global::System.Web.UI.WebControls.Label Label2;
 
         /// <summary>
-        /// lblShippingFee control.
+        /// Label3 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblShippingFee;
+        protected global::System.Web.UI.WebControls.Label Label3;
 
         /// <summary>
-        /// lblCheckoutGrandTotal control.
+        /// Label4 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCheckoutGrandTotal;
+        protected global::System.Web.UI.WebControls.Label Label4;
 
         /// <summary>
         /// btnPageNavigation control.

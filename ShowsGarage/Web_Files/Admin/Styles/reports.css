@@ -36,6 +36,7 @@
     border-radius: 8px;
     padding: 20px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 .stat-meta-header {
@@ -107,22 +108,28 @@
     gap: 20px;
     font-size: 13px;
     color: #aaa;
+    box-sizing: border-box;
+    width: 100%;
 }
 
-.strip-node strong {
-    color: #fff;
-    font-family: monospace;
-    font-size: 14px;
-    margin-left: 4px;
+.strip-node {
+    box-sizing: border-box;
 }
 
-    .strip-node strong.text-green {
-        color: #2ebd59;
+    .strip-node strong {
+        color: #fff;
+        font-family: monospace;
+        font-size: 14px;
+        margin-left: 4px;
     }
 
-    .strip-node strong.text-red {
-        color: #ff6666;
-    }
+        .strip-node strong.text-green {
+            color: #2ebd59;
+        }
+
+        .strip-node strong.text-red {
+            color: #ff6666;
+        }
 
 /* Analytics Charts Responsive Grid Framework */
 .analytics-charts-split-grid {
@@ -143,6 +150,8 @@
     min-height: 340px;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .chart-card-title {
@@ -152,6 +161,7 @@
     letter-spacing: 0.5px;
     margin: 0 0 15px 0;
     font-weight: 700;
+    text-align: left;
 }
 
 .canvas-chart-container {
@@ -160,6 +170,7 @@
     width: 100%;
     height: 100%;
     min-height: 250px;
+    box-sizing: border-box;
 }
 
 /* Data Tables */
@@ -169,6 +180,7 @@
     background-color: #0d0d0d;
     border: 1px solid #1c1c1c;
     border-radius: 6px;
+    -webkit-overflow-scrolling: touch; /* Kinetic scrolling for iOS */
 }
 
 .admin-pl-breakdown-table {
@@ -205,6 +217,7 @@
     height: 6px;
     background-color: #ff5722;
     border-radius: 50%;
+    flex-shrink: 0;
 }
 
 .pl-cell-value {
@@ -213,4 +226,75 @@
     font-size: 14px;
     font-weight: 700;
     color: #aaaaaa;
+}
+
+/* ==========================================================================
+   📱 MOBILE ANALYTICS VIEWPORTS (max-width: 768px)
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+    .admin-content-container {
+        padding: 12px 10px !important;
+    }
+
+    .admin-controls-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .admin-pill-badge {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Stack stat panels sequentially */
+    .pl-overview-cards-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .pl-stat-card {
+        padding: 15px;
+    }
+
+    .stat-amount-display {
+        font-size: 22px;
+    }
+
+    /* Restructure the general operational row strip into vertical node blocks */
+    .operational-summary-strip-row {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 15px;
+    }
+
+    .strip-node {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #1c1c1c;
+        padding-bottom: 8px;
+    }
+
+        .strip-node:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .strip-node strong {
+            margin-left: 0;
+        }
+
+    /* Limit chart container limits slightly on miniature formats to fit nicely */
+    .chart-wrapper-card {
+        min-height: 300px;
+        padding: 15px !important;
+    }
+
+    .canvas-chart-container {
+        min-height: 220px;
+    }
 }

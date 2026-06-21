@@ -8,8 +8,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class checkout : System.Web.UI.Page
     {
-        private decimal dynamicPlatformFee = 0;
-        private decimal dynamicShippingFee = 0;
+        private decimal dynamicPlatformFee = 15.00m; // Default backup platform metric fallback
 
         private string ConnectionString
         {
@@ -36,33 +35,32 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     return;
                 }
 
-                LoadSiteSettings();
+                LoadPlatformFeesFromSettings();
                 InjectFeesIntoDataTable(dtCart);
                 BindCheckoutReview(dtCart);
             }
         }
 
-        private void LoadSiteSettings()
+        private void LoadPlatformFeesFromSettings()
         {
-            string query = "SELECT TOP 1 ISNULL(ShippingCharges, 0), ISNULL(PlatformFees, 15.00) FROM [dbo].[SiteSettings]";
+            string query = "SELECT TOP 1 ISNULL(PlatformFees, 15.00) FROM [dbo].[SiteSettings]";
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    conn.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    try
                     {
-                        if (reader.Read())
+                        conn.Open();
+                        object feeResult = cmd.ExecuteScalar();
+                        if (feeResult != null)
                         {
-                            dynamicShippingFee = Convert.ToDecimal(reader[0]);
-                            dynamicPlatformFee = Convert.ToDecimal(reader[1]);
+                            dynamicPlatformFee = Convert.ToDecimal(feeResult);
                         }
-                        else
-                        {
-                            dynamicShippingFee = 60.00m;
-                            dynamicPlatformFee = 15.00m;
-                        }
+                    }
+                    catch
+                    {
+                        dynamicPlatformFee = 15.00m;
                     }
                 }
             }
@@ -92,22 +90,27 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 decimal sellingPrice = Convert.ToDecimal(row["SellingPrice"]);
                 int qty = Convert.ToInt32(row["Quantity"]);
 
-                // Calculate cumulative sum based on standard item retail listing price
                 itemsSubtotal += (sellingPrice * qty);
                 itemQuantityCounter += qty;
             }
 
-            // Clean Display Summing: Total Items Cost + Delivery Fee
-            decimal grandTotal = itemsSubtotal + dynamicShippingFee;
+            // 🔥 CRITICAL RULE: ONLINE = Rs. 120, COD = Rs. 0
+            decimal appliedShippingFee = 120.00m;
+            if (ddlPaymentMode.SelectedValue == "COD")
+            {
+                appliedShippingFee = 0.00m;
+            }
 
-            rptCheckoutItems.DataSource = dtCart;
-            rptCheckoutItems.DataBind();
+            decimal grandTotal = itemsSubtotal + appliedShippingFee;
 
-            // Render clean, un-split variables onto the frontend
-            lblItemsSubtotal.Text = string.Format("{0:N0}", itemsSubtotal);
-            lblShippingFee.Text = string.Format("{0:N0}", dynamicShippingFee);
-            lblCheckoutItemsCount.Text = itemQuantityCounter.ToString();
-            lblCheckoutGrandTotal.Text = string.Format("{0:N0}", grandTotal);
+            Repeater1.DataSource = dtCart;
+            Repeater1.DataBind();
+
+            // Push fresh figures onto front-end labels
+            Label1.Text = itemQuantityCounter.ToString();
+            Label2.Text = string.Format("{0:N0}", itemsSubtotal);
+            Label3.Text = string.Format("{0:N0}", appliedShippingFee);
+            Label4.Text = string.Format("{0:N0}", grandTotal);
         }
 
         protected void txtCity_TextChanged(object sender, EventArgs e)
@@ -139,11 +142,20 @@ namespace ShowsGarage.Web_Files.Client.Pages
             DataTable dtCart = Session["Cart"] as DataTable;
             if (dtCart != null)
             {
-                LoadSiteSettings();
                 BindCheckoutReview(dtCart);
             }
 
-            updPaymentSection.Update();
+            updMainCheckoutLayout.Update();
+        }
+
+        protected void ddlPaymentMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DataTable dtCart = Session["Cart"] as DataTable;
+            if (dtCart != null)
+            {
+                BindCheckoutReview(dtCart);
+            }
+            updMainCheckoutLayout.Update();
         }
 
         protected void btnPageNavigation_Click(object sender, EventArgs e)
@@ -180,15 +192,17 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             try
             {
-                LoadSiteSettings();
-
                 decimal totalOrderAmount = 0;
                 foreach (DataRow row in dtCart.Rows)
                 {
                     totalOrderAmount += Convert.ToDecimal(row["SellingPrice"]) * Convert.ToInt32(row["Quantity"]);
                 }
 
-                totalOrderAmount += dynamicShippingFee;
+                // Apply correct delivery charges modifier rule to final database total record
+                if (selectedPaymentMode != "COD")
+                {
+                    totalOrderAmount += 120.00m;
+                }
 
                 using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {

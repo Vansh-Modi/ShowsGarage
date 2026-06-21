@@ -17,6 +17,13 @@
     margin: 0 auto;
     padding: 20px 15px;
     box-sizing: border-box;
+    width: 100%;
+}
+
+/* Dedicated micro-layout spacing limit wrapper class to prevent stretching */
+.payment-upload-layout {
+    max-width: 600px !important;
+    margin: 0 auto !important;
 }
 
 /* Header Utilities Bar Control Strips */
@@ -94,6 +101,7 @@
     border-radius: 10px;
     padding: 20px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 @media (min-width: 768px) {
@@ -114,20 +122,30 @@
     text-align: left;
 }
 
-/* Core Form Component Control Parameters */
+/* Core Form Grid Parameters */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
+    width: 100%;
 }
 
+/* Desktop Multi-Column Configuration Rules */
 @media (min-width: 576px) {
     .form-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(12, 1fr);
     }
 
     .full-width {
-        grid-column: span 2;
+        grid-column: span 12;
+    }
+
+    .half-width {
+        grid-column: span 6;
+    }
+
+    .phone-width {
+        grid-column: span 6;
     }
 }
 
@@ -135,6 +153,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-label {
@@ -143,6 +163,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-align: left;
 }
 
 .form-input {
@@ -155,8 +176,177 @@
     font-family: inherit;
     outline: none;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.form
+/* Specific limits to control extreme widening layout stretches */
+.form-grid .form-input {
+    max-width: 450px;
+}
+
+.form-grid .full-width .form-input,
+.form-grid .text-area {
+    max-width: 100%;
+}
+
+.form-input:focus {
+    border-color: #0076df;
+    box-shadow: 0 0 0 3px rgba(0, 118, 223, 0.15);
+}
+
+/* Textarea multiline sizing limits */
+.form-input.text-area {
+    resize: vertical;
+    min-height: 90px;
+}
+
+/* Specific FileUpload adjustments for file buttons */
+input[type="file"].form-input {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+/* Notice & Info Banners */
+.checkout-info-banner {
+    background-color: rgba(255, 204, 0, 0.05);
+    border-left: 3px solid #ffcc00;
+    padding: 15px;
+    margin-bottom: 25px;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.info-banner-title {
+    color: #ffcc00;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.info-banner-text {
+    color: #cccccc;
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Summary Card Rows & Action Buttons */
+.summary-data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.pt-15-border {
+    border-top: 1px solid #222222;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.total-highlight-row {
+    border-top: 2px dashed #222222;
+    padding-top: 15px;
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.total-green-price {
+    color: #2ed573;
+    font-size: 20px;
+}
+
+.summary-actions-block {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.btn-checkout-large {
+    background-color: #0076df;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 14px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    width: 100%;
+    max-width: 100%;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .btn-checkout-large:hover {
+        background-color: #005ec3;
+    }
+
+    .btn-checkout-large:active {
+        transform: scale(0.98);
+    }
+
+/* ==========================================================================
+   📱 MOBILITY CRITICAL LAYOUT ENHANCEMENTS (max-width: 768px)
+   ========================================================================== */
+@media screen and (max-width: 768px) {
+    .shop-content-container {
+        padding: 12px 10px;
+    }
+
+    .checkout-form-card, .summary-card {
+        padding: 15px;
+    }
+
+    .shop-controls-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .btn-filter-pill {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Keep merchant QR element scaled elegantly on mobile */
+    .checkout-form-card img {
+        max-width: 190px !important;
+        height: auto !important;
+    }
+
+    .form-section-title, .summary-card-title {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    /* Collapse column grid rules into a flat block column stack */
+    .form-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    .form-group.half-width,
+    .form-group.phone-width,
+    .form-group.full-width {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .form-grid .form-input {
+        max-width: 100% !important;
+        font-size: 16px !important; /* Prevents auto-zoom on mobile devices */
+        padding: 12px !important;
+    }
+
+    input[type="file"].form-input {
+        font-size: 12px;
+        padding: 10px;
+    }
+}

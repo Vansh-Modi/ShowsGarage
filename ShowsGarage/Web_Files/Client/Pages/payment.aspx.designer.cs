@@ -24,6 +24,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.Label lblStatus;
 
         /// <summary>
+        /// pnlOnlinePaymentDetails control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlOnlinePaymentDetails;
+
+        /// <summary>
         /// imgQrCode control.
         /// </summary>
         /// <remarks>
@@ -49,6 +58,24 @@ namespace ShowsGarage.Web_Files.Client.Pages
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litBankDetails;
+
+        /// <summary>
+        /// pnlCodConfirmation control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlCodConfirmation;
+
+        /// <summary>
+        /// pnlOnlineUploadForm control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlOnlineUploadForm;
 
         /// <summary>
         /// txtTxnReference control.

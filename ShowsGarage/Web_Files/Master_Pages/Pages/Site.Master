@@ -34,7 +34,7 @@
                             </asp:Panel>
 
                             <asp:Panel ID="Panel2" runat="server" Visible="false" CssClass="icon-group">
-                                <asp:ImageButton ID="ibAdminAccount" runat="server" ImageUrl="~/Web_Files/Images/icons/account-icon.png" CssClass="nav-icon" PostBackUrl="~/Web_Files/Admin/Pages/account.aspx" CausesValidation="False" />
+                                <asp:ImageButton ID="ibAdminAccount" runat="server" ImageUrl="~/Web_Files/Images/icons/account-icon.png" CssClass="nav-icon" PostBackUrl="~/Web_Files/Client/Pages/profile.aspx" CausesValidation="False" />
                                 <asp:ImageButton ID="ibAdminLogout" runat="server" ImageUrl="~/Web_Files/Images/icons/logout.png" CssClass="nav-icon" OnClick="ibAdminLogout_Click" CausesValidation="False" />
                             </asp:Panel>
                         </div>
@@ -58,7 +58,7 @@
                             <ul>
                                 <li><a href="../../../Web_Files/Admin/Pages/orders.aspx">Orders</a></li>
                                 <li><a href="../../../Web_Files/Admin/Pages/products.aspx">Inventory</a></li>
-                                <li><a href="../../../Web_Files/Admin/Pages/reports.aspx">P/L Report</a></li>
+                                <li><a href="../../../Web_Files/Admin/Pages/users.aspx">Users</a></li>
                                 <li><a href="../../../Web_Files/Admin/Pages/blog.aspx">Blog</a></li>
                                 <li><a href="../../../Web_Files/Admin/Pages/siteSettings.aspx">Site Settings</a></li>
                             </ul>
