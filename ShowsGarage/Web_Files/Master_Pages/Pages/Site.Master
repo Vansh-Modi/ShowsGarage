@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Vansh Modi" />
     <meta name="designer" content="Vansh Modi" />
+    <meta name="google-site-verification" content="Wav8Bb2OZh3XNfhtu5OYc-kR2-qVCSp1W5CdOdx9M1g" />
     <link href="../Styles/siteMaster.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="~/Web_Files/Images/icons/Show's Garage Logo BG.png" />
     <asp:ContentPlaceHolder ID="head" runat="server"></asp:ContentPlaceHolder>
