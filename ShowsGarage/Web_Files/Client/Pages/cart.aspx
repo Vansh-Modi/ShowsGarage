@@ -30,7 +30,7 @@
                                 <div class="cart-item-details">
                                     <span class="cart-item-brand"><%# Eval("BrandName") %></span>
                                     <h3 class="cart-item-title"><%# Eval("Title") %></h3>
-                                    <span class="cart-item-price">Rs.<%# string.Format("{0:N0}", Eval("MRP")) %></span>
+                                    <span class="cart-item-price">Rs.<%# string.Format("{0:N0}", Eval("SellingPrice")) %></span>
                                 </div>
 
                                 <div class="cart-item-actions">

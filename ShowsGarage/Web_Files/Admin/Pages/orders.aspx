@@ -46,16 +46,13 @@
                                 </div>
                                 <div class="header-meta-group">
                                     <span class="meta-label">Total Invoice Value</span>
-                                    <span class="meta-value text-green">Rs.<%# string.Format("{0:N2}", Eval("TotalAmount")) %></span>
-                                </div>
+                                    <span class="meta-value text-green">Rs.<%# string.Format("{0:N2}", Eval("TotalAmount")) %></span></div>
                                 <div class="header-meta-group">
                                     <span class="meta-label">Customer ID</span>
-                                    <span class="meta-value">User #<%# Eval("UserID") %></span>
-                                </div>
+                                    <span class="meta-value">User #<%# Eval("UserID") %></span></div>
                                 <div class="header-meta-group id-right-align">
                                     <span class="meta-label">Order ID Token</span>
-                                    <span class="meta-value id-code-highlight">#<%# Eval("OrderID") %></span>
-                                </div>
+                                    <span class="meta-value id-code-highlight">#<%# Eval("OrderID") %></span></div>
                                 <div class="header-status-badge-container">
                                     <asp:Label ID="lblStatusBadge" runat="server" Text='<%# Eval("Status") %>'></asp:Label>
                                 </div>
@@ -91,7 +88,7 @@
                                                 <asp:DropDownList ID="ddlEditStatus" runat="server" CssClass="inline-text-box select-arrow-fix" Style="width:100%; padding:6px; background:#000; border:1px solid #333; color:#0076df; font-weight:bold;">
                                                     <asp:ListItem Value="Awaiting Verification">Awaiting Verification</asp:ListItem>
                                                     <asp:ListItem Value="Approved">Approved</asp:ListItem>
-                                                    <asp:ListItem Value="Shipped">Shipped</asp:ListItem>
+                                                    <asp:ListItem Value="Dispatched">Dispatched</asp:ListItem>
                                                     <asp:ListItem Value="Delivered">Delivered</asp:ListItem>
                                                     <asp:ListItem Value="Cancelled">Cancelled</asp:ListItem>
                                                 </asp:DropDownList>
@@ -124,8 +121,7 @@
                                                 </div>
                                                 <div class="manifest-item-pricing">
                                                     <span class="manifest-item-qty">Quantity: <%# Eval("Quantity") %></span>
-                                                    <span class="manifest-item-price">Rs.<%# string.Format("{0:N2}", Eval("UnitPrice")) %></span>
-                                                </div>
+                                                    <span class="manifest-item-price">Rs.<%# string.Format("{0:N2}", Eval("UnitPrice")) %></span></div>
                                             </div>
                                         </ItemTemplate>
                                     </asp:Repeater>

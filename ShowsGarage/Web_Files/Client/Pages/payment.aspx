@@ -1,10 +1,8 @@
 ﻿<%@ Page Title="Submit Payment | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="payment-upload.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.payment_upload" %>
-
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <title>Payment | Show's Garage</title>
     <link href="/Web_Files/Client/Styles/checkout.css?v=2" rel="stylesheet" type="text/css" />
 </asp:Content>
-
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="shop-theme-wrapper">
         <main class="shop-content-container payment-upload-layout" style="max-width: 650px; margin: 0 auto;">
@@ -17,6 +15,11 @@
 
             <div class="checkout-form-card" style="text-align: center;">
                 
+                <div style="background: #161616; padding: 15px; border-radius: 6px; border: 1px dashed #333; margin-bottom: 20px;">
+                    <span style="color: #aaa; font-size: 13px; display: block;">Total Payment Amount Due:</span>
+                    <span style="font-size: 24px; font-weight: 800; color: #00ff66;">Rs. <asp:Literal ID="litPaymentDue" runat="server"></asp:Literal></span>
+                </div>
+
                 <asp:Panel ID="pnlOnlinePaymentDetails" runat="server">
                     <h2 class="form-section-title">Scan QR or Transfer Direct</h2>
                     <p style="color: #aaaaaa; font-size: 14px; margin-bottom: 25px; line-height: 1.4; text-align: center;">

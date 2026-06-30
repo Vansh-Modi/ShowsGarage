@@ -9,6 +9,8 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class payment_upload : System.Web.UI.Page
     {
+        private decimal dynamicShippingFee = 120.00m; // 3) Dynamic fallback
+
         private string ConnectionString
         {
             get
@@ -19,20 +21,24 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Security Authorization Gate
-            if (Session["UserID"] == null || Session["ActiveCheckoutOrderID"] == null)
+            // Security Gate checking staging session
+            if (Session["UserID"] == null || Session["Checkout_PaymentMethod"] == null || Session["Cart"] == null)
             {
                 Response.Redirect("cart.aspx");
                 return;
             }
 
+            // 3) Load real-time execution matrices from DB
+            LoadShippingFeesFromSettings();
+
             if (!IsPostBack)
             {
-                string paymentMethod = GetCurrentOrderPaymentMethod();
+                string paymentMethod = Session["Checkout_PaymentMethod"].ToString();
+                decimal totalDue = CalculateTotalDue(paymentMethod);
+                litPaymentDue.Text = string.Format("{0:N2}", totalDue);
 
                 if (paymentMethod == "COD")
                 {
-                    // Configure UI layout for Cash on Delivery
                     pnlOnlinePaymentDetails.Visible = false;
                     pnlOnlineUploadForm.Visible = false;
                     pnlCodConfirmation.Visible = true;
@@ -40,7 +46,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 }
                 else
                 {
-                    // Configure UI layout for Online Payments
                     pnlOnlinePaymentDetails.Visible = true;
                     pnlOnlineUploadForm.Visible = true;
                     pnlCodConfirmation.Visible = false;
@@ -50,27 +55,40 @@ namespace ShowsGarage.Web_Files.Client.Pages
             }
         }
 
-        private string GetCurrentOrderPaymentMethod()
+        private void LoadShippingFeesFromSettings()
         {
-            int orderId = Convert.ToInt32(Session["ActiveCheckoutOrderID"]);
-            string query = "SELECT PaymentMethod FROM [dbo].[Orders] WHERE OrderID = @OrderID";
-
+            string query = "SELECT TOP 1 ISNULL(ShippingFees, 120.00) FROM [dbo].[SiteSettings]";
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@OrderID", orderId);
-                    conn.Open();
-                    object result = cmd.ExecuteScalar();
-                    return result != null ? result.ToString() : "ONLINE";
+                    try { conn.Open(); object res = cmd.ExecuteScalar(); if (res != null) dynamicShippingFee = Convert.ToDecimal(res); }
+                    catch { dynamicShippingFee = 120.00m; }
                 }
             }
+        }
+
+        private decimal CalculateTotalDue(string paymentMethod)
+        {
+            DataTable dtCart = Session["Cart"] as DataTable;
+            decimal total = 0;
+            if (dtCart != null)
+            {
+                foreach (DataRow row in dtCart.Rows)
+                {
+                    total += Convert.ToDecimal(row["SellingPrice"]) * Convert.ToInt32(row["Quantity"]);
+                }
+            }
+            if (paymentMethod != "COD")
+            {
+                total += dynamicShippingFee; // 3) Added dynamic fee here
+            }
+            return total;
         }
 
         private void LoadMerchantDetailsFromSettings()
         {
             string query = "SELECT TOP 1 QrCodePath, UpiID, BankAccountDetails FROM [dbo].[SiteSettings]";
-
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -100,30 +118,34 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected void btnSubmitProof_Click(object sender, EventArgs e)
         {
             lblStatus.Visible = false;
-            int orderId = Convert.ToInt32(Session["ActiveCheckoutOrderID"]);
             int userId = Convert.ToInt32(Session["UserID"]);
-
-            string paymentMethod = GetCurrentOrderPaymentMethod();
-            string txnRef = "COD-ORDER";
-            string relativeDbStringPath = "COD";
-            string targetOrderStatus = "Awaiting Verification"; // Admin must approve both paths
-
             DataTable dtCart = Session["Cart"] as DataTable;
+
             if (dtCart == null || dtCart.Rows.Count == 0)
             {
-                lblStatus.Text = "❌ Process Error: Session cart data has expired or is missing. Please restart checkout.";
+                lblStatus.Text = "❌ Process Error: Session cart data has expired.";
                 lblStatus.Visible = true;
                 return;
             }
 
-            // --- ONLINE METHOD VALIDATIONS & UPLOADS ---
+            string paymentMethod = Session["Checkout_PaymentMethod"].ToString();
+            string fullName = Session["Checkout_FullName"].ToString();
+            string phone = Session["Checkout_Phone"].ToString();
+            string address = Session["Checkout_Address"].ToString();
+            string city = Session["Checkout_City"].ToString();
+            string pincode = Session["Checkout_Pincode"].ToString(); // 1) Pulling Pincode from session staging
+
+            string txnRef = "COD-ORDER";
+            string relativeDbStringPath = "COD";
+            string targetOrderStatus = "Awaiting Verification";
+
+            // Online Processing Validation Checks
             if (paymentMethod != "COD")
             {
                 txnRef = txtTxnReference.Text.Trim();
-
                 if (string.IsNullOrEmpty(txnRef))
                 {
-                    lblStatus.Text = "⚠️ Please enter your transaction UTR or reference number for account lookup.";
+                    lblStatus.Text = "⚠️ Please enter your transaction UTR or reference number.";
                     lblStatus.Visible = true;
                     return;
                 }
@@ -138,7 +160,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 int maxAllowedBytes = 2 * 1024 * 1024;
                 if (fileScreenshot.PostedFile.ContentLength > maxAllowedBytes)
                 {
-                    lblStatus.Text = "⚠️ Image upload rejected! Screenshot size exceeds the maximum limit of <b>2MB</b>.";
+                    lblStatus.Text = "⚠️ Screenshot size exceeds the maximum limit of 2MB.";
                     lblStatus.Visible = true;
                     return;
                 }
@@ -146,7 +168,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 string mimeType = fileScreenshot.PostedFile.ContentType.ToLower();
                 if (mimeType != "image/jpeg" && mimeType != "image/jpg" && mimeType != "image/png")
                 {
-                    lblStatus.Text = "❌ Invalid file type. Only clean graphic images (.jpg, .jpeg, .png) are supported.";
+                    lblStatus.Text = "❌ Invalid file type. Only standard graphics (.jpg, .jpeg, .png) are supported.";
                     lblStatus.Visible = true;
                     return;
                 }
@@ -154,23 +176,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 try
                 {
                     string extension = Path.GetExtension(fileScreenshot.FileName).ToLower();
-                    if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
-                    {
-                        string folderMapPath = Server.MapPath("~/Assets/uploads/receipts/");
-                        if (!Directory.Exists(folderMapPath)) { Directory.CreateDirectory(folderMapPath); }
+                    string folderMapPath = Server.MapPath("~/Assets/uploads/receipts/");
+                    if (!Directory.Exists(folderMapPath)) { Directory.CreateDirectory(folderMapPath); }
 
-                        string cleanFileName = "Order_" + orderId + "_" + DateTime.Now.Ticks + extension;
-                        string fullServerSavePath = Path.Combine(folderMapPath, cleanFileName);
+                    // Generate safe pseudorandom filename utilizing timestamp metrics
+                    string cleanFileName = "Order_Pending_" + userId + "_" + DateTime.Now.Ticks + extension;
+                    string fullServerSavePath = Path.Combine(folderMapPath, cleanFileName);
 
-                        fileScreenshot.SaveAs(fullServerSavePath);
-                        relativeDbStringPath = "/Assets/uploads/receipts/" + cleanFileName;
-                    }
-                    else
-                    {
-                        lblStatus.Text = "❌ Invalid file selection profiles. Only upload standard image configurations (.jpg, .jpeg, .png).";
-                        lblStatus.Visible = true;
-                        return;
-                    }
+                    fileScreenshot.SaveAs(fullServerSavePath);
+                    relativeDbStringPath = "/Assets/uploads/receipts/" + cleanFileName;
                 }
                 catch (Exception fileEx)
                 {
@@ -180,9 +194,11 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 }
             }
 
-            // --- UNIFIED DATABASE TRANSACTION (Works for both COD & ONLINE) ---
+            // 2) PLACING THE ORDER INSIDE THE PAYMENT CLICK ACTION PROCESSOR
             try
             {
+                decimal totalOrderAmount = CalculateTotalDue(paymentMethod);
+
                 using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
                     conn.Open();
@@ -190,24 +206,35 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     {
                         try
                         {
-                            // A. Update Status and paths in your [dbo].[Orders] table
-                            string updateOrderSql = @"
-                                UPDATE [dbo].[Orders] 
-                                SET Status = @Status, 
-                                    PaymentScreenshotPath = @ImgPath, 
-                                    TransactionReference = @TxnRef 
-                                WHERE OrderID = @OrderID";
+                            // 1) SQL Insert command mapped with Pincode column allocation space
+                            string insertOrderSql = @"
+                                INSERT INTO [dbo].[Orders] 
+                                (UserID, OrderDate, TotalAmount, Status, ShippingAddress, Pincode, PaymentMethod, PaymentScreenshotPath, TransactionReference) 
+                                OUTPUT INSERTED.OrderID
+                                VALUES 
+                                (@UserID, @OrderDate, @TotalAmount, @Status, @ShippingAddress, @Pincode, @PaymentMethod, @ImgPath, @TxnRef)";
 
-                            using (SqlCommand cmdOrder = new SqlCommand(updateOrderSql, conn, trans))
+                            int generatedOrderId;
+                            using (SqlCommand cmdOrder = new SqlCommand(insertOrderSql, conn, trans))
                             {
+                                cmdOrder.Parameters.AddWithValue("@UserID", userId);
+                                cmdOrder.Parameters.AddWithValue("@OrderDate", DateTime.Now);
+                                cmdOrder.Parameters.AddWithValue("@TotalAmount", totalOrderAmount);
                                 cmdOrder.Parameters.AddWithValue("@Status", targetOrderStatus);
+                                cmdOrder.Parameters.AddWithValue("@ShippingAddress", address + ", " + city + " (Phone: " + phone + ", Name: " + fullName + ")");
+                                cmdOrder.Parameters.AddWithValue("@Pincode", pincode); // 1) Appended Parameter
+                                cmdOrder.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
                                 cmdOrder.Parameters.AddWithValue("@ImgPath", relativeDbStringPath);
                                 cmdOrder.Parameters.AddWithValue("@TxnRef", txnRef);
-                                cmdOrder.Parameters.AddWithValue("@OrderID", orderId);
-                                cmdOrder.ExecuteNonQuery();
+
+                                generatedOrderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
                             }
 
-                            // B. Deduct stock values from [dbo].[Products]
+                            // Process transactional items inside loop
+                            string insertItemsQuery = @"
+                                INSERT INTO [dbo].[OrderDetails] (OrderID, ProductID, Quantity, UnitPrice) 
+                                VALUES (@OrderID, @ProductID, @Quantity, @UnitPrice)";
+
                             string deductStockSql = @"
                                 UPDATE [dbo].[Products] 
                                 SET StockQuantity = StockQuantity - @Quantity 
@@ -215,6 +242,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
                             foreach (DataRow row in dtCart.Rows)
                             {
+                                using (SqlCommand cmdItem = new SqlCommand(insertItemsQuery, conn, trans))
+                                {
+                                    cmdItem.Parameters.AddWithValue("@OrderID", generatedOrderId);
+                                    cmdItem.Parameters.AddWithValue("@ProductID", Convert.ToInt32(row["ProductID"]));
+                                    cmdItem.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
+                                    cmdItem.Parameters.AddWithValue("@UnitPrice", Convert.ToDecimal(row["SellingPrice"]));
+                                    cmdItem.ExecuteNonQuery();
+                                }
+
                                 using (SqlCommand cmdStock = new SqlCommand(deductStockSql, conn, trans))
                                 {
                                     cmdStock.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
@@ -223,7 +259,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                                 }
                             }
 
-                            // C. Cleanse active user items inside database Cart table
+                            // Cleanse Active Database Carts
                             string deleteCartSql = "DELETE FROM Cart WHERE UserID = @UserID";
                             using (SqlCommand cmdCart = new SqlCommand(deleteCartSql, conn, trans))
                             {
@@ -232,23 +268,29 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             }
 
                             trans.Commit();
+
+                            // Wipe out localized caching context
+                            Session["Cart"] = null;
+                            Session["Checkout_FullName"] = null;
+                            Session["Checkout_Phone"] = null;
+                            Session["Checkout_Address"] = null;
+                            Session["Checkout_City"] = null;
+                            Session["Checkout_Pincode"] = null;
+                            Session["Checkout_PaymentMethod"] = null;
+
+                            Response.Redirect("confirmOrder.aspx?id=" + generatedOrderId);
                         }
                         catch (Exception innerEx)
                         {
                             trans.Rollback();
-                            throw new Exception("Database inventory adjustment operation rejected. Rolling back alterations.", innerEx);
+                            throw new Exception("Inventory verification rollback. Details: " + innerEx.Message, innerEx);
                         }
                     }
                 }
-
-                // Flush user session details and redirect to success landing page
-                Session["Cart"] = null;
-                Session["ActiveCheckoutOrderID"] = null;
-                Response.Redirect("confirmOrder.aspx?id=" + orderId);
             }
             catch (Exception ex)
             {
-                lblStatus.Text = "❌ Process Error: " + ex.Message + (ex.InnerException != null ? " | Details: " + ex.InnerException.Message : "");
+                lblStatus.Text = "❌ Process Error: " + ex.Message;
                 lblStatus.Visible = true;
             }
         }

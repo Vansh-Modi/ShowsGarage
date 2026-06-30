@@ -32,6 +32,7 @@ namespace ShowsGarage.Web_Files.Admin
 
         private void LoadSystemOrdersDashboard(string filterStatus)
         {
+            // Base query fetching all columns
             string query = @"
                 SELECT OrderID, UserID, OrderDate, TotalAmount, Status, ShippingAddress, PaymentMethod, 
                        ISNULL(PaymentScreenshotPath, '') as PaymentScreenshotPath, 
@@ -39,15 +40,18 @@ namespace ShowsGarage.Web_Files.Admin
                        ISNULL(TrackingPartner, '') as TrackingPartner, 
                        ISNULL(TrackingNumber, '') as TrackingNumber, 
                        EstimatedDeliveryDate
-                FROM [dbo].[Orders] ";
+                FROM [dbo].[Orders]";
 
+            // Build conditional filtering logic
             if (filterStatus != "ALL")
             {
+                // Specifically filters down to the chosen status (e.g., "Cancelled")
                 query += " WHERE Status = @FilterStatus ORDER BY OrderDate DESC";
             }
             else
             {
-                query += " ORDER BY CASE WHEN Status = 'Awaiting Verification' THEN 1 WHEN Status = 'Approved' THEN 2 WHEN Status = 'Shipped' THEN 3 ELSE 4 END, OrderDate DESC";
+                // 🔥 THE FIX: Exclude Cancelled logs entirely from the default "ALL" view
+                query += " WHERE Status <> 'Cancelled' ORDER BY CASE WHEN Status = 'Awaiting Verification' THEN 1 WHEN Status = 'Approved' THEN 2 WHEN Status = 'Shipped' THEN 3 ELSE 4 END, OrderDate DESC";
             }
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
@@ -146,22 +150,35 @@ namespace ShowsGarage.Web_Files.Admin
                 {
                     ExecuteInlineLogisticsUpdate(orderId, txtRef.Text.Trim(), ddlStat.SelectedValue, txtPartner.Text.Trim(), txtTrackNo.Text.Trim(), txtEstDate.Text.Trim());
                     DisplayStatusAlert($"✓ Order tracking parameters and logs metadata for entry #{orderId} updated successfully inside registers.", true);
-                    LoadSystemOrdersDashboard(ddlStatusFilter.SelectedValue);
+
+                    // If the active status filter is set to "ALL" and this order became "Cancelled", it disappears from "ALL".
+                    // If the filter is something specific, let's keep it matching.
+                    if (ddlStatusFilter.SelectedValue == "ALL" && ddlStat.SelectedValue == "Cancelled")
+                    {
+                        LoadSystemOrdersDashboard("ALL");
+                    }
+                    else
+                    {
+                        LoadSystemOrdersDashboard(ddlStatusFilter.SelectedValue);
+                    }
                 }
             }
             else if (e.CommandName == "ApprovePayment")
             {
                 int orderId = Convert.ToInt32(e.CommandArgument);
                 ExecuteStatusTransition(orderId, "Approved");
-                DisplayStatusAlert($"✓ Order reference line entry #{orderId} has been successfully verified. Inventory rows locked down and dispatch flags marked.", true);
+                DisplayStatusAlert($"✓ Order reference line entry #{orderId} has been successfully verified.", true);
                 LoadSystemOrdersDashboard(ddlStatusFilter.SelectedValue);
             }
             else if (e.CommandName == "RejectPayment")
             {
                 int orderId = Convert.ToInt32(e.CommandArgument);
                 ExecuteOrderRejectionWithStockRollback(orderId);
-                DisplayStatusAlert($"⚠️ Order reference line entry #{orderId} payment registration rejected. Stock logs reverted and outbound refund requirement recorded.", true);
-                LoadSystemOrdersDashboard(ddlStatusFilter.SelectedValue);
+                DisplayStatusAlert($"⚠️ Order reference line entry #{orderId} payment registration rejected. Stock logs reverted.", true);
+
+                // Automatically switch the dropdown list to "Cancelled Logs" so the admin sees the order they just rejected
+                ddlStatusFilter.SelectedValue = "Cancelled";
+                LoadSystemOrdersDashboard("Cancelled");
             }
         }
 
@@ -318,8 +335,8 @@ namespace ShowsGarage.Web_Files.Admin
                 case "awaiting payment": return "adm-badge-yellow";
                 case "awaiting verification": return "adm-badge-blue";
                 case "approved": return "adm-badge-green";
-                case "shipped": return "adm-badge-green";
-                case "delivered": return "adm-badge-green"; // Green highlighting theme for completion
+                case "dispatched": return "adm-badge-green";
+                case "delivered": return "adm-badge-green";
                 case "cancelled": return "adm-badge-gray";
                 default: return "adm-badge-gray";
             }

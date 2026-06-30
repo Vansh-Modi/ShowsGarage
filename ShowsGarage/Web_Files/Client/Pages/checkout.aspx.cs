@@ -8,7 +8,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class checkout : System.Web.UI.Page
     {
-        private decimal dynamicPlatformFee = 15.00m; // Default backup platform metric fallback
+        private decimal dynamicShippingFee; // Dynamic shipping fee loaded from database
 
         private string ConnectionString
         {
@@ -26,6 +26,9 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 return;
             }
 
+            // Always update dynamic shipping fee from database settings
+            LoadShippingFeesFromSettings();
+
             if (!IsPostBack)
             {
                 DataTable dtCart = Session["Cart"] as DataTable;
@@ -35,16 +38,14 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     return;
                 }
 
-                LoadPlatformFeesFromSettings();
-                InjectFeesIntoDataTable(dtCart);
                 BindCheckoutReview(dtCart);
             }
         }
 
-        private void LoadPlatformFeesFromSettings()
+        // Load Dynamic Shipping Charges from Settings Matrix
+        private void LoadShippingFeesFromSettings()
         {
-            string query = "SELECT TOP 1 ISNULL(PlatformFees, 15.00) FROM [dbo].[SiteSettings]";
-
+            string query = "SELECT TOP 1 ISNULL(ShippingCharges, 120.00) FROM [dbo].[SiteSettings]";
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -52,32 +53,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     try
                     {
                         conn.Open();
-                        object feeResult = cmd.ExecuteScalar();
-                        if (feeResult != null)
-                        {
-                            dynamicPlatformFee = Convert.ToDecimal(feeResult);
-                        }
+                        object res = cmd.ExecuteScalar();
+                        if (res != null) dynamicShippingFee = Convert.ToDecimal(res);
                     }
                     catch
                     {
-                        dynamicPlatformFee = 15.00m;
+                        dynamicShippingFee = 120.00m;
                     }
                 }
             }
-        }
-
-        private void InjectFeesIntoDataTable(DataTable dtCart)
-        {
-            if (!dtCart.Columns.Contains("PlatformFees"))
-            {
-                dtCart.Columns.Add("PlatformFees", typeof(decimal));
-            }
-
-            foreach (DataRow row in dtCart.Rows)
-            {
-                row["PlatformFees"] = dynamicPlatformFee;
-            }
-            dtCart.AcceptChanges();
         }
 
         private void BindCheckoutReview(DataTable dtCart)
@@ -87,26 +71,16 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             foreach (DataRow row in dtCart.Rows)
             {
-                decimal sellingPrice = Convert.ToDecimal(row["SellingPrice"]);
-                int qty = Convert.ToInt32(row["Quantity"]);
-
-                itemsSubtotal += (sellingPrice * qty);
-                itemQuantityCounter += qty;
+                itemsSubtotal += (Convert.ToDecimal(row["SellingPrice"]) * Convert.ToInt32(row["Quantity"]));
+                itemQuantityCounter += Convert.ToInt32(row["Quantity"]);
             }
 
-            // 🔥 CRITICAL RULE: ONLINE = Rs. 120, COD = Rs. 0
-            decimal appliedShippingFee = 120.00m;
-            if (ddlPaymentMode.SelectedValue == "COD")
-            {
-                appliedShippingFee = 0.00m;
-            }
-
+            decimal appliedShippingFee = (ddlPaymentMode.SelectedValue == "COD") ? 0.00m : dynamicShippingFee;
             decimal grandTotal = itemsSubtotal + appliedShippingFee;
 
             Repeater1.DataSource = dtCart;
             Repeater1.DataBind();
 
-            // Push fresh figures onto front-end labels
             Label1.Text = itemQuantityCounter.ToString();
             Label2.Text = string.Format("{0:N0}", itemsSubtotal);
             Label3.Text = string.Format("{0:N0}", appliedShippingFee);
@@ -121,12 +95,8 @@ namespace ShowsGarage.Web_Files.Client.Pages
             if (cityInput != "surat" && !string.IsNullOrEmpty(cityInput))
             {
                 ddlPaymentMode.SelectedValue = "ONLINE";
-
                 ListItem codItem = ddlPaymentMode.Items.FindByValue("COD");
-                if (codItem != null)
-                {
-                    ddlPaymentMode.Items.Remove(codItem);
-                }
+                if (codItem != null) ddlPaymentMode.Items.Remove(codItem);
 
                 lblPaymentWarning.Text = "⚠️ Cash-on-Delivery is only available within Surat city limits.";
                 lblPaymentWarning.Visible = true;
@@ -134,27 +104,18 @@ namespace ShowsGarage.Web_Files.Client.Pages
             else
             {
                 if (ddlPaymentMode.Items.FindByValue("COD") == null)
-                {
                     ddlPaymentMode.Items.Add(new ListItem("Cash-on-Delivery", "COD"));
-                }
             }
 
             DataTable dtCart = Session["Cart"] as DataTable;
-            if (dtCart != null)
-            {
-                BindCheckoutReview(dtCart);
-            }
-
+            if (dtCart != null) BindCheckoutReview(dtCart);
             updMainCheckoutLayout.Update();
         }
 
         protected void ddlPaymentMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             DataTable dtCart = Session["Cart"] as DataTable;
-            if (dtCart != null)
-            {
-                BindCheckoutReview(dtCart);
-            }
+            if (dtCart != null) BindCheckoutReview(dtCart);
             updMainCheckoutLayout.Update();
         }
 
@@ -166,19 +127,25 @@ namespace ShowsGarage.Web_Files.Client.Pages
             string phone = txtPhone.Text.Trim();
             string address = txtAddress.Text.Trim();
             string city = txtCity.Text.Trim();
+            string pincode = txtPincode.Text.Trim();
             string selectedPaymentMode = ddlPaymentMode.SelectedValue;
-            int userId = Convert.ToInt32(Session["UserID"]);
 
-            if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(address) || string.IsNullOrEmpty(city))
+            // Strict Server-side Validation: Blocks processing if ANY field is empty or whitespace
+            if (string.IsNullOrWhiteSpace(fullName) ||
+                string.IsNullOrWhiteSpace(phone) ||
+                string.IsNullOrWhiteSpace(address) ||
+                string.IsNullOrWhiteSpace(city) ||
+                string.IsNullOrWhiteSpace(pincode))
             {
-                lblStatusMessage.Text = "⚠️ Please fill in all required delivery information fields before submitting.";
+                lblStatusMessage.Text = "⚠️ Please fill in all required delivery information fields (Name, Phone, Address, City, and Pincode) before submitting.";
                 lblStatusMessage.Visible = true;
                 return;
             }
 
-            if (city.Trim().ToLower() != "surat" && selectedPaymentMode == "COD")
+            // Standard City Validation Rules
+            if (city.ToLower() != "surat" && selectedPaymentMode == "COD")
             {
-                lblStatusMessage.Text = "❌ Validation Breach: Cash-on-Delivery (COD) services are strictly closed for delivery destinations outside Surat city limits.";
+                lblStatusMessage.Text = "❌ Validation Breach: COD services are strictly closed outside Surat city limits.";
                 lblStatusMessage.Visible = true;
                 return;
             }
@@ -190,81 +157,16 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 return;
             }
 
-            try
-            {
-                decimal totalOrderAmount = 0;
-                foreach (DataRow row in dtCart.Rows)
-                {
-                    totalOrderAmount += Convert.ToDecimal(row["SellingPrice"]) * Convert.ToInt32(row["Quantity"]);
-                }
+            // Save variables securely to Session state for final database commit inside payment.aspx
+            Session["Checkout_FullName"] = fullName;
+            Session["Checkout_Phone"] = phone;
+            Session["Checkout_Address"] = address;
+            Session["Checkout_City"] = city;
+            Session["Checkout_Pincode"] = pincode;
+            Session["Checkout_PaymentMethod"] = selectedPaymentMode;
 
-                // Apply correct delivery charges modifier rule to final database total record
-                if (selectedPaymentMode != "COD")
-                {
-                    totalOrderAmount += 120.00m;
-                }
-
-                using (SqlConnection conn = new SqlConnection(ConnectionString))
-                {
-                    conn.Open();
-                    using (SqlTransaction transaction = conn.BeginTransaction())
-                    {
-                        try
-                        {
-                            string insertOrderQuery = @"
-                                INSERT INTO [dbo].[Orders] (UserID, OrderDate, TotalAmount, Status, ShippingAddress, PaymentMethod) 
-                                OUTPUT INSERTED.OrderID
-                                VALUES (@UserID, @OrderDate, @TotalAmount, @Status, @ShippingAddress, @PaymentMethod)";
-
-                            int generatedOrderId;
-
-                            using (SqlCommand cmdOrder = new SqlCommand(insertOrderQuery, conn, transaction))
-                            {
-                                cmdOrder.Parameters.AddWithValue("@UserID", userId);
-                                cmdOrder.Parameters.AddWithValue("@OrderDate", DateTime.Now);
-                                cmdOrder.Parameters.AddWithValue("@TotalAmount", totalOrderAmount);
-                                cmdOrder.Parameters.AddWithValue("@Status", "Awaiting Payment");
-                                cmdOrder.Parameters.AddWithValue("@ShippingAddress", address + ", " + city + " (Phone: " + phone + ", Name: " + fullName + ")");
-                                cmdOrder.Parameters.AddWithValue("@PaymentMethod", selectedPaymentMode);
-
-                                generatedOrderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
-                            }
-
-                            string insertItemsQuery = @"
-                                INSERT INTO [dbo].[OrderDetails] (OrderID, ProductID, Quantity, UnitPrice) 
-                                VALUES (@OrderID, @ProductID, @Quantity, @UnitPrice)";
-
-                            foreach (DataRow row in dtCart.Rows)
-                            {
-                                using (SqlCommand cmdItem = new SqlCommand(insertItemsQuery, conn, transaction))
-                                {
-                                    cmdItem.Parameters.AddWithValue("@OrderID", generatedOrderId);
-                                    cmdItem.Parameters.AddWithValue("@ProductID", Convert.ToInt32(row["ProductID"]));
-                                    cmdItem.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
-                                    cmdItem.Parameters.AddWithValue("@UnitPrice", Convert.ToDecimal(row["SellingPrice"]));
-
-                                    cmdItem.ExecuteNonQuery();
-                                }
-                            }
-
-                            transaction.Commit();
-
-                            Session["ActiveCheckoutOrderID"] = generatedOrderId;
-                            Response.Redirect("payment.aspx");
-                        }
-                        catch (Exception innerEx)
-                        {
-                            transaction.Rollback();
-                            throw new Exception("SQL Transaction Inner Exception: " + innerEx.Message, innerEx);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                lblStatusMessage.Text = "❌ Process Error: " + ex.Message;
-                lblStatusMessage.Visible = true;
-            }
+            // Direct customer to payment verification portal
+            Response.Redirect("payment.aspx");
         }
     }
 }

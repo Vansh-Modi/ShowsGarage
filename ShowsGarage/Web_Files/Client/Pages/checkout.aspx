@@ -1,10 +1,8 @@
 ﻿<%@ Page Title="Secure Checkout | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="checkout.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.checkout" %>
-
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <title>Secure Checkout | Show's Garage</title>
     <link href="/Web_Files/Client/Styles/checkout.css?v=1" rel="stylesheet" type="text/css" />
 </asp:Content>
-
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <asp:ScriptManager ID="ScriptManager1" runat="server" />
 
@@ -48,6 +46,11 @@
                                     </div>
 
                                     <div class="form-group half-width">
+                                        <label class="form-label">Pincode / Postal Code</label>
+                                        <asp:TextBox ID="txtPincode" runat="server" CssClass="form-input" placeholder="39500X" MaxLength="6"></asp:TextBox>
+                                    </div>
+
+                                    <div class="form-group full-width">
                                         <label class="form-label">Payment Mode</label>
                                         <asp:DropDownList ID="ddlPaymentMode" runat="server" CssClass="form-input" Style="background-color: #1a1a1a; color: #0076df; font-weight: 600; border-color: #222;" AutoPostBack="True" OnSelectedIndexChanged="ddlPaymentMode_SelectedIndexChanged">
                                             <asp:ListItem Value="ONLINE" Selected="True">Online Transfer (UPI / QR / Bank)</asp:ListItem>
@@ -116,7 +119,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </ContentTemplate>
                 </asp:UpdatePanel>
             </div>

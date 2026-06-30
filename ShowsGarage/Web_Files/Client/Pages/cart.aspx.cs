@@ -8,7 +8,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class cart : System.Web.UI.Page
     {
-        // Centralized property to retrieve your web config connection string securely
         private string ConnectionString
         {
             get
@@ -17,10 +16,8 @@ namespace ShowsGarage.Web_Files.Client.Pages
             }
         }
 
-        // Inside your cart.aspx.cs file:
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Secure boundary gate protects the personal cart rows layout
             if (Session["UserID"] == null)
             {
                 Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
@@ -39,12 +36,11 @@ namespace ShowsGarage.Web_Files.Client.Pages
             int userId = Convert.ToInt32(Session["UserID"]);
             DataTable dtCart = new DataTable();
 
-            // UPDATED SQL: Explicitly added p.MRP to your selection mapping layout
             string query = @"
-        SELECT c.ProductID, p.BrandName, p.Title, p.SellingPrice, p.MRP, c.Quantity, p.ImagePath
-        FROM Cart c 
-        INNER JOIN Products p ON c.ProductID = p.ProductID 
-        WHERE c.UserID = @UserID";
+                SELECT c.ProductID, p.BrandName, p.Title, p.SellingPrice, p.MRP, c.Quantity, p.ImagePath, p.StockQuantity
+                FROM Cart c 
+                INNER JOIN Products p ON c.ProductID = p.ProductID 
+                WHERE c.UserID = @UserID";
 
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
@@ -58,8 +54,40 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 }
             }
 
+            // ====================================================================
+            // BUG 1 (PART B): INITIAL LOAD GUARD
+            // If the user somehow added 2 units from the shop page when only 1 is available, 
+            // this loop corrects it the exact moment the cart page loads.
+            // ====================================================================
+            bool initialStockAdjusted = false;
+            foreach (DataRow row in dtCart.Rows)
+            {
+                int currentQty = Convert.ToInt32(row["Quantity"]);
+                int maxAvailable = Convert.ToInt32(row["StockQuantity"]);
+
+                if (currentQty > maxAvailable)
+                {
+                    initialStockAdjusted = true;
+                    if (maxAvailable > 0)
+                    {
+                        row["Quantity"] = maxAvailable;
+                        UpdateQuantityInDatabase(userId, Convert.ToInt32(row["ProductID"]), maxAvailable);
+                    }
+                    else
+                    {
+                        RemoveItemFromDatabase(userId, Convert.ToInt32(row["ProductID"]));
+                        row.Delete();
+                    }
+                }
+            }
+            if (initialStockAdjusted)
+            {
+                dtCart.AcceptChanges();
+            }
+
             Session["Cart"] = dtCart;
         }
+
         private void CalculateAndBindCart()
         {
             DataTable dtCart = Session["Cart"] as DataTable;
@@ -118,6 +146,17 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
                         if (operationalAction == "plus")
                         {
+                            // ====================================================================
+                            // BUG 1 (PART A): INCREMENT GUARD
+                            // Prevents clicking "+" past the available database StockQuantity.
+                            // ====================================================================
+                            int availableStock = GetAvailableStock(targetProductId);
+                            if (currentQty >= availableStock)
+                            {
+                                string msg = $"Cannot add more items. Only {availableStock} unit(s) available in stock.";
+                                ScriptManager.RegisterStartupScript(this, GetType(), "StockAlert", $"alert('{msg}');", true);
+                                return;
+                            }
                             newQty = currentQty + 1;
                         }
                         else if (operationalAction == "minus" && currentQty > 1)
@@ -125,13 +164,9 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             newQty = currentQty - 1;
                         }
 
-                        // Only write to database if quantity actually changed
                         if (newQty != currentQty)
                         {
-                            // 1. Permanently update the Database row
                             UpdateQuantityInDatabase(userId, targetProductId, newQty);
-
-                            // 2. Synchronize memory row to match DB adjustments
                             row["Quantity"] = newQty;
                         }
                         break;
@@ -141,11 +176,8 @@ namespace ShowsGarage.Web_Files.Client.Pages
             else if (e.CommandName == "RemoveItem")
             {
                 int targetProductId = Convert.ToInt32(e.CommandArgument);
-
-                // 1. Permanently delete the item from SQL database
                 RemoveItemFromDatabase(userId, targetProductId);
 
-                // 2. Filter local memory rows matching standard primary structures
                 for (int i = dtCart.Rows.Count - 1; i >= 0; i--)
                 {
                     if (Convert.ToInt32(dtCart.Rows[i]["ProductID"]) == targetProductId)
@@ -157,16 +189,28 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 dtCart.AcceptChanges();
             }
 
-            // Save state collections and rebind front-end repeater
             Session["Cart"] = dtCart;
             CalculateAndBindCart();
         }
 
-        // Helper Method: Handles SQL UPDATE queries safely
+        private int GetAvailableStock(int productId)
+        {
+            string query = "SELECT StockQuantity FROM Products WHERE ProductID = @ProductID";
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ProductID", productId);
+                    conn.Open();
+                    object result = cmd.ExecuteScalar();
+                    return result != null ? Convert.ToInt32(result) : 0;
+                }
+            }
+        }
+
         private void UpdateQuantityInDatabase(int userId, int productId, int newQuantity)
         {
             string query = "UPDATE Cart SET Quantity = @Quantity WHERE UserID = @UserID AND ProductID = @ProductID";
-
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -174,25 +218,21 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     cmd.Parameters.AddWithValue("@Quantity", newQuantity);
                     cmd.Parameters.AddWithValue("@UserID", userId);
                     cmd.Parameters.AddWithValue("@ProductID", productId);
-
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
         }
 
-        // Helper Method: Handles SQL DELETE queries safely
         private void RemoveItemFromDatabase(int userId, int productId)
         {
             string query = "DELETE FROM Cart WHERE UserID = @UserID AND ProductID = @ProductID";
-
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@UserID", userId);
                     cmd.Parameters.AddWithValue("@ProductID", productId);
-
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
@@ -202,7 +242,64 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected void btnCheckout_Click(object sender, EventArgs e)
         {
             DataTable dtCart = Session["Cart"] as DataTable;
-            if (dtCart != null && dtCart.Rows.Count > 0)
+            if (dtCart == null || dtCart.Rows.Count == 0) return;
+
+            int userId = Convert.ToInt32(Session["UserID"]);
+            bool stockIssueFound = false;
+            string alertMessage = "Some items in your cart are no longer available in the requested quantity:\\n";
+
+            // ====================================================================
+            // BUG 2 FIX: CONCURRENCY RACE CONDITION CHECK
+            // Verifies live quantities *right at checkout execution* in case 
+            // someone else bought the item out from underneath them while they sat on this page.
+            // ====================================================================
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+                foreach (DataRow row in dtCart.Rows)
+                {
+                    if (row.RowState == DataRowState.Deleted) continue;
+
+                    int productId = Convert.ToInt32(row["ProductID"]);
+                    int requestedQty = Convert.ToInt32(row["Quantity"]);
+                    string productTitle = row["Title"].ToString();
+
+                    string query = "SELECT StockQuantity FROM Products WHERE ProductID = @ProductID";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ProductID", productId);
+                        object result = cmd.ExecuteScalar();
+                        int currentStock = result != null ? Convert.ToInt32(result) : 0;
+
+                        if (requestedQty > currentStock)
+                        {
+                            stockIssueFound = true;
+                            alertMessage += $"- {productTitle} (Available: {currentStock}, in your cart: {requestedQty})\\n";
+
+                            if (currentStock > 0)
+                            {
+                                UpdateQuantityInDatabase(userId, productId, currentStock);
+                                row["Quantity"] = currentStock;
+                            }
+                            else
+                            {
+                                RemoveItemFromDatabase(userId, productId);
+                                row.Delete();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (stockIssueFound)
+            {
+                dtCart.AcceptChanges();
+                Session["Cart"] = dtCart;
+                CalculateAndBindCart();
+
+                ScriptManager.RegisterStartupScript(this, GetType(), "CheckoutStockError", $"alert('{alertMessage}');", true);
+            }
+            else
             {
                 Response.Redirect("checkout.aspx");
             }
