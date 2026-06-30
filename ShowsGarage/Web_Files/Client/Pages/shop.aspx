@@ -35,15 +35,26 @@
                 <h1 class="shop-main-heading">Our Featured Collection</h1>
             </div>
 
-            <div class="category-filter-bar">
-                <asp:LinkButton ID="lnkAll" runat="server" CssClass="btn btn-filter-pill active-pill" OnClick="CategoryFilter_Click" CommandArgument="0">All Collections</asp:LinkButton>
-                <asp:Repeater ID="rptCategories" runat="server">
-                    <ItemTemplate>
-                        <asp:LinkButton ID="lnkCat" runat="server" CssClass="btn btn-filter-pill" 
-                            OnClick="CategoryFilter_Click" 
-                            CommandArgument='<%# Eval("CategoryID") %>'><%# Eval("CategoryName") %></asp:LinkButton>
-                    </ItemTemplate>
-                </asp:Repeater>
+            <div class="final-scroll-box" style="width: 100% !important; max-width: 100% !important; display: block !important; overflow-x: auto !important; overflow-y: hidden !important; margin-bottom: 35px !important; padding-bottom: 15px !important; -webkit-overflow-scrolling: touch !important;">
+                <div class="final-scroll-content" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: center !important; gap: 12px !important; width: max-content !important;">
+                    
+                    <asp:LinkButton ID="lnkAll" runat="server" 
+                        Style="flex-shrink: 0 !important; white-space: nowrap !important; display: inline-block !important; background-color: #141414 !important; border: 1px solid #222222 !important; color: #aaaaaa !important; font-size: 13px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; padding: 8px 18px !important; border-radius: 20px !important; text-decoration: none !important; cursor: pointer !important;"
+                        CssClass="btn-filter-pill-isolated active-pill-isolated" 
+                        OnClick="CategoryFilter_Click" 
+                        CommandArgument="0">All Collections</asp:LinkButton>
+                    
+                    <asp:Repeater ID="rptCategories" runat="server">
+                        <ItemTemplate>
+                            <asp:LinkButton ID="lnkCat" runat="server" 
+                                Style="flex-shrink: 0 !important; white-space: nowrap !important; display: inline-block !important; background-color: #141414 !important; border: 1px solid #222222 !important; color: #aaaaaa !important; font-size: 13px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; padding: 8px 18px !important; border-radius: 20px !important; text-decoration: none !important; cursor: pointer !important;"
+                                CssClass="btn-filter-pill-isolated" 
+                                OnClick="CategoryFilter_Click" 
+                                CommandArgument='<%# Eval("CategoryID") %>'><%# Eval("CategoryName") %></asp:LinkButton>
+                        </ItemTemplate>
+                    </asp:Repeater>
+
+                </div>
             </div>
 
             <div class="products-gallery-grid">

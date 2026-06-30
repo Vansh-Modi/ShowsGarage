@@ -24,22 +24,49 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
-        /// lblTotalRevenue control.
+        /// lblCarSalesRevenue control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTotalRevenue;
+        protected global::System.Web.UI.WebControls.Label lblCarSalesRevenue;
 
         /// <summary>
-        /// lblTotalExpenses control.
+        /// lblShippingCollected control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblTotalExpenses;
+        protected global::System.Web.UI.WebControls.Label lblShippingCollected;
+
+        /// <summary>
+        /// lblStockValuation control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblStockValuation;
+
+        /// <summary>
+        /// lblSourcingCost control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSourcingCost;
+
+        /// <summary>
+        /// lblOperatingExpenses control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblOperatingExpenses;
 
         /// <summary>
         /// divNetProfitCard control.
@@ -69,6 +96,33 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.Label lblNetMargin;
 
         /// <summary>
+        /// lblAvgOrderValue control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblAvgOrderValue;
+
+        /// <summary>
+        /// lblRevenueLeakage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblRevenueLeakage;
+
+        /// <summary>
+        /// lblGrossOrderVolume control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblGrossOrderVolume;
+
+        /// <summary>
         /// litTotalOrdersCount control.
         /// </summary>
         /// <remarks>
@@ -78,22 +132,13 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.Literal litTotalOrdersCount;
 
         /// <summary>
-        /// litTotalShippingFees control.
+        /// litGrossCombinedTotal control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litTotalShippingFees;
-
-        /// <summary>
-        /// litTotalInventorySourcingCost control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litTotalInventorySourcingCost;
+        protected global::System.Web.UI.WebControls.Literal litGrossCombinedTotal;
 
         /// <summary>
         /// rptExpenseTypeBreakdown control.
@@ -103,5 +148,14 @@ namespace ShowsGarage.Web_Files.Admin
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater rptExpenseTypeBreakdown;
+
+        /// <summary>
+        /// gvOrderManifest control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvOrderManifest;
     }
 }

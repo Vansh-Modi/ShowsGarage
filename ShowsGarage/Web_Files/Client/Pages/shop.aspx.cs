@@ -10,11 +10,11 @@ namespace ShowsGarage.Web_Files.Client.Pages
     {
         private string connStr => System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
+        private const string BasePillStyle = "flex-shrink: 0 !important; white-space: nowrap !important; display: inline-block !important; background-color: #141414 !important; border: 1px solid #222222 !important; color: #aaaaaa !important; font-size: 13px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; padding: 8px 18px !important; border-radius: 20px !important; text-decoration: none !important; cursor: pointer !important;";
+        private const string ActivePillStyle = "flex-shrink: 0 !important; white-space: nowrap !important; display: inline-block !important; background-color: rgba(255, 87, 34, 0.08) !important; border: 1px solid #ff5722 !important; color: #ff5722 !important; font-size: 13px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; padding: 8px 18px !important; border-radius: 20px !important; text-decoration: none !important; cursor: pointer !important;";
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            // REMOVED: The Session["UserID"] == null redirect restriction gate.
-            // This allows guest shoppers and potential buyers to freely browse your catalog!
-
             if (!IsPostBack)
             {
                 BindCategories();
@@ -39,7 +39,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             rptCategories.DataSource = dt;
                             rptCategories.DataBind();
                         }
-                        catch { /* Fail-safe fallback tracking handles checks */ }
+                        catch { /* Tracking handles fallbacks */ }
                     }
                 }
             }
@@ -78,7 +78,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             rptProducts.DataSource = dt;
                             rptProducts.DataBind();
                         }
-                        catch { /* Prevent layout crashes */ }
+                        catch { /* Layout crash prevention block */ }
                     }
                 }
             }
@@ -90,17 +90,23 @@ namespace ShowsGarage.Web_Files.Client.Pages
             int categoryId = Convert.ToInt32(btn.CommandArgument);
             BindProducts(categoryId);
 
-            lnkAll.CssClass = "btn btn-filter-pill";
+            // Re-apply inline styling layouts via backend parameters
+            lnkAll.Attributes["style"] = BasePillStyle;
+            lnkAll.CssClass = "btn-filter-pill-isolated";
+
             foreach (RepeaterItem item in rptCategories.Items)
             {
                 LinkButton lb = (LinkButton)item.FindControl("lnkCat");
                 if (lb != null)
                 {
-                    lb.CssClass = "btn btn-filter-pill";
+                    lb.Attributes["style"] = BasePillStyle;
+                    lb.CssClass = "btn-filter-pill-isolated";
                 }
             }
 
-            btn.CssClass = "btn btn-filter-pill active-pill";
+            // Lock active selection styles dynamically
+            btn.Attributes["style"] = ActivePillStyle;
+            btn.CssClass = "btn-filter-pill-isolated active-pill-isolated";
         }
     }
 }
