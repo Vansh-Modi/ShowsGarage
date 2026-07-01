@@ -1,8 +1,5 @@
-﻿/* ==========================================================================
-   Show's Garage - Dynamic Client Scale Model Details Control Panel Engine
-   ========================================================================== */
-
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -15,7 +12,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Security Gate: Redirect users to login if they try to access details directly without an active session
+            // Security Gate: Check login session parameters
             if (Session["UserID"] == null || Session["UserEmail"] == null)
             {
                 Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx");
@@ -24,7 +21,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             if (!IsPostBack)
             {
-                // Read straight from the QueryString parameter token on initial load
                 string productIdStr = Request.QueryString["id"];
 
                 if (string.IsNullOrEmpty(productIdStr))
@@ -38,12 +34,14 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void LoadProductInformation(string productId)
         {
-            // FIXED: Added Scale and forced NULL StockQuantity to evaluate as 0 safely
+            // BATCH SQL EXECUTION: Pulls product data and then pulls extra rows from ProductGallery
             string query = @"
                 SELECT Title, Description, MRP, SellingPrice, BrandName, Scale, ImagePath, 
                        ISNULL(StockQuantity, 0) AS StockQuantity 
                 FROM Products 
-                WHERE ProductID = @prodID";
+                WHERE ProductID = @prodID;
+                
+                SELECT ImagePath FROM ProductGallery WHERE ProductID = @prodID;";
 
             try
             {
@@ -58,6 +56,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         {
                             if (reader.Read())
                             {
+                                // 1. Map Textual Parameters to Labels
                                 lblProductName.Text = reader["Title"].ToString();
                                 lblManufacturer.Text = reader["BrandName"].ToString();
 
@@ -70,7 +69,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                                 decimal price = Convert.ToDecimal(reader["SellingPrice"]);
                                 lblPrice.Text = string.Format("{0:N0}", price);
 
-                                // FIXED: Fetch StockQuantity and explicitly disable Add to Cart if 0
+                                // Stock Validation Logic
                                 int currentStockCount = Convert.ToInt32(reader["StockQuantity"]);
 
                                 if (currentStockCount <= 0)
@@ -78,7 +77,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                                     lblStockBadge.Text = "Out of Stock";
                                     lblStockBadge.CssClass = "details-stock-badge-indicator stock-out-badge";
 
-                                    // Lock down control properties to freeze user clicks
                                     btnAddToCart.Text = "Sold Out";
                                     btnAddToCart.Enabled = false;
                                     btnAddToCart.CssClass = "btn-add-to-cart-large btn-add-disabled";
@@ -93,14 +91,38 @@ namespace ShowsGarage.Web_Files.Client.Pages
                                     btnAddToCart.CssClass = "btn-add-to-cart-large";
                                 }
 
-                                string imageUrl = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : "";
-                                if (!string.IsNullOrEmpty(imageUrl))
+                                // 2. Dynamic Image Assembly Engine
+                                List<string> imageGalleryCollection = new List<string>();
+
+                                string mainImageUrl = reader["ImagePath"] != DBNull.Value ? reader["ImagePath"].ToString() : "";
+                                if (!string.IsNullOrEmpty(mainImageUrl))
                                 {
-                                    imgProduct.ImageUrl = ResolveUrl(imageUrl);
+                                    imgProduct.ImageUrl = ResolveUrl(mainImageUrl);
+                                    imageGalleryCollection.Add(mainImageUrl); // Main thumbnail goes first
                                 }
                                 else
                                 {
                                     imgProduct.ImageUrl = ResolveUrl("~/Assets/images/default-model.png");
+                                }
+
+                                // Read second result set (ProductGallery rows)
+                                if (reader.NextResult())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        string galleryPath = reader["ImagePath"].ToString();
+                                        if (!string.IsNullOrEmpty(galleryPath))
+                                        {
+                                            imageGalleryCollection.Add(galleryPath);
+                                        }
+                                    }
+                                }
+
+                                // Bind collection lists to repeater if extra views exist
+                                if (imageGalleryCollection.Count > 1)
+                                {
+                                    rptGallery.DataSource = imageGalleryCollection;
+                                    rptGallery.DataBind();
                                 }
                             }
                             else
@@ -111,8 +133,9 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 Response.Redirect("shop.aspx");
             }
         }
@@ -143,7 +166,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 {
                     con.Open();
 
-                    // SERVER-SIDE STOCK CHECK: Extra boundary defense check before touching cart updates
+                    // Boundary Stock Check before executing manipulation logic routines
                     string verifyStockSql = "SELECT ISNULL(StockQuantity, 0) FROM Products WHERE ProductID = @productID";
                     using (SqlCommand cmdStock = new SqlCommand(verifyStockSql, con))
                     {
@@ -155,7 +178,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             lblDetailStatus.Text = "⚠️ This item has just sold out and cannot be requested for addition.";
                             lblDetailStatus.Visible = true;
 
-                            // Dynamically mirror state change onto UI controls immediately
                             btnAddToCart.Text = "Sold Out";
                             btnAddToCart.Enabled = false;
                             btnAddToCart.CssClass = "btn-add-to-cart-large btn-add-disabled";
@@ -163,7 +185,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         }
                     }
 
-                    // Check if the item already exists in this specific user's cart records
                     string checkQuery = "SELECT CartID, Quantity FROM Cart WHERE UserID = @userID AND ProductID = @productID";
                     int existingCartId = 0;
                     int currentQuantity = 0;
@@ -185,7 +206,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
                     if (existingCartId > 0)
                     {
-                        // Increment item line tracking quantity cleanly
                         string updateQuery = "UPDATE Cart SET Quantity = @quantity WHERE CartID = @cartID";
                         using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                         {
@@ -196,7 +216,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     }
                     else
                     {
-                        // Insert clean row item mapping directly back to database structures layout
                         string insertQuery = "INSERT INTO Cart (UserID, ProductID, Quantity) VALUES (@userID, @productID, 1)";
                         using (SqlCommand insertCmd = new SqlCommand(insertQuery, con))
                         {

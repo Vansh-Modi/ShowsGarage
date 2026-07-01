@@ -177,6 +177,33 @@ namespace ShowsGarage.Web_Files.Admin
         protected global::System.Web.UI.WebControls.TextBox txtCurrentImgPath;
 
         /// <summary>
+        /// fileProductGallery control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload fileProductGallery;
+
+        /// <summary>
+        /// pnlActiveGalleryManagementBlock control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlActiveGalleryManagementBlock;
+
+        /// <summary>
+        /// rptEditProductGallery control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptEditProductGallery;
+
+        /// <summary>
         /// chkIsNewArrival control.
         /// </summary>
         /// <remarks>

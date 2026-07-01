@@ -62,6 +62,55 @@
             color: #ff3333;
             text-decoration: underline;
         }
+
+        /* Multiline Sub-Gallery Photo Control CSS Core */
+        .admin-gallery-manager-panel {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #222;
+        }
+
+        .admin-gallery-grid-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .admin-gallery-thumb-card {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border: 1px solid #222;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+            .admin-gallery-thumb-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .admin-gallery-thumb-card .btn-drop-gallery-img {
+                position: absolute;
+                top: 2px;
+                right: 2px;
+                background: rgba(255, 51, 51, 0.9);
+                color: #fff;
+                border: none;
+                border-radius: 3px;
+                font-size: 10px;
+                padding: 2px 4px;
+                cursor: pointer;
+                line-height: 1;
+                font-weight: bold;
+            }
+
+                .admin-gallery-thumb-card .btn-drop-gallery-img:hover {
+                    background: #ff0000;
+                }
     </style>
 </asp:Content>
 
@@ -135,10 +184,29 @@
                             </div>
 
                             <div class="form-group full-width">
-                                <label class="settings-label">Upload Product Image (.png / .jpg)</label>
+                                <label class="settings-label">Upload Primary Thumbnail (.png / .jpg)</label>
                                 <asp:FileUpload ID="fileProductImg" runat="server" CssClass="settings-input file-picker" />
                                 <asp:TextBox ID="txtCurrentImgPath" runat="server" CssClass="settings-input path-fallback-label" Enabled="false" Visible="false"></asp:TextBox>
                             </div>
+
+                            <div class="form-group full-width" style="margin-top: 5px;">
+                                <label class="settings-label">Upload Additional Gallery Photos (Multiple Allowed)</label>
+                                <asp:FileUpload ID="fileProductGallery" runat="server" CssClass="settings-input file-picker" AllowMultiple="true" />
+                            </div>
+
+                            <asp:Panel ID="pnlActiveGalleryManagementBlock" runat="server" CssClass="form-group full-width admin-gallery-manager-panel" Visible="false">
+                                <label class="settings-label" style="color: #0076df;">Active Multi-Image Gallery Assets</label>
+                                <div class="admin-gallery-grid-wrapper">
+                                    <asp:Repeater ID="rptEditProductGallery" runat="server" OnItemCommand="rptEditProductGallery_ItemCommand">
+                                        <ItemTemplate>
+                                            <div class="admin-gallery-thumb-card">
+                                                <img src='<%# ResolveUrl("~" + Container.DataItem.ToString().Replace("~","")) %>' alt="Gallery asset" />
+                                                <asp:Button ID="btnDeleteGalleryItem" runat="server" Text="✕" CssClass="btn-drop-gallery-img" CommandName="DropGalleryImage" CommandArgument='<%# Container.DataItem %>' OnClientClick="return confirm('Remove this specific image from product sub-gallery registers?');" CausesValidation="false" />
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:Repeater>
+                                </div>
+                            </asp:Panel>
 
                             <div class="form-group full-width" style="display: flex; align-items: center; gap: 8px; margin: 10px 0;">
                                 <asp:CheckBox ID="chkIsNewArrival" runat="server" Checked="true" Style="margin: 0; cursor: pointer;" />

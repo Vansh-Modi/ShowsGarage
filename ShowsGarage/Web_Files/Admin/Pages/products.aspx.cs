@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Data;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -102,6 +103,43 @@ namespace ShowsGarage.Web_Files.Admin
             }
         }
 
+        private void LoadProductGalleryAdministrationGrid(int productId)
+        {
+            List<string> imagePaths = new List<string>();
+            string query = "SELECT ImagePath FROM [dbo].[ProductGallery] WHERE ProductID = @ProductID ORDER BY GalleryID ASC";
+
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ProductID", productId);
+                    try
+                    {
+                        conn.Open();
+                        using (SqlDataReader rdr = cmd.ExecuteReader())
+                        {
+                            while (rdr.Read())
+                            {
+                                imagePaths.Add(rdr["ImagePath"].ToString());
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            if (imagePaths.Count > 0)
+            {
+                rptEditProductGallery.DataSource = imagePaths;
+                rptEditProductGallery.DataBind();
+                pnlActiveGalleryManagementBlock.Visible = true;
+            }
+            else
+            {
+                pnlActiveGalleryManagementBlock.Visible = false;
+            }
+        }
+
         // ==========================================
         // SECTION 2: WORKSPACE TOGGLE ROUTINES
         // ==========================================
@@ -142,7 +180,6 @@ namespace ShowsGarage.Web_Files.Admin
             string description = txtDescription.Text.Trim();
             bool isNewArrival = chkIsNewArrival.Checked;
 
-            // Updated Input Validation checking for the newly added MRP field box control
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(categoryVal) || string.IsNullOrEmpty(txtSellingPrice.Text.Trim()) || string.IsNullOrEmpty(txtCostPrice.Text.Trim()) || string.IsNullOrEmpty(txtMRP.Text.Trim()))
             {
                 DisplayStatusFeedback("⚠️ Title, Category configuration, MRP field, and both financial valuation properties are strictly required.", false);
@@ -155,11 +192,12 @@ namespace ShowsGarage.Web_Files.Admin
             decimal costPrice = 0, sellingPrice = 0, mrpValue = 0;
             decimal.TryParse(txtCostPrice.Text.Trim(), out costPrice);
             decimal.TryParse(txtSellingPrice.Text.Trim(), out sellingPrice);
-            decimal.TryParse(txtMRP.Text.Trim(), out mrpValue); // Parse numeric collection from textual formatting box
+            decimal.TryParse(txtMRP.Text.Trim(), out mrpValue);
 
             bool isEditing = !string.IsNullOrEmpty(hfActiveProductID.Value);
             string finalImgRelativePath = isEditing ? txtCurrentImgPath.Text : "/Assets/images/default-model.png";
 
+            // A. Execute Single Main Thumbnail Management Pipeline
             if (fileProductImg.HasFile)
             {
                 string ext = Path.GetExtension(fileProductImg.FileName).ToLower();
@@ -176,20 +214,21 @@ namespace ShowsGarage.Web_Files.Admin
                     }
                     catch (Exception fileEx)
                     {
-                        DisplayStatusFeedback("❌ Storage Save Error: " + fileEx.Message, false);
+                        DisplayStatusFeedback("❌ Thumbnail Save Error: " + fileEx.Message, false);
                         return;
                     }
                 }
                 else
                 {
-                    DisplayStatusFeedback("❌ Format Error: Product image configurations must use standard image parameters (.jpg, .jpeg, .png, .webp).", false);
+                    DisplayStatusFeedback("❌ Format Error: Main thumbnail configurations must use standard images (.jpg, .jpeg, .png, .webp).", false);
                     return;
                 }
             }
 
+            int activeWorkingProductId = 0;
+
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
-                // UPDATED TRANSACTIONS: Incorporating [MRP] field allocations directly into runtime queries
                 string sql = isEditing ?
                     @"UPDATE [dbo].[Products] 
                       SET Title = @Title, BrandName = @BrandName, CategoryID = @CategoryID, Scale = @Scale, 
@@ -197,7 +236,8 @@ namespace ShowsGarage.Web_Files.Admin
                           StockQuantity = @StockQuantity, ImagePath = @ImagePath, IsNewArrival = @IsNewArrival
                       WHERE ProductID = @ProductID" :
                     @"INSERT INTO [dbo].[Products] (Title, BrandName, CategoryID, Scale, Description, SellingPrice, CostPrice, MRP, StockQuantity, ImagePath, IsNewArrival, CreatedAt)
-                      VALUES (@Title, @BrandName, @CategoryID, @Scale, @Description, @SellingPrice, @CostPrice, @MRP, @StockQuantity, @ImagePath, @IsNewArrival, @CreatedAt)";
+                      VALUES (@Title, @BrandName, @CategoryID, @Scale, @Description, @SellingPrice, @CostPrice, @MRP, @StockQuantity, @ImagePath, @IsNewArrival, @CreatedAt);
+                      SELECT SCOPE_IDENTITY();";
 
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
                 {
@@ -208,31 +248,82 @@ namespace ShowsGarage.Web_Files.Admin
                     cmd.Parameters.AddWithValue("@Description", string.IsNullOrEmpty(description) ? (object)DBNull.Value : description);
                     cmd.Parameters.AddWithValue("@SellingPrice", sellingPrice);
                     cmd.Parameters.AddWithValue("@CostPrice", costPrice);
-                    cmd.Parameters.AddWithValue("@MRP", mrpValue); // Map the freshly computed data item row property
+                    cmd.Parameters.AddWithValue("@MRP", mrpValue);
                     cmd.Parameters.AddWithValue("@StockQuantity", stock);
                     cmd.Parameters.AddWithValue("@ImagePath", finalImgRelativePath);
                     cmd.Parameters.AddWithValue("@IsNewArrival", isNewArrival);
 
                     if (isEditing)
-                        cmd.Parameters.AddWithValue("@ProductID", Convert.ToInt32(hfActiveProductID.Value));
+                    {
+                        activeWorkingProductId = Convert.ToInt32(hfActiveProductID.Value);
+                        cmd.Parameters.AddWithValue("@ProductID", activeWorkingProductId);
+                    }
                     else
+                    {
                         cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+                    }
 
                     try
                     {
                         conn.Open();
-                        cmd.ExecuteNonQuery();
-
-                        DisplayStatusFeedback(isEditing ? "✓ Inventory configuration matrix parameters updated successfully." : "✓ Brand new item listing safely injected inside garage catalog data.", true);
-                        ResetProductFormPanel();
-                        LoadInventoryItemsMatrixGrid();
+                        if (isEditing)
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                        else
+                        {
+                            activeWorkingProductId = Convert.ToInt32(cmd.ExecuteScalar());
+                        }
                     }
                     catch (Exception sqlEx)
                     {
                         DisplayStatusFeedback("❌ Data Query Execution Failure: " + sqlEx.Message, false);
+                        return;
                     }
                 }
             }
+
+            // B. Multi-File Processing Loop for Dynamic Secondary ProductGallery Collections
+            if (fileProductGallery.HasFiles)
+            {
+                string targetGalleryDir = Server.MapPath("~/Assets/uploads/gallery/");
+                if (!Directory.Exists(targetGalleryDir)) Directory.CreateDirectory(targetGalleryDir);
+
+                foreach (var currentFile in fileProductGallery.PostedFiles)
+                {
+                    string fileExtension = Path.GetExtension(currentFile.FileName).ToLower();
+                    if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png" || fileExtension == ".webp")
+                    {
+                        try
+                        {
+                            string internalUniqueName = "Gallery_" + DateTime.Now.Ticks + "_" + Guid.NewGuid().ToString().Substring(0, 5) + fileExtension;
+                            currentFile.SaveAs(Path.Combine(targetGalleryDir, internalUniqueName));
+                            string galleryRelativePathString = "/Assets/uploads/gallery/" + internalUniqueName;
+
+                            // Insert matching mapping row entries back to database structures layout
+                            string galleryInsertQuery = "INSERT INTO [dbo].[ProductGallery] (ProductID, ImagePath) VALUES (@ProductID, @ImagePath)";
+                            using (SqlConnection galleryConn = new SqlConnection(ConnectionString))
+                            {
+                                using (SqlCommand galleryCmd = new SqlCommand(galleryInsertQuery, galleryConn))
+                                {
+                                    galleryCmd.Parameters.AddWithValue("@ProductID", activeWorkingProductId);
+                                    galleryCmd.Parameters.AddWithValue("@ImagePath", galleryRelativePathString);
+                                    galleryConn.Open();
+                                    galleryCmd.ExecuteNonQuery();
+                                }
+                            }
+                        }
+                        catch (Exception galleryEx)
+                        {
+                            DisplayStatusFeedback("⚠️ Main parameters saved, but sub-gallery items failed to process completely: " + galleryEx.Message, false);
+                        }
+                    }
+                }
+            }
+
+            DisplayStatusFeedback(isEditing ? "✓ Inventory configuration matrix parameters updated successfully." : "✓ Brand new item listing safely injected inside garage catalog data.", true);
+            ResetProductFormPanel();
+            LoadInventoryItemsMatrixGrid();
         }
 
         protected void rptInventoryMatrix_ItemCommand(object source, RepeaterCommandEventArgs e)
@@ -243,6 +334,49 @@ namespace ShowsGarage.Web_Files.Admin
                 PopulateFormForProductEditing(productId);
             else if (e.CommandName == "DeleteProduct")
                 ExecutePermanentProductDeletion(productId);
+        }
+
+        protected void rptEditProductGallery_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "DropGalleryImage")
+            {
+                string targetDbPathToDelete = e.CommandArgument.ToString();
+                int currentActiveProdId = Convert.ToInt32(hfActiveProductID.Value);
+
+                string query = "DELETE FROM [dbo].[ProductGallery] WHERE ProductID = @ProductID AND ImagePath = @ImagePath";
+                using (SqlConnection conn = new SqlConnection(ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ProductID", currentActiveProdId);
+                        cmd.Parameters.AddWithValue("@ImagePath", targetDbPathToDelete);
+
+                        try
+                        {
+                            conn.Open();
+                            cmd.ExecuteNonQuery();
+
+                            // Attempt physical cleaning logic routines from server discs structure
+                            try
+                            {
+                                string completePhysicalDiskPath = Server.MapPath("~" + targetDbPathToDelete.Replace("~", ""));
+                                if (File.Exists(completePhysicalDiskPath))
+                                {
+                                    File.Delete(completePhysicalDiskPath);
+                                }
+                            }
+                            catch { }
+
+                            DisplayStatusFeedback("✓ Sub-gallery item removed cleanly.", true);
+                            LoadProductGalleryAdministrationGrid(currentActiveProdId);
+                        }
+                        catch (Exception ex)
+                        {
+                            DisplayStatusFeedback("❌ Failed to clear sub-image item row allocation parameters: " + ex.Message, false);
+                        }
+                    }
+                }
+            }
         }
 
         private void PopulateFormForProductEditing(int productId)
@@ -268,10 +402,7 @@ namespace ShowsGarage.Web_Files.Admin
                                 txtStockQuantity.Text = reader["StockQuantity"].ToString();
                                 txtCostPrice.Text = string.Format("{0:F2}", reader["CostPrice"]);
                                 txtSellingPrice.Text = string.Format("{0:F2}", reader["SellingPrice"]);
-
-                                // NEW FIELD READER: Populates the product form interface with database values
                                 txtMRP.Text = string.Format("{0:F2}", reader["MRP"]);
-
                                 txtCurrentImgPath.Text = reader["ImagePath"].ToString();
                                 chkIsNewArrival.Checked = Convert.ToBoolean(reader["IsNewArrival"]);
                                 txtDescription.Text = reader["Description"].ToString();
@@ -289,10 +420,13 @@ namespace ShowsGarage.Web_Files.Admin
                     }
                 }
             }
+            // Bind supplementary gallery items for editing workflows
+            LoadProductGalleryAdministrationGrid(productId);
         }
 
         private void ExecutePermanentProductDeletion(int productId)
         {
+            // Note: Cascade Delete on foreign keys handles ProductGallery cleanup in the DB.
             string query = "DELETE FROM [dbo].[Products] WHERE ProductID = @ProductID";
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
@@ -440,7 +574,7 @@ namespace ShowsGarage.Web_Files.Admin
             txtStockQuantity.Text = "";
             txtCostPrice.Text = "";
             txtSellingPrice.Text = "";
-            txtMRP.Text = ""; // Flush value out of control form field block
+            txtMRP.Text = "";
             txtCurrentImgPath.Text = "";
             txtDescription.Text = "";
             chkIsNewArrival.Checked = true;
@@ -448,6 +582,7 @@ namespace ShowsGarage.Web_Files.Admin
             litFormTitle.Text = "Add New Scale Model";
             btnSaveProduct.Text = "Save Scale Model";
             btnCancelEdit.Visible = false;
+            pnlActiveGalleryManagementBlock.Visible = false;
         }
 
         private void ResetCategoryFormPanel()

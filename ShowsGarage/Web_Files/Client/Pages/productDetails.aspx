@@ -4,6 +4,38 @@
     <title>Product Details | Show's Garage</title>
     <link href="/Web_Files/Client/Styles/shop.css?v=2" rel="stylesheet" type="text/css" />
     <link href="/Web_Files/Client/Styles/productDetails.css?v=4" rel="stylesheet" type="text/css" />
+
+    <style>
+        /* Gallery Thumbnails Grid Layout */
+        .gallery-thumbnails-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .thumbnail-wrapper {
+            width: 75px;
+            height: 75px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background-color: #fff;
+        }
+
+            .thumbnail-wrapper:hover, .thumbnail-wrapper.active-thumb {
+                border-color: #111;
+                transform: scale(1.02);
+            }
+
+        .gallery-thumb-item {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -20,7 +52,17 @@
 
                 <div class="details-image-panel">
                     <div class="main-showcase-image-frame">
-                        <asp:Image ID="imgProduct" runat="server" CssClass="details-main-img" />
+                        <asp:Image ID="imgProduct" runat="server" CssClass="details-main-img" ClientIDMode="Static" />
+                    </div>
+
+                    <div class="gallery-thumbnails-container">
+                        <asp:Repeater ID="rptGallery" runat="server">
+                            <ItemTemplate>
+                                <div class="thumbnail-wrapper" onclick="switchShowcaseImage(this)">
+                                    <img src='<%# ResolveUrl(Container.DataItem.ToString()) %>' class="gallery-thumb-item" alt="Product thumbnail" />
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
                     </div>
                 </div>
 
@@ -54,6 +96,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="my-faq-container">
                 <div class="my-faq-header">
                     <h3 class="my-faq-title">Fulfillment & Shop Information</h3>
@@ -84,7 +127,6 @@
                 </div>
 
                 <div class="faq-accordion-stack">
-
                     <div class="faq-accordion-item">
                         <div class="faq-trigger-header" onclick="toggleFaqAccordion(this)">
                             <span class="faq-title-text">
@@ -190,14 +232,21 @@
             </div>
         </main>
     </div>
+
     <script type="text/javascript">
         function toggleFaqAccordion(headerElement) {
-            // Find the parent .faq-accordion-item container element
             const item = headerElement.closest('.faq-accordion-item');
-
-            // Toggle the 'is-open' class rule 
             item.classList.toggle('is-open');
         }
 
+        // Live image swap functionality
+        function switchShowcaseImage(thumbnailElement) {
+            const targetSrc = thumbnailElement.querySelector('img').src;
+            document.getElementById('imgProduct').src = targetSrc;
+
+            // Manage dynamic tracking border styles
+            document.querySelectorAll('.thumbnail-wrapper').forEach(el => el.classList.remove('active-thumb'));
+            thumbnailElement.classList.add('active-thumb');
+        }
     </script>
 </asp:Content>
