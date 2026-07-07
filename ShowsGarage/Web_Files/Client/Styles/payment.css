@@ -1,352 +1,231 @@
 ﻿/* ==========================================================================
-   Show's Garage - Universal Secure Checkout & Payment Style Framework
+   Show's Garage - Checkout & Payment Layer (Adapted for Site.Master)
    ========================================================================== */
 
-/* Layout & Page Universal Containers */
-.shop-theme-wrapper {
-    width: 100%;
-    min-height: 100vh;
-    background-color: #0d0d0d;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #ffffff;
-    box-sizing: border-box;
-}
-
-.shop-content-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px 15px;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-/* Dedicated micro-layout spacing limit wrapper class to prevent stretching */
+/* Spacing layout wrapper to constrain width neatly over the Master Page teal */
 .payment-upload-layout {
     max-width: 600px !important;
     margin: 0 auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
-/* Header Utilities Bar Control Strips */
+/* Base Panel Box Styling Cards - Clean White Card Content to Match Site Layout */
+.checkout-form-card {
+    background-color: #ffffff !important; /* Matches Master content-card profile */
+    border-radius: 8px !important;
+    padding: 30px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+    color: #333333 !important; /* Clean reading contrast */
+    box-sizing: border-box !important;
+    width: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Header Spacing Utilities */
 .shop-controls-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #1a1a1a;
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-    gap: 15px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.08) !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 25px !important;
 }
 
 .shop-main-heading {
-    font-size: 22px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0;
-    color: #ffffff;
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin: 0 !important;
+    color: #005461 !important; /* Dynamic contrast match */
 }
 
-.btn-filter-pill {
-    display: inline-flex;
-    align-items: center;
-    color: #999999;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border: 1px solid #262626;
-    border-radius: 30px;
-    background-color: #141414;
-    transition: all 0.2s ease;
-}
-
-    .btn-filter-pill:hover {
-        color: #ffffff;
-        border-color: #0076df;
-        background-color: rgba(0, 118, 223, 0.08);
-    }
-
-/* Split Column Responsive Grid Layout System */
-.cart-layout-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 25px;
-    align-items: start;
-}
-
-@media (min-width: 992px) {
-    .cart-layout-container {
-        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    }
-}
-
-/* Status Notifications & Error Boxes */
-.status-msg-error {
-    display: block;
-    background-color: #261111;
-    border: 1px solid #ff3333;
-    color: #ff6666;
-    padding: 14px 16px;
-    border-radius: 6px;
-    margin-bottom: 25px;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: left;
-}
-
-/* Base Panel Box Styling Cards */
-.checkout-form-card, .summary-card {
-    background-color: #141414;
-    border: 1px solid #222222;
-    border-radius: 10px;
-    padding: 20px;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-@media (min-width: 768px) {
-    .checkout-form-card, .summary-card {
-        padding: 30px;
-    }
-}
-
-.form-section-title, .summary-card-title {
-    font-size: 18px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0 0 25px 0;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #222222;
-    color: #ffffff;
-    text-align: left;
-}
-
-/* Core Form Grid Parameters */
+/* Core Form Formatting Stack */
 .form-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-    width: 100%;
-}
-
-/* Desktop Multi-Column Configuration Rules */
-@media (min-width: 576px) {
-    .form-grid {
-        grid-template-columns: repeat(12, 1fr);
-    }
-
-    .full-width {
-        grid-column: span 12;
-    }
-
-    .half-width {
-        grid-column: span 6;
-    }
-
-    .phone-width {
-        grid-column: span 6;
-    }
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .form-label {
-    color: #888888;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-align: left;
+    color: #555555 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    text-align: left !important;
 }
 
+/* Upgraded Input Field Parameters (Zero Overflowing Guaranteed) */
 .form-input {
-    background-color: #1c1c1c;
-    border: 1px solid #2d2d2d;
-    border-radius: 6px;
-    color: #ffffff;
-    padding: 12px 14px;
-    font-size: 14px;
-    font-family: inherit;
-    outline: none;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #f9f9f9 !important;
+    border: 1px solid #cccccc !important;
+    border-radius: 6px !important;
+    color: #333333 !important;
+    padding: 12px 14px !important;
+    font-size: 14px !important;
+    font-family: inherit !important;
+    outline: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease !important;
 }
 
-/* Specific limits to control extreme widening layout stretches */
-.form-grid .form-input {
-    max-width: 450px;
-}
+    .form-input:focus {
+        border-color: #005461 !important; /* Pulls active theme color from master */
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 3px rgba(0, 84, 97, 0.15) !important;
+    }
 
-.form-grid .full-width .form-input,
-.form-grid .text-area {
-    max-width: 100%;
-}
-
-.form-input:focus {
-    border-color: #0076df;
-    box-shadow: 0 0 0 3px rgba(0, 118, 223, 0.15);
-}
-
-/* Textarea multiline sizing limits */
-.form-input.text-area {
-    resize: vertical;
-    min-height: 90px;
-}
-
-/* Specific FileUpload adjustments for file buttons */
+/* Custom design rules for native file browser input selector fields */
 input[type="file"].form-input {
-    padding: 8px 12px;
-    cursor: pointer;
+    padding: 9px 12px !important;
+    cursor: pointer !important;
 }
 
-/* Notice & Info Banners */
+/* Notice Info Box */
 .checkout-info-banner {
-    background-color: rgba(255, 204, 0, 0.05);
-    border-left: 3px solid #ffcc00;
-    padding: 15px;
-    margin-bottom: 25px;
-    border-radius: 4px;
-    text-align: left;
+    background-color: rgba(212, 175, 55, 0.08) !important;
+    border-left: 4px solid #D4AF37 !important; /* Matches gold accents */
+    padding: 15px !important;
+    margin: 20px 0 !important;
+    border-radius: 4px !important;
+    text-align: left !important;
 }
 
 .info-banner-title {
-    color: #ffcc00;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 5px;
+    color: #c29d23 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    display: block !important;
+    margin-bottom: 5px !important;
 }
 
 .info-banner-text {
-    color: #cccccc;
-    font-size: 13px;
-    margin: 0;
-    line-height: 1.5;
+    color: #555555 !important;
+    font-size: 13px !important;
+    margin: 0 !important;
+    line-height: 1.5 !important;
 }
 
-/* Summary Card Rows & Action Buttons */
-.summary-data-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    font-size: 14px;
+/* Premium Dashboard UI Display Fields */
+.price-summary-container {
+    background: #fdfaf2 !important;
+    padding: 15px !important;
+    border-radius: 6px !important;
+    border: 1px dashed #D4AF37 !important;
+    margin-bottom: 20px !important;
 }
 
-.pt-15-border {
-    border-top: 1px solid #222222;
-    padding-top: 15px;
-    margin-top: 15px;
+.price-summary-label {
+    color: #777777 !important;
+    font-size: 13px !important;
+    display: block !important;
 }
 
-.total-highlight-row {
-    border-top: 2px dashed #222222;
-    padding-top: 15px;
-    margin-top: 15px;
-    font-size: 16px;
-    font-weight: 700;
+.price-summary-value {
+    font-size: 24px !important;
+    font-weight: 800 !important;
+    color: #005461 !important;
 }
 
-.total-green-price {
-    color: #2ed573;
-    font-size: 20px;
+.section-description-text {
+    color: #666666 !important;
+    font-size: 14px !important;
+    margin-bottom: 20px !important;
+    line-height: 1.4 !important;
 }
 
-.summary-actions-block {
-    margin-top: 20px;
-    width: 100%;
+.bank-details-box {
+    background-color: #fdfdfd !important;
+    padding: 16px !important;
+    border-radius: 6px !important;
+    text-align: left !important;
+    border: 1px solid #eeeeee !important;
+    margin-bottom: 20px !important;
 }
 
+.bank-row-label {
+    color: #888888 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    display: block !important;
+    font-weight: 600 !important;
+}
+
+.bank-row-value.values-highlight {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #005461 !important;
+    word-break: break-all !important;
+}
+
+.bank-monospace-text {
+    margin: 6px 0 0 0 !important;
+    color: #444444 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    white-space: pre-line !important;
+    font-family: monospace !important;
+    word-break: break-all !important;
+}
+
+/* Fully Unified Dynamic Action Complete Button */
 .btn-checkout-large {
-    background-color: #0076df;
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    padding: 14px 20px;
-    font-size: 15px;
-    font-weight: 700;
-    width: 100%;
-    max-width: 100%;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    background-color: #D4AF37 !important; /* Gold layout from Master Page properties */
+    color: #1a1a1a !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 15px 20px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    box-sizing: border-box !important;
 }
 
     .btn-checkout-large:hover {
-        background-color: #005ec3;
+        background-color: #FAEAB1 !important; /* Cream highlight layout link match */
     }
 
-    .btn-checkout-large:active {
-        transform: scale(0.98);
-    }
+/* Image scaling settings for fluid mobile boxes */
+.checkout-form-card img,
+.checkout-form-card .payment-qr-img {
+    max-width: 180px !important;
+    width: 100% !important;
+    height: auto !important;
+    border: 1px solid #dddddd !important;
+    background-color: #ffffff !important;
+    padding: 6px !important;
+    border-radius: 6px !important;
+    margin: 0 auto 20px auto !important;
+    display: block !important;
+}
 
 /* ==========================================================================
-   📱 MOBILITY CRITICAL LAYOUT ENHANCEMENTS (max-width: 768px)
+   📱 MOBILE STACKING COMPRESSION LOGIC
    ========================================================================== */
 @media screen and (max-width: 768px) {
-    .shop-content-container {
-        padding: 12px 10px;
-    }
-
-    .checkout-form-card, .summary-card {
-        padding: 15px;
-    }
-
-    .shop-controls-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .btn-filter-pill {
-        width: 100%;
-        justify-content: center;
-    }
-
-    /* Keep merchant QR element scaled elegantly on mobile */
-    .checkout-form-card img {
-        max-width: 190px !important;
-        height: auto !important;
-    }
-
-    .form-section-title, .summary-card-title {
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
-
-    /* Collapse column grid rules into a flat block column stack */
-    .form-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 15px !important;
-    }
-
-    .form-group.half-width,
-    .form-group.phone-width,
-    .form-group.full-width {
-        width: 100% !important;
-        margin: 0 !important;
+    .checkout-form-card {
+        padding: 20px 15px !important;
     }
 
     .form-grid .form-input {
-        max-width: 100% !important;
-        font-size: 16px !important; /* Prevents auto-zoom on mobile devices */
+        font-size: 16px !important; /* Absolute guard to stop mobile auto-zoom */
         padding: 12px !important;
-    }
-
-    input[type="file"].form-input {
-        font-size: 12px;
-        padding: 10px;
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Web;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Master_Pages.Pages
@@ -19,9 +21,15 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
             }
         }
 
-        /// <summary>
-        /// Pulls core branding configuration values directly out of SiteSettings table parameters schema row #1.
-        /// </summary>
+        protected void imgSearch_Click(object sender, ImageClickEventArgs e)
+        {
+            string queryStr = txtSearch.Text.Trim();
+            if (!string.IsNullOrEmpty(queryStr))
+            {
+                Response.Redirect("/Web_Files/Client/Pages/shop.aspx?search=" + HttpUtility.UrlEncode(queryStr));
+            }
+        }
+
         private void LoadGlobalDynamicBrandingParameters()
         {
             string query = "SELECT TOP 1 Logo, LogoTitle, Copyright, Email, PhoneNumber FROM [dbo].[SiteSettings] WHERE [SiteSettingId] = 1";
@@ -35,76 +43,65 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
                         conn.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            if (reader.Read())
+                            if (!reader.Read())
                             {
-                                // 1. Safe Logo & Brand Title String Extractions
-                                object dbLogo = reader["Logo"];
-                                object dbLogoTitle = reader["LogoTitle"];
+                                return;
+                            }
 
-                                ibLogo.ImageUrl = (dbLogo == DBNull.Value || string.IsNullOrEmpty(dbLogo.ToString())) ?
-                                    "~/Web_Files/Images/icons/Show's Garage Logo(Master Page BG).png" : dbLogo.ToString();
+                            object dbLogo = reader["Logo"];
+                            object dbLogoTitle = reader["LogoTitle"];
 
-                                string companyTitle = (dbLogoTitle == DBNull.Value || string.IsNullOrEmpty(dbLogoTitle.ToString())) ?
-                                    "Show's Garage" : dbLogoTitle.ToString();
+                            ibLogo.ImageUrl = ((dbLogo == DBNull.Value || string.IsNullOrEmpty(dbLogo.ToString().Trim())) ? "~/Web_Files/Images/icons/Show's Garage Logo BG.png" : dbLogo.ToString().Trim());
 
-                                ibLogo.AlternateText = companyTitle;
-                                litFooterBrandTitle.Text = companyTitle.ToUpper();
+                            string companyTitle = ((dbLogoTitle == DBNull.Value || string.IsNullOrEmpty(dbLogoTitle.ToString().Trim())) ? "Show's Garage" : dbLogoTitle.ToString().Trim());
+                            ibLogo.AlternateText = companyTitle;
+                            litFooterBrandTitle.Text = companyTitle.ToUpper();
 
-                                // 2. Safe Copyright Extraction (This was causing the crash!)
-                                // 2. Safe Copyright Extraction with Dynamic {year} Token Replacement
-                                object dbCopyright = reader["Copyright"];
-                                if (dbCopyright != DBNull.Value && !string.IsNullOrEmpty(dbCopyright.ToString()))
+                            object dbCopyright = reader["Copyright"];
+                            if (dbCopyright != DBNull.Value && !string.IsNullOrEmpty(dbCopyright.ToString()))
+                            {
+                                string copyrightText = dbCopyright.ToString();
+                                if (copyrightText.Contains("{year}"))
                                 {
-                                    string copyrightText = dbCopyright.ToString();
+                                    copyrightText = copyrightText.Replace("{year}", DateTime.Now.Year.ToString());
+                                }
+                                litCopyrightDisplay.Text = copyrightText;
+                            }
+                            else
+                            {
+                                litCopyrightDisplay.Text = $"&copy; {DateTime.Now.Year} Shows Garage";
+                            }
 
-                                    // Dynamically replace the {year} string wrapper parameter with the current system year
-                                    if (copyrightText.Contains("{year}"))
-                                    {
-                                        copyrightText = copyrightText.Replace("{year}", DateTime.Now.Year.ToString());
-                                    }
+                            object dbEmail = reader["Email"];
+                            if (dbEmail != DBNull.Value && !string.IsNullOrEmpty(dbEmail.ToString().Trim()))
+                            {
+                                lnkFooterEmail.HRef = "mailto:" + dbEmail.ToString().Trim();
+                                lnkFooterEmail.InnerText = dbEmail.ToString().Trim();
+                                lnkFooterEmail.Visible = true;
+                            }
+                            else
+                            {
+                                lnkFooterEmail.Visible = false;
+                            }
 
-                                    litCopyrightDisplay.Text = copyrightText;
-                                }
-                                else
-                                {
-                                    // Hardcoded global fallback defaults parameter string layout
-                                    litCopyrightDisplay.Text = $"&copy; {DateTime.Now.Year} Shows Garage";
-                                }
-
-                                // 3. Safe Email Support Channel Checking
-                                object dbEmail = reader["Email"];
-                                if (dbEmail != DBNull.Value && !string.IsNullOrEmpty(dbEmail.ToString()))
-                                {
-                                    lnkFooterEmail.HRef = "mailto:" + dbEmail.ToString().Trim();
-                                    lnkFooterEmail.InnerText = dbEmail.ToString().Trim();
-                                    lnkFooterEmail.Visible = true;
-                                }
-                                else
-                                {
-                                    lnkFooterEmail.Visible = false;
-                                }
-
-                                // 4. Safe Phone Number Contact Checking
-                                object dbPhone = reader["PhoneNumber"];
-                                if (dbPhone != DBNull.Value && !string.IsNullOrEmpty(dbPhone.ToString().Trim()))
-                                {
-                                    lnkFooterPhone.HRef = "tel:" + dbPhone.ToString().Trim();
-                                    lnkFooterPhone.InnerText = "Call: " + dbPhone.ToString().Trim();
-                                    lnkFooterPhone.Visible = true;
-                                }
-                                else
-                                {
-                                    lnkFooterPhone.Visible = false;
-                                }
+                            object dbPhone = reader["PhoneNumber"];
+                            if (dbPhone != DBNull.Value && !string.IsNullOrEmpty(dbPhone.ToString().Trim()))
+                            {
+                                lnkFooterPhone.HRef = "tel:" + dbPhone.ToString().Trim();
+                                lnkFooterPhone.InnerText = "Call: " + dbPhone.ToString().Trim();
+                                lnkFooterPhone.Visible = true;
+                            }
+                            else
+                            {
+                                lnkFooterPhone.Visible = false;
                             }
                         }
                     }
                     catch
                     {
-                        // Fallback catch block prevents the footer line from ever disappearing entirely
-                        ibLogo.ImageUrl = "~/Web_Files/Images/icons/Show's Garage Logo(Master Page BG).png";
+                        ibLogo.ImageUrl = "~/Web_Files/Images/icons/Show's Garage Logo BG.png";
                         litFooterBrandTitle.Text = "SHOWS GARAGE";
-                        litCopyrightDisplay.Text = "&copy; 2026 Shows Garage";
+                        litCopyrightDisplay.Text = $"&copy; {DateTime.Now.Year} Shows Garage";
                         lnkFooterEmail.Visible = false;
                         lnkFooterPhone.Visible = false;
                     }
@@ -154,7 +151,6 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
 
         protected void ibLogo_Click(object sender, ImageClickEventArgs e)
         {
-            // FIXED: Added safe null comparison validation criteria check step before string conversion evaluation drops
             if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
             {
                 Response.Redirect("~/Web_Files/Admin/Pages/dashboard.aspx");

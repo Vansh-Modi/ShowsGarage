@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using System.Drawing;
 using System.Net;
 using System.Net.Mail;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class register : System.Web.UI.Page
     {
-        string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
+        private string connStr => ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -21,14 +20,11 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 btnRegister.Enabled = false;
                 btnResendOTP.Visible = false;
             }
-            else
+            else if (Session["tempPass"] != null)
             {
-                // Re-hydrate passwords back into fields if a postback occurred
-                if (Session["tempPass"] != null)
-                {
-                    txtPassword.Attributes.Add("value", Session["tempPass"].ToString());
-                    txtConfirmPass.Attributes.Add("value", Session["tempPass"].ToString());
-                }
+                // Re-hydrate passwords back into fields if a postback occurred to preserve UI state
+                txtPassword.Attributes.Add("value", Session["tempPass"].ToString());
+                txtConfirmPass.Attributes.Add("value", Session["tempPass"].ToString());
             }
         }
 
@@ -36,50 +32,40 @@ namespace ShowsGarage.Web_Files.Client.Pages
         {
             try
             {
-                // 1. Verify OTP from Session
+                // 1. Verify OTP code matches what was stored in the session memory
                 if (Session["GeneratedOTP"] != null && txtOTP.Text.Trim() == Session["GeneratedOTP"].ToString())
                 {
-                    // Clear OTP session once successfully verified
-                    Session["GeneratedOTP"] = null;
+                    Session["GeneratedOTP"] = null; // Flush token immediately upon verification success
+                    string query = "INSERT INTO Users (FullName, Phone, Email, PasswordHash, Role, IsVerified) VALUES (@name, @phone, @email, @pass, @role, @isVerified)";
 
-                    // 2. Connect to Database and Insert User Records
                     using (SqlConnection con = new SqlConnection(connStr))
+                    using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        string query = "INSERT INTO Users (FullName, Phone, Email, PasswordHash, Role, IsVerified) " +
-                                       "VALUES (@name, @phone, @email, @pass, @role, @isVerified)";
+                        cmd.Parameters.AddWithValue("@name", txtName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@phone", txtNumber.Text.Trim());
+                        cmd.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
 
-                        using (SqlCommand cmd = new SqlCommand(query, con))
-                        {
-                            cmd.Parameters.AddWithValue("@name", txtName.Text.Trim());
-                            cmd.Parameters.AddWithValue("@phone", txtNumber.Text.Trim());
-                            cmd.Parameters.AddWithValue("@email", txtEmail.Text.Trim());
+                        // Pull securely from session token cache to handle blank disabled control values
+                        string securePassword = (Session["tempPass"] != null) ? Session["tempPass"].ToString() : txtPassword.Text.Trim();
+                        cmd.Parameters.AddWithValue("@pass", securePassword);
 
-                            // Pull safely from your persistent Session object
-                            if (Session["tempPass"] != null)
-                                cmd.Parameters.AddWithValue("@pass", Session["tempPass"].ToString());
-                            else
-                                cmd.Parameters.AddWithValue("@pass", txtPassword.Text.Trim());
+                        cmd.Parameters.AddWithValue("@role", "Client");
+                        cmd.Parameters.AddWithValue("@isVerified", true);
 
-                            cmd.Parameters.AddWithValue("@role", "Client");
-                            cmd.Parameters.AddWithValue("@isVerified", true);
-
-                            Session["tempPass"] = null; // Flush clean out on successful creation
-                            con.Open();
-                            cmd.ExecuteNonQuery();
-                        }
+                        Session["tempPass"] = null; // Clear password state cache safely
+                        con.Open();
+                        cmd.ExecuteNonQuery();
                     }
 
                     lblError.Text = "Registration Successful!";
-                    lblError.ForeColor = System.Drawing.Color.LightGreen;
-
+                    lblError.ForeColor = Color.LightGreen;
                     Response.Redirect("~/homePage.aspx");
                 }
                 else
                 {
                     lblError.Text = "Invalid OTP. Please check and try again.";
-                    lblError.ForeColor = System.Drawing.Color.Red;
+                    lblError.ForeColor = Color.Red;
 
-                    // Maintain password visuals even on failed registration postbacks
                     if (Session["tempPass"] != null)
                     {
                         txtPassword.Attributes.Add("value", Session["tempPass"].ToString());
@@ -90,7 +76,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             catch (Exception ex)
             {
                 lblError.Text = "Database Error: " + ex.Message;
-                lblError.ForeColor = System.Drawing.Color.Red;
+                lblError.ForeColor = Color.Red;
             }
         }
 
@@ -99,21 +85,16 @@ namespace ShowsGarage.Web_Files.Client.Pages
             if (string.IsNullOrEmpty(txtEmail.Text.Trim()))
             {
                 lblError.Text = "Please enter an email address first.";
-                lblError.ForeColor = System.Drawing.Color.Red;
+                lblError.ForeColor = Color.Red;
                 return;
             }
 
-            // CRITICAL FIX: Only read text fields if Session["tempPass"] doesn't already hold the token.
-            // This stops resend clicks (which return blank inputs since the controls are disabled) from wiping your data.
-            if (Session["tempPass"] == null)
+            // Lock field values into a safe temporary variable block on original request pass
+            if (Session["tempPass"] == null && !string.IsNullOrEmpty(txtPassword.Text))
             {
-                if (!string.IsNullOrEmpty(txtPassword.Text))
-                {
-                    Session["tempPass"] = txtPassword.Text;
-                }
+                Session["tempPass"] = txtPassword.Text;
             }
 
-            // Ensure attributes are appended regardless of click counts so CSS stays clean
             if (Session["tempPass"] != null)
             {
                 txtPassword.Attributes.Add("value", Session["tempPass"].ToString());
@@ -123,35 +104,34 @@ namespace ShowsGarage.Web_Files.Client.Pages
             string otp = new Random().Next(100000, 999999).ToString();
             Session["GeneratedOTP"] = otp;
 
-            System.Diagnostics.Debug.WriteLine("=== DEBUG OTP: " + otp + " ===");
-
             try
             {
-                MailMessage mail = new MailMessage();
-                mail.To.Add(txtEmail.Text.Trim());
+                using (MailMessage mail = new MailMessage())
+                {
+                    mail.To.Add(txtEmail.Text.Trim());
+                    mail.From = new MailAddress("showsgarage@gmail.com", "Show's Garage");
+                    mail.Subject = "Your Verification Security Code";
+                    mail.Body = $@"
+                        <div style='font-family: sans-serif; padding: 25px; background-color: #141414; color: #ffffff; border-radius: 8px; max-width: 480px;'>
+                            <h2 style='color: #ff5722; margin-top: 0;'>Show's Garage</h2>
+                            <p style='color: #aaaaaa; font-size: 14px;'>Welcome to the club! Use the verification security code below to activate your account profile logs:</p>
+                            <div style='background-color: #1c1c1c; border: 1px solid #2d2d2d; padding: 15px; text-align: center; font-size: 26px; font-weight: 800; color: #2ebd59; letter-spacing: 5px; border-radius: 4px; margin: 20px 0;'>
+                                {otp}
+                            </div>
+                            <p style='font-size: 11px; color: #666666; margin: 0;'>If you did not request this code, you can safely ignore this email validation trace.</p>
+                        </div>";
+                    mail.IsBodyHtml = true;
 
-                mail.From = new MailAddress("showsgarage@gmail.com", "Show's Garage");
-                mail.Subject = "Your Verification Security Code";
+                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                    {
+                        smtp.UseDefaultCredentials = false;
+                        smtp.Credentials = new NetworkCredential("showsgarage@gmail.com", "gikedyayowpsbhjq");
+                        smtp.EnableSsl = true;
+                        smtp.Send(mail);
+                    }
+                }
 
-                mail.Body = $@"
-                    <div style='font-family: sans-serif; padding: 25px; background-color: #141414; color: #ffffff; border-radius: 8px; max-width: 480px;'>
-                        <h2 style='color: #ff5722; margin-top: 0;'>Show's Garage</h2>
-                        <p style='color: #aaaaaa; font-size: 14px;'>Welcome to the club! Use the verification security code below to activate your account profile logs:</p>
-                        <div style='background-color: #1c1c1c; border: 1px solid #2d2d2d; padding: 15px; text-align: center; font-size: 26px; font-weight: 800; color: #2ebd59; letter-spacing: 5px; border-radius: 4px; margin: 20px 0;'>
-                            {otp}
-                        </div>
-                        <p style='font-size: 11px; color: #666666; margin: 0;'>If you did not request this code, you can safely ignore this email validation trace.</p>
-                    </div>";
-                mail.IsBodyHtml = true;
-
-                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential("showsgarage@gmail.com", "gikedyayowpsbhjq");
-                smtp.EnableSsl = true;
-
-                smtp.Send(mail);
-
-                // Step 4: UI Management (Freeze fields on success execution)
+                // UI Architecture Management: Freeze existing inputs to lock transaction context state
                 txtName.Enabled = false;
                 txtNumber.Enabled = false;
                 txtEmail.Enabled = false;
@@ -162,13 +142,13 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 btnResendOTP.Visible = true;
                 btnRegister.Enabled = true;
 
-                lblError.Text = "OTP resent successfully to " + txtEmail.Text.Trim() + ". <br/><span style='font-size:12px; font-weight:normal; opacity:0.85;'>Can't find it? Please check your <b>Spam, Junk, or Updates</b> folders!</span>";
-                lblError.ForeColor = System.Drawing.Color.LightGreen;
+                lblError.Text = "OTP sent successfully to " + txtEmail.Text.Trim() + ". <br/><span style='font-size:12px; font-weight:normal; opacity:0.85;'>Can't find it? Please check your <b>Spam, Junk, or Updates</b> folders!</span>";
+                lblError.ForeColor = Color.LightGreen;
             }
             catch (Exception ex)
             {
                 lblError.Text = "Mail Delivery Error: " + ex.Message;
-                lblError.ForeColor = System.Drawing.Color.Red;
+                lblError.ForeColor = Color.Red;
                 btnRegister.Enabled = false;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
@@ -8,78 +9,109 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class shop : System.Web.UI.Page
     {
-        private string connStr => System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
-
         private const string BasePillStyle = "flex-shrink: 0 !important; white-space: nowrap !important; display: inline-block !important; background-color: #141414 !important; border: 1px solid #222222 !important; color: #aaaaaa !important; font-size: 13px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; padding: 8px 18px !important; border-radius: 20px !important; text-decoration: none !important; cursor: pointer !important;";
         private const string ActivePillStyle = "flex-shrink: 0 !important; white-space: nowrap !important; display: inline-block !important; background-color: rgba(255, 87, 34, 0.08) !important; border: 1px solid #ff5722 !important; color: #ff5722 !important; font-size: 13px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; padding: 8px 18px !important; border-radius: 20px !important; text-decoration: none !important; cursor: pointer !important;";
+
+        private string connStr => ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
                 BindCategories();
-                BindProducts(0);
+
+                if (Request.QueryString["search"] != null)
+                {
+                    string searchKeyword = Request.QueryString["search"].ToString().Trim();
+                    BindProductsFilteredBySearch(searchKeyword);
+                }
+                else
+                {
+                    BindProducts(0);
+                }
             }
         }
 
         private void BindCategories()
         {
+            string query = "SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryName ASC";
+
             using (SqlConnection con = new SqlConnection(connStr))
+            using (SqlCommand cmd = new SqlCommand(query, con))
+            using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
             {
-                string query = "SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryName ASC";
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                DataTable dt = new DataTable();
+                try
                 {
-                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        try
-                        {
-                            con.Open();
-                            sda.Fill(dt);
-                            rptCategories.DataSource = dt;
-                            rptCategories.DataBind();
-                        }
-                        catch { /* Tracking handles fallbacks */ }
-                    }
+                    con.Open();
+                    sda.Fill(dt);
+                    rptCategories.DataSource = dt;
+                    rptCategories.DataBind();
                 }
+                catch { /* Quiet fallback catch engine */ }
             }
         }
 
         private void BindProducts(int categoryId)
         {
-            using (SqlConnection con = new SqlConnection(connStr))
-            {
-                string query = @"
-                    SELECT ProductID, Title, BrandName, MRP, SellingPrice, ImagePath, 
-                           ISNULL(StockQuantity, 0) AS StockQuantity 
-                    FROM Products";
+            string query = @"SELECT ProductID, Title, BrandName, MRP, SellingPrice, ImagePath, 
+                                   ISNULL(StockQuantity, 0) AS StockQuantity 
+                            FROM Products";
 
+            if (categoryId > 0)
+            {
+                query += " WHERE CategoryID = @catID";
+            }
+            query += " ORDER BY ProductID DESC";
+
+            using (SqlConnection con = new SqlConnection(connStr))
+            using (SqlCommand cmd = new SqlCommand(query, con))
+            {
                 if (categoryId > 0)
                 {
-                    query += " WHERE CategoryID = @catID";
+                    cmd.Parameters.AddWithValue("@catID", categoryId);
                 }
 
-                query += " ORDER BY ProductID DESC";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
                 {
-                    if (categoryId > 0)
+                    DataTable dt = new DataTable();
+                    try
                     {
-                        cmd.Parameters.AddWithValue("@catID", categoryId);
+                        con.Open();
+                        sda.Fill(dt);
+                        rptProducts.DataSource = dt;
+                        rptProducts.DataBind();
                     }
+                    catch { /* Quiet fallback catch engine */ }
+                }
+            }
+        }
 
-                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+        private void BindProductsFilteredBySearch(string keyword)
+        {
+            string query = @"SELECT ProductID, Title, BrandName, MRP, SellingPrice, ImagePath, 
+                                   ISNULL(StockQuantity, 0) AS StockQuantity 
+                            FROM Products 
+                            WHERE Title LIKE @search 
+                               OR BrandName LIKE @search 
+                            ORDER BY ProductID DESC";
+
+            using (SqlConnection con = new SqlConnection(connStr))
+            using (SqlCommand cmd = new SqlCommand(query, con))
+            {
+                cmd.Parameters.AddWithValue("@search", "%" + keyword + "%");
+
+                using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                {
+                    DataTable dt = new DataTable();
+                    try
                     {
-                        DataTable dt = new DataTable();
-                        try
-                        {
-                            con.Open();
-                            sda.Fill(dt);
-                            rptProducts.DataSource = dt;
-                            rptProducts.DataBind();
-                        }
-                        catch { /* Layout crash prevention block */ }
+                        con.Open();
+                        sda.Fill(dt);
+                        rptProducts.DataSource = dt;
+                        rptProducts.DataBind();
                     }
+                    catch { /* Quiet fallback catch engine */ }
                 }
             }
         }
@@ -90,7 +122,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             int categoryId = Convert.ToInt32(btn.CommandArgument);
             BindProducts(categoryId);
 
-            // Re-apply inline styling layouts via backend parameters
+            // Reset default base styles safely using your constants
             lnkAll.Attributes["style"] = BasePillStyle;
             lnkAll.CssClass = "btn-filter-pill-isolated";
 
@@ -104,7 +136,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 }
             }
 
-            // Lock active selection styles dynamically
+            // Bind high performance active style tokens onto selection target
             btn.Attributes["style"] = ActivePillStyle;
             btn.CssClass = "btn-filter-pill-isolated active-pill-isolated";
         }
