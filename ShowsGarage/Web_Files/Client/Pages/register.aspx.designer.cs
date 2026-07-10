@@ -42,22 +42,22 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.TextBox txtNumber;
 
         /// <summary>
-        /// rfvNumber control.
+        /// rfvPhone control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvNumber;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPhone;
 
         /// <summary>
-        /// revNumber control.
+        /// revPhone control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator revNumber;
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator revPhone;
 
         /// <summary>
         /// txtEmail control.
@@ -69,6 +69,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
 
         /// <summary>
+        /// btnGetOTP control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnGetOTP;
+
+        /// <summary>
         /// rfvEmail control.
         /// </summary>
         /// <remarks>
@@ -78,31 +87,22 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvEmail;
 
         /// <summary>
-        /// rfvEmailForOtp control.
+        /// txtOTP control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvEmailForOtp;
+        protected global::System.Web.UI.WebControls.TextBox txtOTP;
 
         /// <summary>
-        /// revEmail control.
+        /// btnResendOTP control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator revEmail;
-
-        /// <summary>
-        /// revEmailForOtp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator revEmailForOtp;
+        protected global::System.Web.UI.WebControls.LinkButton btnResendOTP;
 
         /// <summary>
         /// txtPassword control.
@@ -123,15 +123,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPassword;
 
         /// <summary>
-        /// revPassword control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator revPassword;
-
-        /// <summary>
         /// txtConfirmPass control.
         /// </summary>
         /// <remarks>
@@ -150,40 +141,13 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvConfirmPass;
 
         /// <summary>
-        /// cvConfirmPass control.
+        /// cvPasswordMatch control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CompareValidator cvConfirmPass;
-
-        /// <summary>
-        /// txtOTP control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtOTP;
-
-        /// <summary>
-        /// btnGetOTP control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGetOTP;
-
-        /// <summary>
-        /// btnResendOTP control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnResendOTP;
+        protected global::System.Web.UI.WebControls.CompareValidator cvPasswordMatch;
 
         /// <summary>
         /// btnRegister control.

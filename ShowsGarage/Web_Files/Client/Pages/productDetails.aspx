@@ -1,41 +1,8 @@
 ﻿<%@ Page Title="Product Details | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="productDetails.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.productDetails" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <title>Product Details | Show's Garage</title>
-    <link href="/Web_Files/Client/Styles/shop.css?v=2" rel="stylesheet" type="text/css" />
-    <link href="/Web_Files/Client/Styles/productDetails.css?v=4" rel="stylesheet" type="text/css" />
-
-    <style>
-        /* Gallery Thumbnails Grid Layout */
-        .gallery-thumbnails-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .thumbnail-wrapper {
-            width: 75px;
-            height: 75px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            background-color: #fff;
-        }
-
-            .thumbnail-wrapper:hover, .thumbnail-wrapper.active-thumb {
-                border-color: #111;
-                transform: scale(1.02);
-            }
-
-        .gallery-thumb-item {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    </style>
+    <link href="/Web_Files/Client/Styles/shop.css?v=3" rel="stylesheet" type="text/css" />
+    <link href="/Web_Files/Client/Styles/productDetails.css?v=5" rel="stylesheet" type="text/css" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -46,8 +13,9 @@
                 <a href="shop.aspx" class="btn-layout-back">← Back to Collection</a>
             </div>
 
-            <asp:Label ID="lblDetailStatus" runat="server" CssClass="admin-alert-banner alert-error" Visible="false" Style="margin-bottom: 20px; display: block;"></asp:Label>
+            <asp:Label ID="lblDetailStatus" runat="server" CssClass="status-msg-error" Visible="false" Style="margin-bottom: 20px; display: block;"></asp:Label>
 
+            <!-- Main Product Structural Presentation Split Container -->
             <div class="product-details-layout-container">
 
                 <div class="details-image-panel">
@@ -59,7 +27,7 @@
                         <asp:Repeater ID="rptGallery" runat="server">
                             <ItemTemplate>
                                 <div class="thumbnail-wrapper" onclick="switchShowcaseImage(this)">
-                                    <img src='<%# ResolveUrl(Container.DataItem.ToString()) %>' class="gallery-thumb-item" alt="Product thumbnail" />
+                                    <img src='<%# ResolveUrl(Container.DataItem.ToString()) %>' class="gallery-thumb-item" alt="Product thumbnail replica detail view" />
                                 </div>
                             </ItemTemplate>
                         </asp:Repeater>
@@ -75,8 +43,7 @@
                     </h1>
 
                     <div class="details-inventory-status-row">
-                        <span class="details-scale-badge">Scale Ratio:
-                            <asp:Label ID="lblScaleDisplay" runat="server"></asp:Label></span>
+                        <span class="details-scale-badge">Scale Ratio: <asp:Label ID="lblScaleDisplay" runat="server"></asp:Label></span>
                         <asp:Label ID="lblStockBadge" runat="server" CssClass="details-stock-badge-indicator"></asp:Label>
                     </div>
 
@@ -97,6 +64,7 @@
                 </div>
             </div>
 
+            <!-- Bottom Sourcing Trust Badges & FAQ Accordion Block Box -->
             <div class="my-faq-container">
                 <div class="my-faq-header">
                     <h3 class="my-faq-title">Fulfillment & Shop Information</h3>
@@ -119,7 +87,7 @@
                     </div>
                     <div class="badge-box-item">
                         <svg viewBox="0 0 24 24">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-313-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                         </svg>
                         <h4>All India Delivery</h4>
                         <p>Delivery 3-7 days transit duration depending on city location.</p>
@@ -236,17 +204,35 @@
     <script type="text/javascript">
         function toggleFaqAccordion(headerElement) {
             const item = headerElement.closest('.faq-accordion-item');
-            item.classList.toggle('is-open');
+            if (item) {
+                const isOpen = item.classList.contains('is-open');
+
+                // Close other open panels for clean collapse mechanics
+                document.querySelectorAll('.faq-accordion-item').forEach(el => {
+                    el.classList.remove('is-open');
+                    const panel = el.querySelector('.faq-content-panel');
+                    if (panel) panel.style.maxHeight = null;
+                });
+
+                if (!isOpen) {
+                    item.classList.add('is-open');
+                    const contentPanel = item.querySelector('.faq-content-panel');
+                    if (contentPanel) contentPanel.style.maxHeight = contentPanel.scrollHeight + "px";
+                }
+            }
         }
 
-        // Live image swap functionality
+        // Live image swap thumbnail selection handler
         function switchShowcaseImage(thumbnailElement) {
-            const targetSrc = thumbnailElement.querySelector('img').src;
-            document.getElementById('imgProduct').src = targetSrc;
+            const imgEl = thumbnailElement.querySelector('img');
+            if (imgEl) {
+                const targetSrc = imgEl.src;
+                const mainImg = document.getElementById('imgProduct');
+                if (mainImg) mainImg.src = targetSrc;
 
-            // Manage dynamic tracking border styles
-            document.querySelectorAll('.thumbnail-wrapper').forEach(el => el.classList.remove('active-thumb'));
-            thumbnailElement.classList.add('active-thumb');
+                document.querySelectorAll('.thumbnail-wrapper').forEach(el => el.classList.remove('active-thumb'));
+                thumbnailElement.classList.add('active-thumb');
+            }
         }
     </script>
 </asp:Content>

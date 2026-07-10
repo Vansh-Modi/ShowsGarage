@@ -1,8 +1,7 @@
 ﻿<%@ Page Title="Profile | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="profile.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.profile" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <title>Profile | Show's Garage</title>
-    <link href="/Web_Files/Client/Styles/profile.css" rel="stylesheet" type="text/css" />
+    <link href="/Web_Files/Client/Styles/profile.css?v=2" rel="stylesheet" type="text/css" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -15,7 +14,7 @@
             </header>
 
             <div class="status-message-container">
-                <asp:Label ID="lblStatus" runat="server" CssClass="status-label"></asp:Label>
+                <asp:Label ID="lblStatus" runat="server" CssClass="status-label-alert"></asp:Label>
             </div>
 
             <div class="welcome-container">
@@ -53,91 +52,96 @@
                     </asp:RegularExpressionValidator>
                 </div>
 
+                <!-- Sliding Security Credentials Reset Drawer -->
                 <section id="passwordDrawer" class="password-sliding-drawer hidden-drawer">
-    <h3 class="drawer-title">Update Security Credentials</h3>
-    
-    <asp:PlaceHolder ID="phStandardReset" runat="server" Visible="true">
-        <div class="form-group-clean">
-            <asp:TextBox ID="txtCurrentPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="Current Password"></asp:TextBox>
-            <asp:RequiredFieldValidator ID="rfvCurrentPass" runat="server" 
-                ControlToValidate="txtCurrentPassword" ErrorMessage="Current password required." 
-                CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
-            </asp:RequiredFieldValidator>
-            <div style="margin-top: 5px; text-align: right;">
-                <asp:LinkButton ID="lnkForgotCurrent" runat="server" OnClick="lnkForgotCurrent_Click" ForeColor="#bbb" Font-Size="12px" CausesValidation="False">Forgot Current Password?</asp:LinkButton>
+                    <h3 class="drawer-title">Update Security Credentials</h3>
+                    
+                    <asp:PlaceHolder ID="phStandardReset" runat="server" Visible="true">
+                        <div class="form-group-clean">
+                            <asp:TextBox ID="txtCurrentPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="Current Password"></asp:TextBox>
+                            <asp:RequiredFieldValidator ID="rfvCurrentPass" runat="server" 
+                                ControlToValidate="txtCurrentPassword" ErrorMessage="Current password required." 
+                                CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
+                            </asp:RequiredFieldValidator>
+                            <div class="forgot-current-link-wrapper">
+                                <asp:LinkButton ID="lnkForgotCurrent" runat="server" OnClick="lnkForgotCurrent_Click" CssClass="inline-forgot-trigger" CausesValidation="False">Forgot Current Password?</asp:LinkButton>
+                            </div>
+                        </div>
+                    </asp:PlaceHolder>
+
+                    <asp:PlaceHolder ID="phOtpVerification" runat="server" Visible="false">
+                        <div class="form-group-clean verification-otp-alert-card">
+                            <label class="otp-alert-label">* Recovery Mode Active</label>
+                            <asp:TextBox ID="txtProfileOTP" runat="server" CssClass="form-input-clean" placeholder="Enter 6-Digit Email OTP" MaxLength="6"></asp:TextBox>
+                            <asp:RequiredFieldValidator ID="rfvProfileOTP" runat="server" 
+                                ControlToValidate="txtProfileOTP" ErrorMessage="Verification OTP code required." 
+                                CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
+                            </asp:RequiredFieldValidator>
+                            <div style="margin-top: 5px;">
+                                <asp:LinkButton ID="lnkCancelRecovery" runat="server" OnClick="lnkCancelRecovery_Click" CssClass="inline-cancel-trigger" CausesValidation="False">Cancel OTP Recovery</asp:LinkButton>
+                            </div>
+                        </div>
+                    </asp:PlaceHolder>
+
+                    <div class="form-group-clean">
+                        <asp:TextBox ID="txtNewPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="New Password"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvNewPass" runat="server" 
+                            ControlToValidate="txtNewPassword" ErrorMessage="New password required." 
+                            CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
+                        </asp:RequiredFieldValidator>
+                    </div>
+
+                    <div class="form-group-clean">
+                        <asp:TextBox ID="txtConfirmNewPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="Confirm New Password"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvConfirmNewPass" runat="server" 
+                            ControlToValidate="txtConfirmNewPassword" ErrorMessage="Please confirm your new password." 
+                            CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
+                        </asp:RequiredFieldValidator>
+                        <asp:CompareValidator ID="cvPasswordMatch" runat="server" 
+                            ControlToValidate="txtConfirmNewPassword" ControlToCompare="txtNewPassword" 
+                            ErrorMessage="Passwords do not match." CssClass="validation-error" 
+                            Display="Dynamic" ValidationGroup="PasswordGroup">
+                        </asp:CompareValidator>
+                    </div>
+
+                    <div class="form-actions-row">
+                        <asp:Button ID="btnUpdatePassword" runat="server" Text="Confirm New Password" 
+                            CssClass="btn btn-save" ValidationGroup="PasswordGroup" OnClick="btnUpdatePassword_Click" />
+                    </div>
+                </section>
+
+                <div class="form-actions-row bottom-actions">
+                    <asp:Button ID="btnUpdate" runat="server" Text="Save" CssClass="btn btn-save" OnClick="btnUpdate_Click" />
+                    <a href="../../../homePage.aspx" class="btn btn-cancel">Cancel</a>
+                    <button type="button" class="btn btn-reset" onclick="resetFormFields()">Reset</button>
+                </div>
+
             </div>
-        </div>
-    </asp:PlaceHolder>
-
-    <asp:PlaceHolder ID="phOtpVerification" runat="server" Visible="false">
-        <div class="form-group-clean" style="border: 1px solid #444; padding: 12px; border-radius: 4px; background: #1a1a1a;">
-            <label style="color: #ff3333; font-size: 11px; display: block; margin-bottom: 5px;">* Recovery Mode Active</label>
-            <asp:TextBox ID="txtProfileOTP" runat="server" CssClass="form-input-clean" placeholder="Enter 6-Digit Email OTP" MaxLength="6"></asp:TextBox>
-            <asp:RequiredFieldValidator ID="rfvProfileOTP" runat="server" 
-                ControlToValidate="txtProfileOTP" ErrorMessage="Verification OTP code required." 
-                CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
-            </asp:RequiredFieldValidator>
-            <div style="margin-top: 5px;">
-                <asp:LinkButton ID="lnkCancelRecovery" runat="server" OnClick="lnkCancelRecovery_Click" ForeColor="#ff6464" Font-Size="11px" CausesValidation="False">Cancel OTP Recovery</asp:LinkButton>
-            </div>
-        </div>
-    </asp:PlaceHolder>
-
-    <div class="form-group-clean">
-        <asp:TextBox ID="txtNewPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="New Password"></asp:TextBox>
-        <asp:RequiredFieldValidator ID="rfvNewPass" runat="server" 
-            ControlToValidate="txtNewPassword" ErrorMessage="New password required." 
-            CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
-        </asp:RequiredFieldValidator>
+        </main>
     </div>
 
-    <div class="form-group-clean">
-        <asp:TextBox ID="txtConfirmNewPassword" runat="server" TextMode="Password" PointChar="•" CssClass="form-input-clean" placeholder="Confirm New Password"></asp:TextBox>
-        <asp:RequiredFieldValidator ID="rfvConfirmNewPass" runat="server" 
-            ControlToValidate="txtConfirmNewPassword" ErrorMessage="Please confirm your new password." 
-            CssClass="validation-error" Display="Dynamic" ValidationGroup="PasswordGroup">
-        </asp:RequiredFieldValidator>
-        <asp:CompareValidator ID="cvPasswordMatch" runat="server" 
-            ControlToValidate="txtConfirmNewPassword" ControlToCompare="txtNewPassword" 
-            ErrorMessage="Passwords do not match." CssClass="validation-error" 
-            Display="Dynamic" ValidationGroup="PasswordGroup">
-        </asp:CompareValidator>
-    </div>
+    <script type="text/javascript">
+        function togglePasswordSection() {
+            var drawer = document.getElementById('passwordDrawer');
+            if (drawer) drawer.classList.toggle('hidden-drawer');
+        }
 
-    <div class="form-actions-row">
-        <asp:Button ID="btnUpdatePassword" runat="server" Text="Confirm New Password" 
-            CssClass="btn btn-save" ValidationGroup="PasswordGroup" OnClick="btnUpdatePassword_Click" />
-    </div>
-</section>
+        function resetFormFields() {
+            var nameField = document.getElementById('<%= txtName.ClientID %>');
+            var phoneField = document.getElementById('<%= txtNumber.ClientID %>');
 
-<div class="form-actions-row bottom-actions">
-    <asp:Button ID="btnUpdate" runat="server" Text="Save" CssClass="btn btn-save" OnClick="btnUpdate_Click" />
-    <a href="../../../homePage.aspx" class="btn btn-cancel">Cancel</a>
-    <button type="button" class="btn btn-reset" onclick="resetFormFields()">Reset</button>
-</div>
+            if (nameField) nameField.value = nameField.defaultValue;
+            if (phoneField) phoneField.value = phoneField.defaultValue;
 
-</main>
-</div>
+            var currentPass = document.getElementById('<%= txtCurrentPassword.ClientID %>');
+            var newPass = document.getElementById('<%= txtNewPassword.ClientID %>');
+            var confirmPass = document.getElementById('<%= txtConfirmNewPassword.ClientID %>');
+            var otpField = document.getElementById('<%= txtProfileOTP.ClientID %>');
 
-<script type="text/javascript">
-    function togglePasswordSection() {
-        var drawer = document.getElementById('passwordDrawer');
-        drawer.classList.toggle('hidden-drawer');
-    }
-
-    function resetFormFields() {
-        document.getElementById('<%= txtName.ClientID %>').value = document.getElementById('<%= txtName.ClientID %>').defaultValue;
-        document.getElementById('<%= txtNumber.ClientID %>').value = document.getElementById('<%= txtNumber.ClientID %>').defaultValue;
-        
-        var currentPass = document.getElementById('<%= txtCurrentPassword.ClientID %>');
-        var newPass = document.getElementById('<%= txtNewPassword.ClientID %>');
-        var confirmPass = document.getElementById('<%= txtConfirmNewPassword.ClientID %>');
-        var otpField = document.getElementById('<%= txtProfileOTP.ClientID %>');
-
-        if (currentPass) currentPass.value = '';
-        if (newPass) newPass.value = '';
-        if (confirmPass) confirmPass.value = '';
-        if (otpField) otpField.value = '';
-    }
-</script>
+            if (currentPass) currentPass.value = '';
+            if (newPass) newPass.value = '';
+            if (confirmPass) confirmPass.value = '';
+            if (otpField) otpField.value = '';
+        }
+    </script>
 </asp:Content>

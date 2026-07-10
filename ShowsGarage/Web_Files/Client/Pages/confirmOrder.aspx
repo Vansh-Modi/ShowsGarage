@@ -1,8 +1,7 @@
 ﻿<%@ Page Title="Order Confirmed | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="order-success.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.order_success" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <title>Order Confirmed | Show's Garage</title>
-    <link href="/Web_Files/Client/Styles/confirmOrder.css?v=1" rel="stylesheet" type="text/css" />
+    <link href="/Web_Files/Client/Styles/confirmOrder.css?v=2" rel="stylesheet" type="text/css" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">

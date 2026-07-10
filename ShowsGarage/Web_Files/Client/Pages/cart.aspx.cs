@@ -6,19 +6,14 @@ using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Client.Pages
 {
-    public partial class cart : System.Web.UI.Page
+    public partial class cart : Page
     {
-        private string ConnectionString
-        {
-            get
-            {
-                return System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
-            }
-        }
+        private string ConnectionString => System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserID"] == null)
+            // Synced Security Gate Check explicitly matching universal framework guidelines
+            if (Session["UserRole"] == null || Session["UserID"] == null)
             {
                 Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
                 return;
@@ -34,9 +29,9 @@ namespace ShowsGarage.Web_Files.Client.Pages
         private void LoadCartFromDatabase()
         {
             int userId = Convert.ToInt32(Session["UserID"]);
-            DataTable dtCart = new DataTable();
+            var dtCart = new DataTable();
 
-            string query = @"
+            const string query = @"
                 SELECT c.ProductID, p.BrandName, p.Title, p.SellingPrice, p.MRP, c.Quantity, p.ImagePath, p.StockQuantity
                 FROM Cart c 
                 INNER JOIN Products p ON c.ProductID = p.ProductID 
@@ -54,11 +49,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 }
             }
 
-            // ====================================================================
-            // BUG 1 (PART B): INITIAL LOAD GUARD
-            // If the user somehow added 2 units from the shop page when only 1 is available, 
-            // this loop corrects it the exact moment the cart page loads.
-            // ====================================================================
             bool initialStockAdjusted = false;
             foreach (DataRow row in dtCart.Rows)
             {
@@ -80,6 +70,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     }
                 }
             }
+
             if (initialStockAdjusted)
             {
                 dtCart.AcceptChanges();
@@ -91,7 +82,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
         private void CalculateAndBindCart()
         {
             DataTable dtCart = Session["Cart"] as DataTable;
-
             if (dtCart == null || dtCart.Rows.Count == 0)
             {
                 lblEmptyMessage.Visible = true;
@@ -128,7 +118,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
         {
             DataTable dtCart = Session["Cart"] as DataTable;
             if (dtCart == null) return;
-
             int userId = Convert.ToInt32(Session["UserID"]);
 
             if (e.CommandName == "UpdateQty")
@@ -146,10 +135,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
                         if (operationalAction == "plus")
                         {
-                            // ====================================================================
-                            // BUG 1 (PART A): INCREMENT GUARD
-                            // Prevents clicking "+" past the available database StockQuantity.
-                            // ====================================================================
                             int availableStock = GetAvailableStock(targetProductId);
                             if (currentQty >= availableStock)
                             {
@@ -195,7 +180,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private int GetAvailableStock(int productId)
         {
-            string query = "SELECT StockQuantity FROM Products WHERE ProductID = @ProductID";
+            const string query = "SELECT StockQuantity FROM Products WHERE ProductID = @ProductID";
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -210,7 +195,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void UpdateQuantityInDatabase(int userId, int productId, int newQuantity)
         {
-            string query = "UPDATE Cart SET Quantity = @Quantity WHERE UserID = @UserID AND ProductID = @ProductID";
+            const string query = "UPDATE Cart SET Quantity = @Quantity WHERE UserID = @UserID AND ProductID = @ProductID";
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -226,7 +211,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void RemoveItemFromDatabase(int userId, int productId)
         {
-            string query = "DELETE FROM Cart WHERE UserID = @UserID AND ProductID = @ProductID";
+            const string query = "DELETE FROM Cart WHERE UserID = @UserID AND ProductID = @ProductID";
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -248,11 +233,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
             bool stockIssueFound = false;
             string alertMessage = "Some items in your cart are no longer available in the requested quantity:\\n";
 
-            // ====================================================================
-            // BUG 2 FIX: CONCURRENCY RACE CONDITION CHECK
-            // Verifies live quantities *right at checkout execution* in case 
-            // someone else bought the item out from underneath them while they sat on this page.
-            // ====================================================================
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 conn.Open();
@@ -264,7 +244,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     int requestedQty = Convert.ToInt32(row["Quantity"]);
                     string productTitle = row["Title"].ToString();
 
-                    string query = "SELECT StockQuantity FROM Products WHERE ProductID = @ProductID";
+                    const string query = "SELECT StockQuantity FROM Products WHERE ProductID = @ProductID";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@ProductID", productId);
@@ -296,7 +276,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 dtCart.AcceptChanges();
                 Session["Cart"] = dtCart;
                 CalculateAndBindCart();
-
                 ScriptManager.RegisterStartupScript(this, GetType(), "CheckoutStockError", $"alert('{alertMessage}');", true);
             }
             else

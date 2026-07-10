@@ -7,20 +7,14 @@ using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Client.Pages
 {
-    public partial class my_orders : System.Web.UI.Page
+    public partial class my_orders : Page
     {
-        private string ConnectionString
-        {
-            get
-            {
-                return System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
-            }
-        }
+        private string ConnectionString => System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Secure boundary gate protects the personal cart rows layout
-            if (Session["UserID"] == null)
+            // Secure boundary identity gate check matching universal global requirements
+            if (Session["UserRole"] == null || Session["UserID"] == null)
             {
                 Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx");
                 return;
@@ -36,8 +30,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
         {
             int userId = Convert.ToInt32(Session["UserID"]);
 
-            // Added PaymentScreenShot and TransactionReference selection targets to database pull row
-            string query = @"
+            const string query = @"
                 SELECT OrderID, OrderDate, TotalAmount, Status, ShippingAddress, 
                        ISNULL(PaymentScreenshotPath, '') as PaymentScreenShot, 
                        ISNULL(TransactionReference, '') as TransactionReference 
@@ -50,28 +43,29 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@UserID", userId);
-                    SqlDataAdapter da = new SqlDataAdapter(cmd);
-                    DataTable dtOrders = new DataTable();
-
-                    try
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                     {
-                        conn.Open();
-                        da.Fill(dtOrders);
+                        DataTable dtOrders = new DataTable();
+                        try
+                        {
+                            conn.Open();
+                            da.Fill(dtOrders);
 
-                        if (dtOrders.Rows.Count == 0)
-                        {
-                            pnlNoOrders.Visible = true;
+                            if (dtOrders.Rows.Count == 0)
+                            {
+                                pnlNoOrders.Visible = true;
+                            }
+                            else
+                            {
+                                rptOrders.DataSource = dtOrders;
+                                rptOrders.DataBind();
+                            }
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            rptOrders.DataSource = dtOrders;
-                            rptOrders.DataBind();
+                            lblStatusMessage.Text = "❌ Failed to load order records: " + ex.Message;
+                            lblStatusMessage.Visible = true;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        lblStatusMessage.Text = "❌ Failed to load order records: " + ex.Message;
-                        lblStatusMessage.Visible = true;
                     }
                 }
             }
@@ -85,7 +79,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 int orderId = Convert.ToInt32(rowView["OrderID"]);
                 string status = rowView["Status"].ToString();
 
-                // 1. Color-code the main status badge dynamically using CSS classes
+                // 1. Color-code the main status badge dynamically via standard styles
                 Label lblStatusBadge = (Label)e.Item.FindControl("lblStatusBadge");
                 if (lblStatusBadge != null)
                 {
@@ -98,12 +92,12 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     else if (status.Equals("Shipped", StringComparison.OrdinalIgnoreCase))
                         lblStatusBadge.CssClass = "badge-status status-shipped";
                     else if (status.Equals("Delivered", StringComparison.OrdinalIgnoreCase))
-                        lblStatusBadge.CssClass = "badge-status status-approved"; // Green success highlight
+                        lblStatusBadge.CssClass = "badge-status status-approved";
                     else
                         lblStatusBadge.CssClass = "badge-status status-default";
                 }
 
-                // 2. Drive the Timeline Step Tracker states based on the active state
+                // 2. Compute timeline process node classes based on verified statuses
                 HtmlGenericControl stepPlaced = (HtmlGenericControl)e.Item.FindControl("stepPlaced");
                 HtmlGenericControl stepVerified = (HtmlGenericControl)e.Item.FindControl("stepVerified");
                 HtmlGenericControl stepShipped = (HtmlGenericControl)e.Item.FindControl("stepShipped");
@@ -130,18 +124,17 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     }
                     else if (status.Equals("Delivered", StringComparison.OrdinalIgnoreCase))
                     {
-                        // Marks every checkpoint node completely green upon final drop-off verification
                         stepPlaced.Attributes["class"] = "timeline-step completed";
                         stepVerified.Attributes["class"] = "timeline-step completed";
                         stepShipped.Attributes["class"] = "timeline-step completed active-step";
                     }
                 }
 
-                // 3. Fetch all child items/products belonging to this specific OrderID
+                // 3. Child iteration retrieval executed via standard nested block declarations
                 Repeater rptOrderItems = (Repeater)e.Item.FindControl("rptOrderItems");
                 if (rptOrderItems != null)
                 {
-                    string itemsQuery = @"
+                    const string itemsQuery = @"
                         SELECT od.Quantity, od.UnitPrice, p.Title, p.Scale, p.BrandName 
                         FROM [dbo].[OrderDetails] od
                         INNER JOIN [dbo].[Products] p ON od.ProductID = p.ProductID
@@ -152,12 +145,17 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         using (SqlCommand cmd = new SqlCommand(itemsQuery, conn))
                         {
                             cmd.Parameters.AddWithValue("@OrderID", orderId);
-                            SqlDataAdapter da = new SqlDataAdapter(cmd);
-                            DataTable dtItems = new DataTable();
-                            da.Fill(dtItems);
-
-                            rptOrderItems.DataSource = dtItems;
-                            rptOrderItems.DataBind();
+                            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                            {
+                                DataTable dtItems = new DataTable();
+                                try
+                                {
+                                    da.Fill(dtItems);
+                                    rptOrderItems.DataSource = dtItems;
+                                    rptOrderItems.DataBind();
+                                }
+                                catch { /* Graceful fallback catch */ }
+                            }
                         }
                     }
                 }

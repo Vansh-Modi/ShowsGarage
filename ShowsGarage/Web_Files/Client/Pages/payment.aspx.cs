@@ -48,22 +48,26 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void LoadShippingFeesFromSettings()
         {
-            const string query = "SELECT TOP 1 ISNULL(ShippingFees, 120.00) FROM [dbo].[SiteSettings]";
+            const string query = "SELECT TOP 1 ISNULL(ShippingCharges, 120.00) FROM [dbo].[SiteSettings]";
 
-            var conn = new SqlConnection(ConnectionString);
-            var cmd = new SqlCommand(query, conn);
-            try
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
-                conn.Open();
-                var res = cmd.ExecuteScalar();
-                if (res != null)
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    dynamicShippingFee = Convert.ToDecimal(res);
+                    try
+                    {
+                        conn.Open();
+                        object res = cmd.ExecuteScalar();
+                        if (res != null)
+                        {
+                            dynamicShippingFee = Convert.ToDecimal(res);
+                        }
+                    }
+                    catch
+                    {
+                        dynamicShippingFee = 120.00m;
+                    }
                 }
-            }
-            catch
-            {
-                dynamicShippingFee = 120.00m;
             }
         }
 
@@ -91,27 +95,33 @@ namespace ShowsGarage.Web_Files.Client.Pages
         {
             const string query = "SELECT TOP 1 QrCodePath, UpiID, BankAccountDetails FROM [dbo].[SiteSettings]";
 
-            var conn = new SqlConnection(ConnectionString);
-            var cmd = new SqlCommand(query, conn);
-            try
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
-                conn.Open();
-                var reader = cmd.ExecuteReader();
-                if (reader.Read())
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    string qrPath = reader["QrCodePath"].ToString();
-                    string upiId = reader["UpiID"].ToString();
-                    string bankDetails = reader["BankAccountDetails"].ToString();
+                    try
+                    {
+                        conn.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string qrPath = reader["QrCodePath"].ToString();
+                                string upiId = reader["UpiID"].ToString();
+                                string bankDetails = reader["BankAccountDetails"].ToString();
 
-                    imgQrCode.ImageUrl = !string.IsNullOrEmpty(qrPath) ? qrPath : "/Assets/images/default-qr.png";
-                    litUpiId.Text = !string.IsNullOrEmpty(upiId) ? upiId : "Not Available";
-                    litBankDetails.Text = !string.IsNullOrEmpty(bankDetails) ? bankDetails : "Contact Support for Details";
+                                imgQrCode.ImageUrl = !string.IsNullOrEmpty(qrPath) ? qrPath : "/Assets/images/default-qr.png";
+                                litUpiId.Text = !string.IsNullOrEmpty(upiId) ? upiId : "Not Available";
+                                litBankDetails.Text = !string.IsNullOrEmpty(bankDetails) ? bankDetails : "Contact Support for Details";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        lblStatus.Text = $"❌ Configuration Read Failure: {ex.Message}";
+                        lblStatus.Visible = true;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                lblStatus.Text = $"❌ Configuration Read Failure: {ex.Message}";
-                lblStatus.Visible = true;
             }
         }
 
@@ -155,7 +165,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     return;
                 }
 
-                const int maxAllowedBytes = 2097152; // 2MB Boundary Limit
+                const int maxAllowedBytes = 2097152; // 2MB Upload Cap Sequence Limit
                 if (fileScreenshot.PostedFile.ContentLength > maxAllowedBytes)
                 {
                     lblStatus.Text = "⚠️ Screenshot size exceeds the maximum limit of 2MB.";
@@ -198,87 +208,89 @@ namespace ShowsGarage.Web_Files.Client.Pages
             try
             {
                 decimal totalOrderAmount = CalculateTotalDue(paymentMethod);
-                var conn = new SqlConnection(ConnectionString);
-                conn.Open();
-                var trans = conn.BeginTransaction();
-
-                try
+                using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
-                    const string insertOrderSql = @"
-                        INSERT INTO [dbo].[Orders] 
-                        (UserID, OrderDate, TotalAmount, Status, ShippingAddress, Pincode, PaymentMethod, PaymentScreenshotPath, TransactionReference) 
-                        OUTPUT INSERTED.OrderID
-                        VALUES 
-                        (@UserID, @OrderDate, @TotalAmount, @Status, @ShippingAddress, @Pincode, @PaymentMethod, @ImgPath, @TxnRef)";
+                    conn.Open();
+                    SqlTransaction trans = conn.BeginTransaction();
 
-                    int generatedOrderId;
-                    using (var cmdOrder = new SqlCommand(insertOrderSql, conn, trans))
+                    try
                     {
-                        cmdOrder.Parameters.AddWithValue("@UserID", userId);
-                        cmdOrder.Parameters.AddWithValue("@OrderDate", DateTime.Now);
-                        cmdOrder.Parameters.AddWithValue("@TotalAmount", totalOrderAmount);
-                        cmdOrder.Parameters.AddWithValue("@Status", targetOrderStatus);
-                        cmdOrder.Parameters.AddWithValue("@ShippingAddress", $"{address}, {city} (Phone: {phone}, Name: {fullName})");
-                        cmdOrder.Parameters.AddWithValue("@Pincode", pincode);
-                        cmdOrder.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
-                        cmdOrder.Parameters.AddWithValue("@ImgPath", relativeDbStringPath);
-                        cmdOrder.Parameters.AddWithValue("@TxnRef", txnRef);
+                        const string insertOrderSql = @"
+                            INSERT INTO [dbo].[Orders] 
+                            (UserID, OrderDate, TotalAmount, Status, ShippingAddress, Pincode, PaymentMethod, PaymentScreenshotPath, TransactionReference) 
+                            OUTPUT INSERTED.OrderID
+                            VALUES 
+                            (@UserID, @OrderDate, @TotalAmount, @Status, @ShippingAddress, @Pincode, @PaymentMethod, @ImgPath, @TxnRef)";
 
-                        generatedOrderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
-                    }
-
-                    const string insertItemsQuery = @"
-                        INSERT INTO [dbo].[OrderDetails] (OrderID, ProductID, Quantity, UnitPrice) 
-                        VALUES (@OrderID, @ProductID, @Quantity, @UnitPrice)";
-
-                    const string deductStockSql = @"
-                        UPDATE [dbo].[Products] 
-                        SET StockQuantity = StockQuantity - @Quantity 
-                        WHERE ProductID = @ProductID";
-
-                    foreach (DataRow row in dtCart.Rows)
-                    {
-                        using (var cmdItem = new SqlCommand(insertItemsQuery, conn, trans))
+                        int generatedOrderId;
+                        using (SqlCommand cmdOrder = new SqlCommand(insertOrderSql, conn, trans))
                         {
-                            cmdItem.Parameters.AddWithValue("@OrderID", generatedOrderId);
-                            cmdItem.Parameters.AddWithValue("@ProductID", Convert.ToInt32(row["ProductID"]));
-                            cmdItem.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
-                            cmdItem.Parameters.AddWithValue("@UnitPrice", Convert.ToDecimal(row["SellingPrice"]));
-                            cmdItem.ExecuteNonQuery();
+                            cmdOrder.Parameters.AddWithValue("@UserID", userId);
+                            cmdOrder.Parameters.AddWithValue("@OrderDate", DateTime.Now);
+                            cmdOrder.Parameters.AddWithValue("@TotalAmount", totalOrderAmount);
+                            cmdOrder.Parameters.AddWithValue("@Status", targetOrderStatus);
+                            cmdOrder.Parameters.AddWithValue("@ShippingAddress", $"{address}, {city} (Phone: {phone}, Name: {fullName})");
+                            cmdOrder.Parameters.AddWithValue("@Pincode", pincode);
+                            cmdOrder.Parameters.AddWithValue("@PaymentMethod", paymentMethod);
+                            cmdOrder.Parameters.AddWithValue("@ImgPath", relativeDbStringPath);
+                            cmdOrder.Parameters.AddWithValue("@TxnRef", txnRef);
+
+                            generatedOrderId = Convert.ToInt32(cmdOrder.ExecuteScalar());
                         }
 
-                        using (var cmdStock = new SqlCommand(deductStockSql, conn, trans))
+                        const string insertItemsQuery = @"
+                            INSERT INTO [dbo].[OrderDetails] (OrderID, ProductID, Quantity, UnitPrice) 
+                            VALUES (@OrderID, @ProductID, @Quantity, @UnitPrice)";
+
+                        const string deductStockSql = @"
+                            UPDATE [dbo].[Products] 
+                            SET StockQuantity = StockQuantity - @Quantity 
+                            WHERE ProductID = @ProductID";
+
+                        foreach (DataRow row in dtCart.Rows)
                         {
-                            cmdStock.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
-                            cmdStock.Parameters.AddWithValue("@ProductID", Convert.ToInt32(row["ProductID"]));
-                            cmdStock.ExecuteNonQuery();
+                            using (SqlCommand cmdItem = new SqlCommand(insertItemsQuery, conn, trans))
+                            {
+                                cmdItem.Parameters.AddWithValue("@OrderID", generatedOrderId);
+                                cmdItem.Parameters.AddWithValue("@ProductID", Convert.ToInt32(row["ProductID"]));
+                                cmdItem.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
+                                cmdItem.Parameters.AddWithValue("@UnitPrice", Convert.ToDecimal(row["SellingPrice"]));
+                                cmdItem.ExecuteNonQuery();
+                            }
+
+                            using (SqlCommand cmdStock = new SqlCommand(deductStockSql, conn, trans))
+                            {
+                                cmdStock.Parameters.AddWithValue("@Quantity", Convert.ToInt32(row["Quantity"]));
+                                cmdStock.Parameters.AddWithValue("@ProductID", Convert.ToInt32(row["ProductID"]));
+                                cmdStock.ExecuteNonQuery();
+                            }
                         }
-                    }
 
-                    const string deleteCartSql = "DELETE FROM Cart WHERE UserID = @UserID";
-                    using (var cmdCart = new SqlCommand(deleteCartSql, conn, trans))
+                        const string deleteCartSql = "DELETE FROM Cart WHERE UserID = @UserID";
+                        using (SqlCommand cmdCart = new SqlCommand(deleteCartSql, conn, trans))
+                        {
+                            cmdCart.Parameters.AddWithValue("@UserID", userId);
+                            cmdCart.ExecuteNonQuery();
+                        }
+
+                        trans.Commit();
+
+                        // Flush complete transaction checkout environments 
+                        Session["Cart"] = null;
+                        Session["Checkout_FullName"] = null;
+                        Session["Checkout_Phone"] = null;
+                        Session["Checkout_Address"] = null;
+                        Session["Checkout_City"] = null;
+                        Session["Checkout_Pincode"] = null;
+                        Session["Checkout_PaymentMethod"] = null;
+
+                        Response.Redirect($"confirmOrder.aspx?id={generatedOrderId}");
+                    }
+                    catch (Exception ex2)
                     {
-                        cmdCart.Parameters.AddWithValue("@UserID", userId);
-                        cmdCart.ExecuteNonQuery();
+                        trans.Rollback();
+                        throw new Exception($"Inventory verification rollback. Details: {ex2.Message}", ex2);
                     }
-
-                    trans.Commit();
-
-                    // Flush complete transaction checkout environments 
-                    Session["Cart"] = null;
-                    Session["Checkout_FullName"] = null;
-                    Session["Checkout_Phone"] = null;
-                    Session["Checkout_Address"] = null;
-                    Session["Checkout_City"] = null;
-                    Session["Checkout_Pincode"] = null;
-                    Session["Checkout_PaymentMethod"] = null;
-
-                    Response.Redirect($"confirmOrder.aspx?id={generatedOrderId}");
-                }
-                catch (Exception ex2)
-                {
-                    trans.Rollback();
-                    throw new Exception($"Inventory verification rollback. Details: {ex2.Message}", ex2);
                 }
             }
             catch (Exception ex3)

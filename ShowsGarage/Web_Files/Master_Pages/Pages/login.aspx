@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Login & Recovery | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="login.aspx.cs" Inherits="ShowsGarage.Web_Files.Master_Pages.Pages.login" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link rel="stylesheet" type="text/css" href="/Web_Files/Master_Pages/Styles/login.css" />
+    <link rel="stylesheet" type="text/css" href="/Web_Files/Master_Pages/Styles/login.css?v=2" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -9,6 +9,7 @@
         <div class="auth-card">
             <asp:MultiView ID="mvAuth" runat="server" ActiveViewIndex="0">
                 
+                <!-- View 1: Standard Login Screen Panel -->
                 <asp:View ID="vLogin" runat="server">
                     <div class="auth-header">
                         <h2>Welcome Back</h2>
@@ -41,6 +42,7 @@
                     </div>
                 </asp:View>
 
+                <!-- View 2: Forgot Password Initiation Screen Panel -->
                 <asp:View ID="vForgotPassword" runat="server">
                     <div class="auth-header">
                         <h2>Recover Password</h2>
@@ -64,6 +66,7 @@
                     </div>
                 </asp:View>
 
+                <!-- View 3: OTP Verification and Reset Core Update Screen Panel -->
                 <asp:View ID="vResetPassword" runat="server">
                     <div class="auth-header">
                         <h2>Set New Password</h2>

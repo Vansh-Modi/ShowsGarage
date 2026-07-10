@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.UI;
@@ -6,27 +7,20 @@ using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Client.Pages
 {
-    public partial class checkout : System.Web.UI.Page
+    public partial class checkout : Page
     {
-        private decimal dynamicShippingFee; // Dynamic shipping fee loaded from database
+        private decimal dynamicShippingFee;
 
-        private string ConnectionString
-        {
-            get
-            {
-                return System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
-            }
-        }
+        private string ConnectionString => ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserID"] == null || Session["UserEmail"] == null)
+            if (Session["UserRole"] == null || Session["UserID"] == null || Session["UserEmail"] == null)
             {
                 Response.Redirect("~/Web_Files/Master_Pages/Pages/login.aspx");
                 return;
             }
 
-            // Always update dynamic shipping fee from database settings
             LoadShippingFeesFromSettings();
 
             if (!IsPostBack)
@@ -42,10 +36,10 @@ namespace ShowsGarage.Web_Files.Client.Pages
             }
         }
 
-        // Load Dynamic Shipping Charges from Settings Matrix
         private void LoadShippingFeesFromSettings()
         {
-            string query = "SELECT TOP 1 ISNULL(ShippingCharges, 120.00) FROM [dbo].[SiteSettings]";
+            const string query = "SELECT TOP 1 ISNULL(ShippingCharges, 120.00) FROM [dbo].[SiteSettings]";
+
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -54,7 +48,10 @@ namespace ShowsGarage.Web_Files.Client.Pages
                     {
                         conn.Open();
                         object res = cmd.ExecuteScalar();
-                        if (res != null) dynamicShippingFee = Convert.ToDecimal(res);
+                        if (res != null)
+                        {
+                            dynamicShippingFee = Convert.ToDecimal(res);
+                        }
                     }
                     catch
                     {
@@ -96,7 +93,10 @@ namespace ShowsGarage.Web_Files.Client.Pages
             {
                 ddlPaymentMode.SelectedValue = "ONLINE";
                 ListItem codItem = ddlPaymentMode.Items.FindByValue("COD");
-                if (codItem != null) ddlPaymentMode.Items.Remove(codItem);
+                if (codItem != null)
+                {
+                    ddlPaymentMode.Items.Remove(codItem);
+                }
 
                 lblPaymentWarning.Text = "⚠️ Cash-on-Delivery is only available within Surat city limits.";
                 lblPaymentWarning.Visible = true;
@@ -104,18 +104,26 @@ namespace ShowsGarage.Web_Files.Client.Pages
             else
             {
                 if (ddlPaymentMode.Items.FindByValue("COD") == null)
+                {
                     ddlPaymentMode.Items.Add(new ListItem("Cash-on-Delivery", "COD"));
+                }
             }
 
             DataTable dtCart = Session["Cart"] as DataTable;
-            if (dtCart != null) BindCheckoutReview(dtCart);
+            if (dtCart != null)
+            {
+                BindCheckoutReview(dtCart);
+            }
             updMainCheckoutLayout.Update();
         }
 
         protected void ddlPaymentMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             DataTable dtCart = Session["Cart"] as DataTable;
-            if (dtCart != null) BindCheckoutReview(dtCart);
+            if (dtCart != null)
+            {
+                BindCheckoutReview(dtCart);
+            }
             updMainCheckoutLayout.Update();
         }
 
@@ -130,7 +138,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
             string pincode = txtPincode.Text.Trim();
             string selectedPaymentMode = ddlPaymentMode.SelectedValue;
 
-            // Strict Server-side Validation: Blocks processing if ANY field is empty or whitespace
             if (string.IsNullOrWhiteSpace(fullName) ||
                 string.IsNullOrWhiteSpace(phone) ||
                 string.IsNullOrWhiteSpace(address) ||
@@ -142,7 +149,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 return;
             }
 
-            // Standard City Validation Rules
             if (city.ToLower() != "surat" && selectedPaymentMode == "COD")
             {
                 lblStatusMessage.Text = "❌ Validation Breach: COD services are strictly closed outside Surat city limits.";
@@ -157,7 +163,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 return;
             }
 
-            // Save variables securely to Session state for final database commit inside payment.aspx
             Session["Checkout_FullName"] = fullName;
             Session["Checkout_Phone"] = phone;
             Session["Checkout_Address"] = address;
@@ -165,7 +170,6 @@ namespace ShowsGarage.Web_Files.Client.Pages
             Session["Checkout_Pincode"] = pincode;
             Session["Checkout_PaymentMethod"] = selectedPaymentMode;
 
-            // Direct customer to payment verification portal
             Response.Redirect("payment.aspx");
         }
     }

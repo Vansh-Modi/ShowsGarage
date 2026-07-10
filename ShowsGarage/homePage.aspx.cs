@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace ShowsGarage
 {
-    public partial class WebForm1 : System.Web.UI.Page
+    public partial class WebForm1 : Page
     {
         private string connString => ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
@@ -24,57 +24,49 @@ namespace ShowsGarage
 
         private void LoadHeroContent()
         {
-            string query = "SELECT HeroImg, HeroTitle, HeroSubtitle FROM [dbo].[SiteSettings] WHERE SiteSettingId = 1";
-            using (SqlConnection conn = new SqlConnection(connString))
+            const string query = "SELECT HeroImg, HeroTitle, HeroSubtitle FROM [dbo].[SiteSettings] WHERE SiteSettingId = 1";
+
+            var conn = new SqlConnection(connString);
+            var cmd = new SqlCommand(query, conn);
+            try
             {
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                if (reader.Read())
                 {
-                    try
+                    string imageUrl = reader["HeroImg"].ToString();
+                    if (!string.IsNullOrEmpty(imageUrl))
                     {
-                        conn.Open();
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                string imageUrl = reader["HeroImg"].ToString();
-                                if (!string.IsNullOrEmpty(imageUrl))
-                                {
-                                    heroSection.Attributes["style"] = $"background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{ResolveUrl(imageUrl)}');";
-                                }
-                                litHeroTitle.Text = reader["HeroTitle"].ToString();
-                                litHeroContent.Text = reader["HeroSubtitle"].ToString();
-                            }
-                        }
+                        // Set image cleanly; structural layers are completely managed via CSS setup architecture rules
+                        heroSection.Attributes["style"] = $"background-image: url('{ResolveUrl(imageUrl)}');";
                     }
-                    catch (Exception ex)
-                    {
-                        litHeroContent.Text = "Welcome to Show's Garage. System baseline warning details: " + ex.Message;
-                    }
+                    litHeroTitle.Text = reader["HeroTitle"].ToString();
+                    litHeroContent.Text = reader["HeroSubtitle"].ToString();
                 }
+            }
+            catch (Exception ex)
+            {
+                litHeroContent.Text = $"Welcome to Show's Garage. System baseline warning details: {ex.Message}";
             }
         }
 
         private void LoadGalleryData()
         {
-            string query = "SELECT ProductID, ImagePath, BrandName, Title, MRP, SellingPrice FROM [dbo].[Products] ORDER BY CreatedAt DESC";
-            using (SqlConnection conn = new SqlConnection(connString))
+            const string query = "SELECT ProductID, ImagePath, BrandName, Title, MRP, SellingPrice FROM [dbo].[Products] ORDER BY CreatedAt DESC";
+
+            var conn = new SqlConnection(connString);
+            var cmd = new SqlCommand(query, conn);
+            var sda = new SqlDataAdapter(cmd);
+
+            var dt = new DataTable();
+            try
             {
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        try
-                        {
-                            conn.Open();
-                            sda.Fill(dt);
-                            rptGallery.DataSource = dt;
-                            rptGallery.DataBind();
-                        }
-                        catch { /* Graceful baseline silence */ }
-                    }
-                }
+                conn.Open();
+                sda.Fill(dt);
+                rptGallery.DataSource = dt;
+                rptGallery.DataBind();
             }
+            catch { /* Graceful baseline silence placeholder */ }
         }
 
         protected void btnToggleGrid_Click(object sender, EventArgs e)
@@ -97,39 +89,35 @@ namespace ShowsGarage
 
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
-            Button btn = (Button)sender;
-            string productId = btn.CommandArgument;
-
-            // Redirect smoothly to details mapping parameters token view
-            Response.Redirect("~/Web_Files/Client/Pages/productDetails.aspx?id=" + productId);
+            if (sender is Button btn)
+            {
+                string productId = btn.CommandArgument;
+                Response.Redirect($"~/Web_Files/Client/Pages/productDetails.aspx?id={productId}");
+            }
         }
 
         private void BindBlogGrid()
         {
-            string query = "SELECT TOP 3 BlogId, BlogTitle, Excerpt, BlogImage, PublishDate FROM [dbo].[Blogs] ORDER BY PublishDate DESC";
-            using (SqlConnection conn = new SqlConnection(connString))
+            const string query = "SELECT TOP 3 BlogId, BlogTitle, Excerpt, BlogImage, PublishDate FROM [dbo].[Blogs] ORDER BY PublishDate DESC";
+
+            var conn = new SqlConnection(connString);
+            var cmd = new SqlCommand(query, conn);
+            var da = new SqlDataAdapter(cmd);
+
+            var dtBlogs = new DataTable();
+            try
             {
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                    {
-                        DataTable dtBlogs = new DataTable();
-                        try
-                        {
-                            conn.Open();
-                            da.Fill(dtBlogs);
-                            rptLatestBlogs.DataSource = dtBlogs;
-                            rptLatestBlogs.DataBind();
-                        }
-                        catch { /* Failure fallback tracking handles checks */ }
-                    }
-                }
+                conn.Open();
+                da.Fill(dtBlogs);
+                rptLatestBlogs.DataSource = dtBlogs;
+                rptLatestBlogs.DataBind();
             }
+            catch { /* Failure fallback tracking placeholder */ }
         }
 
         protected void rptGallery_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
-
+            // Extensible hooks point
         }
     }
 }

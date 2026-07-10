@@ -13,7 +13,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
         protected void Page_Load(object sender, EventArgs e)
         {
             // Core Security Validation Gate matching system authorization architecture
-            if (Session["UserRole"] == null)
+            if (Session["UserRole"] == null || Session["UserID"] == null)
             {
                 string currentUrlWithQueryString = Request.Url.PathAndQuery;
                 Response.Redirect("/Web_Files/Master_Pages/Pages/login.aspx?ReturnUrl=" + HttpUtility.UrlEncode(currentUrlWithQueryString));
@@ -54,45 +54,49 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
             try
             {
-                var conn = new SqlConnection(ConnectionString);
-                var cmd = new SqlCommand(query, conn);
-
-                cmd.Parameters.AddWithValue("@OrderID", orderId);
-                cmd.Parameters.AddWithValue("@UserID", currentUserId);
-
-                conn.Open();
-                var reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
-                    pnlTrackingInfo.Visible = true;
-                    lblErrorMessage.Visible = false;
-
-                    lblOrderID.Text = reader["OrderID"].ToString();
-                    lblStatus.Text = reader["Status"].ToString();
-                    lblDeliveryAddress.Text = reader["ShippingAddress"].ToString();
-
-                    string partner = reader["TrackingPartner"].ToString();
-                    string trackNo = reader["TrackingNumber"].ToString();
-                    object estDate = reader["EstimatedDeliveryDate"];
-
-                    lblCourierName.Text = !string.IsNullOrEmpty(partner) ? partner : "Processing";
-                    lblTrackingNo.Text = !string.IsNullOrEmpty(trackNo) ? trackNo : "Not Available Yet";
-
-                    if (estDate != DBNull.Value && estDate != null)
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        lblEstDelivery.Text = Convert.ToDateTime(estDate).ToString("dd MMM yyyy (dddd)");
+                        cmd.Parameters.AddWithValue("@OrderID", orderId);
+                        cmd.Parameters.AddWithValue("@UserID", currentUserId);
+
+                        conn.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                pnlTrackingInfo.Visible = true;
+                                lblErrorMessage.Visible = false;
+
+                                lblOrderID.Text = reader["OrderID"].ToString();
+                                lblStatus.Text = reader["Status"].ToString();
+                                lblDeliveryAddress.Text = reader["ShippingAddress"].ToString();
+
+                                string partner = reader["TrackingPartner"].ToString();
+                                string trackNo = reader["TrackingNumber"].ToString();
+                                object estDate = reader["EstimatedDeliveryDate"];
+
+                                lblCourierName.Text = !string.IsNullOrEmpty(partner) ? partner : "Processing";
+                                lblTrackingNo.Text = !string.IsNullOrEmpty(trackNo) ? trackNo : "Not Available Yet";
+
+                                if (estDate != DBNull.Value && estDate != null)
+                                {
+                                    lblEstDelivery.Text = Convert.ToDateTime(estDate).ToString("dd MMM yyyy (dddd)");
+                                }
+                                else
+                                {
+                                    lblEstDelivery.Text = "Calculating schedule...";
+                                }
+                            }
+                            else
+                            {
+                                lblErrorMessage.Text = "❌ Access Boundary Violation: Record resource not found or missing structural security authorization tokens.";
+                                lblErrorMessage.Visible = true;
+                                pnlTrackingInfo.Visible = false;
+                            }
+                        }
                     }
-                    else
-                    {
-                        lblEstDelivery.Text = "Calculating schedule...";
-                    }
-                }
-                else
-                {
-                    lblErrorMessage.Text = "❌ Access Boundary Violation: Record resource not found or missing structural security authorization tokens.";
-                    lblErrorMessage.Visible = true;
-                    pnlTrackingInfo.Visible = false;
                 }
             }
             catch (Exception ex)

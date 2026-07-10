@@ -1,78 +1,82 @@
-﻿<%@ Page Title="Show's Garage | Registration" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="register.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.register" %>
+﻿<%@ Page Title="Create Account | Show's Garage" Language="C#" MasterPageFile="~/Web_Files/Master_Pages/Pages/Site.Master" AutoEventWireup="true" CodeBehind="register.aspx.cs" Inherits="ShowsGarage.Web_Files.Client.Pages.register" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link href="/Web_Files/Client/Styles/register.css?v=5" rel="stylesheet" type="text/css" runat="server" />
+    <link href="/Web_Files/Client/Styles/register.css?v=3" rel="stylesheet" type="text/css" />
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="auth-theme-wrapper">
-        <div class="auth-centered-container">
+        <main class="auth-centered-container">
             <div class="auth-card-width">
 
-                <div class="auth-header-block">
-                    <h2 class="auth-main-heading">Join Club</h2>
-                    <p class="auth-subtitle-text">Create your show's garage account</p>
-                </div>
+                <!-- Roomy Header Section with Fixed Contrast Variables -->
+                <header class="auth-header-block">
+                    <h1 class="auth-main-heading">Join The Garage</h1>
+                    <p class="auth-subtitle-text">Create an account to start managing your diecast collection log.</p>
+                </header>
 
-                <div class="auth-form-body">
+                <div class="profile-form">
+                    <!-- Full Name Row -->
                     <div class="input-group">
-                        <label>User Name</label>
-                        <asp:TextBox ID="txtName" runat="server" CssClass="auth-input" placeholder="Enter User Name"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvName" runat="server" ControlToValidate="txtName" Display="Dynamic" CssClass="auth-error-message" ErrorMessage="Name Required" ValidationGroup="RegGroup"></asp:RequiredFieldValidator>
+                        <label>Full Name</label>
+                        <asp:TextBox ID="txtName" runat="server" CssClass="auth-input" placeholder="Enter full name"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvName" runat="server" ControlToValidate="txtName" ErrorMessage="Name is required" CssClass="auth-error-message" Display="Dynamic" ValidationGroup="RegisterVG"></asp:RequiredFieldValidator>
                     </div>
 
+                    <!-- Contact Number Row -->
                     <div class="input-group">
                         <label>Phone Number</label>
-                        <asp:TextBox ID="txtNumber" runat="server" CssClass="auth-input" TextMode="Phone" placeholder="Enter Phone Number"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvNumber" runat="server" ControlToValidate="txtNumber" CssClass="auth-error-message" Display="Dynamic" ErrorMessage="Phone Number Required" ValidationGroup="RegGroup"></asp:RequiredFieldValidator>
-                        <asp:RegularExpressionValidator ID="revNumber" runat="server" ControlToValidate="txtNumber" CssClass="auth-error-message" Display="Dynamic" ErrorMessage="Enter Correct Number" ValidationExpression="^[6-9]\d{9}$" ValidationGroup="RegGroup"></asp:RegularExpressionValidator>
+                        <asp:TextBox ID="txtNumber" runat="server" CssClass="auth-input" placeholder="10-Digit Contact Number" MaxLength="10"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="rfvPhone" runat="server" ControlToValidate="txtNumber" ErrorMessage="Phone number is required" CssClass="auth-error-message" Display="Dynamic" ValidationGroup="RegisterVG"></asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="revPhone" runat="server" ControlToValidate="txtNumber" ValidationExpression="^[0-9]{10}$" ErrorMessage="Please enter a valid 10-digit phone number" CssClass="auth-error-message" Display="Dynamic" ValidationGroup="RegisterVG"></asp:RegularExpressionValidator>
                     </div>
 
+                    <!-- Email Address and Get OTP Row -->
                     <div class="input-group">
                         <label>Email Address</label>
-                        <asp:TextBox ID="txtEmail" runat="server" CssClass="auth-input" placeholder="Enter your email" AutoPostBack="false" TextMode="Email"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtEmail" CssClass="auth-error-message" Display="Dynamic" ErrorMessage="Email Required" ValidationGroup="RegGroup"></asp:RequiredFieldValidator>
-                        <asp:RequiredFieldValidator ID="rfvEmailForOtp" runat="server" ControlToValidate="txtEmail" CssClass="auth-error-message" Display="Dynamic" ErrorMessage="Email Required for OTP" ValidationGroup="OtpGroup"></asp:RequiredFieldValidator>
-                        <asp:RegularExpressionValidator ID="revEmail" runat="server" Display="Dynamic" CssClass="auth-error-message" ErrorMessage="Invalid Email" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ValidationGroup="RegGroup" ControlToValidate="txtEmail"></asp:RegularExpressionValidator>
-                        <asp:RegularExpressionValidator ID="revEmailForOtp" runat="server" Display="Dynamic" CssClass="auth-error-message" ErrorMessage="Invalid Email" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ValidationGroup="OtpGroup" ControlToValidate="txtEmail"></asp:RegularExpressionValidator>
+                        <div class="auth-inline-input-row">
+                            <asp:TextBox ID="txtEmail" runat="server" CssClass="auth-input auth-flex-input" placeholder="name@email.com" TextMode="Email"></asp:TextBox>
+                            <asp:Button ID="btnGetOTP" runat="server" Text="Get OTP" CssClass="btn-inline-action" OnClick="btnGetOTP_Click" ValidationGroup="RegisterVG" />
+                        </div>
+                        <asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtEmail" ErrorMessage="Email address is required" CssClass="auth-error-message" Display="Dynamic" ValidationGroup="RegisterVG"></asp:RequiredFieldValidator>
                     </div>
 
+                    <!-- Verification OTP Entry Row -->
+                    <div class="input-group">
+                        <label>Enter Verification OTP</label>
+                        <asp:TextBox ID="txtOTP" runat="server" CssClass="auth-input" placeholder="6-Digit Code" MaxLength="6"></asp:TextBox>
+                        <div class="auth-resend-link-box">
+                            <asp:LinkButton ID="btnResendOTP" runat="server" OnClick="btnGetOTP_Click" CssClass="auth-resend-btn" CausesValidation="False">Resend OTP Code</asp:LinkButton>
+                        </div>
+                    </div>
+
+                    <!-- Password Configuration Rows -->
                     <div class="input-group">
                         <label>Password</label>
                         <asp:TextBox ID="txtPassword" runat="server" CssClass="auth-input" TextMode="Password" placeholder="••••••••"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvPassword" runat="server" CssClass="auth-error-message" ControlToValidate="txtPassword" Display="Dynamic" ErrorMessage="Password Required" ValidationGroup="RegGroup"></asp:RequiredFieldValidator>
-                        <asp:RegularExpressionValidator ID="revPassword" runat="server" ValidationExpression="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$" ErrorMessage="Password must be 8-20 characters, include a capital letter, a number, and a symbol." ControlToValidate="txtPassword" Display="Dynamic" ValidationGroup="RegGroup" CssClass="auth-error-message"></asp:RegularExpressionValidator>
+                        <asp:RequiredFieldValidator ID="rfvPassword" runat="server" ControlToValidate="txtPassword" ErrorMessage="Password is required" CssClass="auth-error-message" Display="Dynamic" ValidationGroup="RegisterVG"></asp:RequiredFieldValidator>
                     </div>
 
                     <div class="input-group">
                         <label>Confirm Password</label>
                         <asp:TextBox ID="txtConfirmPass" runat="server" CssClass="auth-input" TextMode="Password" placeholder="••••••••"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="rfvConfirmPass" runat="server" CssClass="auth-error-message" ControlToValidate="txtConfirmPass" Display="Dynamic" ErrorMessage="Password Required" ValidationGroup="RegGroup"></asp:RequiredFieldValidator>
-                        <asp:CompareValidator ID="cvConfirmPass" runat="server" CssClass="auth-error-message" ErrorMessage="Password Mismatch" ControlToCompare="txtPassword" ControlToValidate="txtConfirmPass" Display="Dynamic" ValidationGroup="RegGroup"></asp:CompareValidator>
+                        <asp:RequiredFieldValidator ID="rfvConfirmPass" runat="server" ControlToValidate="txtConfirmPass" ErrorMessage="Please confirm your password" CssClass="auth-error-message" Display="Dynamic" ValidationGroup="RegisterVG"></asp:RequiredFieldValidator>
+                        <asp:CompareValidator ID="cvPasswordMatch" runat="server" ControlToValidate="txtConfirmPass" ControlToCompare="txtPassword" ErrorMessage="Passwords do not match." CssClass="auth-error-message" Display="Dynamic" ValidationGroup="RegisterVG"></asp:CompareValidator>
                     </div>
 
-                    <div class="input-group">
-                        <label>OTP</label>
-                        <div class="auth-inline-input-row">
-                            <asp:TextBox ID="txtOTP" runat="server" CssClass="auth-input auth-flex-input" placeholder="Enter OTP"></asp:TextBox>
-                            <asp:Button ID="btnGetOTP" runat="server" Text="Get OTP" CssClass="btn-inline-action" OnClick="btnGetOTP_Click" ValidationGroup="OtpGroup" />
-                        </div>
-                        <div class="auth-resend-link-box">
-                            <asp:LinkButton ID="btnResendOTP" runat="server" Visible="false" OnClick="btnGetOTP_Click" CssClass="auth-resend-btn" ValidationGroup="OtpGroup">
-                                Didn't get it? Resend OTP
-                            </asp:LinkButton>
-                        </div>
-                    </div>
+                    <!-- Registration Submit Action -->
+                    <asp:Button ID="btnRegister" runat="server" Text="Complete Registration" CssClass="auth-primary-submit-btn" OnClick="btnRegister_Click" ValidationGroup="RegisterVG" />
 
-                    <asp:Button ID="btnRegister" runat="server" Text="REGISTER" CssClass="auth-primary-submit-btn" OnClick="btnRegister_Click" ValidationGroup="RegGroup" />
-
-                    <div class="auth-footer-routing-box">
-                        <p class="auth-footer-text">Already a member? <a href="/Web_Files/Master_Pages/Pages/login.aspx" class="auth-redirect-link">Login here</a></p>
+                    <!-- Generous Footer Segment Layout -->
+                    <footer class="auth-footer-routing-box">
+                        <div class="auth-footer-text">
+                            Already part of the garage? <a href="/Web_Files/Master_Pages/Pages/login.aspx" class="auth-redirect-link">Log In Instead</a>
+                        </div>
                         <asp:Label ID="lblError" runat="server" CssClass="auth-system-alert-text"></asp:Label>
-                    </div>
+                    </footer>
                 </div>
 
             </div>
-        </div>
+        </main>
     </div>
 </asp:Content>

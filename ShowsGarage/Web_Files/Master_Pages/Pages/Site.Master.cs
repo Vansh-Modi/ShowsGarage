@@ -3,12 +3,10 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Web;
 using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Master_Pages.Pages
 {
-    public partial class Site : System.Web.UI.MasterPage
+    public partial class Site : MasterPage
     {
         private string ConnectionString => ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
@@ -32,80 +30,76 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
 
         private void LoadGlobalDynamicBrandingParameters()
         {
-            string query = "SELECT TOP 1 Logo, LogoTitle, Copyright, Email, PhoneNumber FROM [dbo].[SiteSettings] WHERE [SiteSettingId] = 1";
+            const string query = "SELECT TOP 1 Logo, LogoTitle, Copyright, Email, PhoneNumber FROM [dbo].[SiteSettings] WHERE [SiteSettingId] = 1";
 
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            var conn = new SqlConnection(ConnectionString);
+            var cmd = new SqlCommand(query, conn);
+            try
             {
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                conn.Open();
+                var reader = cmd.ExecuteReader();
+                if (!reader.Read()) return;
+
+                object dbLogo = reader["Logo"];
+                object dbLogoTitle = reader["LogoTitle"];
+
+                ibLogo.ImageUrl = (dbLogo == DBNull.Value || string.IsNullOrEmpty(dbLogo.ToString().Trim()))
+                    ? "~/Web_Files/Images/icons/Show's Garage Logo BG.png"
+                    : dbLogo.ToString().Trim();
+
+                string companyTitle = (dbLogoTitle == DBNull.Value || string.IsNullOrEmpty(dbLogoTitle.ToString().Trim()))
+                    ? "Show's Garage"
+                    : dbLogoTitle.ToString().Trim();
+
+                ibLogo.AlternateText = companyTitle;
+                litFooterBrandTitle.Text = companyTitle.ToUpper();
+
+                object dbCopyright = reader["Copyright"];
+                if (dbCopyright != DBNull.Value && !string.IsNullOrEmpty(dbCopyright.ToString()))
                 {
-                    try
+                    string copyrightText = dbCopyright.ToString();
+                    if (copyrightText.Contains("{year}"))
                     {
-                        conn.Open();
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (!reader.Read())
-                            {
-                                return;
-                            }
-
-                            object dbLogo = reader["Logo"];
-                            object dbLogoTitle = reader["LogoTitle"];
-
-                            ibLogo.ImageUrl = ((dbLogo == DBNull.Value || string.IsNullOrEmpty(dbLogo.ToString().Trim())) ? "~/Web_Files/Images/icons/Show's Garage Logo BG.png" : dbLogo.ToString().Trim());
-
-                            string companyTitle = ((dbLogoTitle == DBNull.Value || string.IsNullOrEmpty(dbLogoTitle.ToString().Trim())) ? "Show's Garage" : dbLogoTitle.ToString().Trim());
-                            ibLogo.AlternateText = companyTitle;
-                            litFooterBrandTitle.Text = companyTitle.ToUpper();
-
-                            object dbCopyright = reader["Copyright"];
-                            if (dbCopyright != DBNull.Value && !string.IsNullOrEmpty(dbCopyright.ToString()))
-                            {
-                                string copyrightText = dbCopyright.ToString();
-                                if (copyrightText.Contains("{year}"))
-                                {
-                                    copyrightText = copyrightText.Replace("{year}", DateTime.Now.Year.ToString());
-                                }
-                                litCopyrightDisplay.Text = copyrightText;
-                            }
-                            else
-                            {
-                                litCopyrightDisplay.Text = $"&copy; {DateTime.Now.Year} Shows Garage";
-                            }
-
-                            object dbEmail = reader["Email"];
-                            if (dbEmail != DBNull.Value && !string.IsNullOrEmpty(dbEmail.ToString().Trim()))
-                            {
-                                lnkFooterEmail.HRef = "mailto:" + dbEmail.ToString().Trim();
-                                lnkFooterEmail.InnerText = dbEmail.ToString().Trim();
-                                lnkFooterEmail.Visible = true;
-                            }
-                            else
-                            {
-                                lnkFooterEmail.Visible = false;
-                            }
-
-                            object dbPhone = reader["PhoneNumber"];
-                            if (dbPhone != DBNull.Value && !string.IsNullOrEmpty(dbPhone.ToString().Trim()))
-                            {
-                                lnkFooterPhone.HRef = "tel:" + dbPhone.ToString().Trim();
-                                lnkFooterPhone.InnerText = "Call: " + dbPhone.ToString().Trim();
-                                lnkFooterPhone.Visible = true;
-                            }
-                            else
-                            {
-                                lnkFooterPhone.Visible = false;
-                            }
-                        }
+                        copyrightText = copyrightText.Replace("{year}", DateTime.Now.Year.ToString());
                     }
-                    catch
-                    {
-                        ibLogo.ImageUrl = "~/Web_Files/Images/icons/Show's Garage Logo BG.png";
-                        litFooterBrandTitle.Text = "SHOWS GARAGE";
-                        litCopyrightDisplay.Text = $"&copy; {DateTime.Now.Year} Shows Garage";
-                        lnkFooterEmail.Visible = false;
-                        lnkFooterPhone.Visible = false;
-                    }
+                    litCopyrightDisplay.Text = copyrightText;
                 }
+                else
+                {
+                    litCopyrightDisplay.Text = $"&copy; {DateTime.Now.Year} Shows Garage";
+                }
+
+                object dbEmail = reader["Email"];
+                if (dbEmail != DBNull.Value && !string.IsNullOrEmpty(dbEmail.ToString().Trim()))
+                {
+                    lnkFooterEmail.HRef = "mailto:" + dbEmail.ToString().Trim();
+                    lnkFooterEmail.InnerText = dbEmail.ToString().Trim();
+                    lnkFooterEmail.Visible = true;
+                }
+                else
+                {
+                    lnkFooterEmail.Visible = false;
+                }
+
+                object dbPhone = reader["PhoneNumber"];
+                if (dbPhone != DBNull.Value && !string.IsNullOrEmpty(dbPhone.ToString().Trim()))
+                {
+                    lnkFooterPhone.HRef = "tel:" + dbPhone.ToString().Trim();
+                    lnkFooterPhone.InnerText = "Call: " + dbPhone.ToString().Trim();
+                    lnkFooterPhone.Visible = true;
+                }
+                else
+                {
+                    lnkFooterPhone.Visible = false;
+                }
+            }
+            catch
+            {
+                ibLogo.ImageUrl = "~/Web_Files/Images/icons/Show's Garage Logo BG.png";
+                litFooterBrandTitle.Text = "SHOWS GARAGE";
+                litCopyrightDisplay.Text = $"&copy; {DateTime.Now.Year} Shows Garage";
+                lnkFooterEmail.Visible = false;
+                lnkFooterPhone.Visible = false;
             }
         }
 
@@ -127,15 +121,9 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
             }
         }
 
-        protected void ibUserLogout_Click(object sender, ImageClickEventArgs e)
-        {
-            ExecuteGlobalLogoutSequence();
-        }
+        protected void ibUserLogout_Click(object sender, ImageClickEventArgs e) => ExecuteGlobalLogoutSequence();
 
-        protected void ibAdminLogout_Click(object sender, ImageClickEventArgs e)
-        {
-            ExecuteGlobalLogoutSequence();
-        }
+        protected void ibAdminLogout_Click(object sender, ImageClickEventArgs e) => ExecuteGlobalLogoutSequence();
 
         private void ExecuteGlobalLogoutSequence()
         {
@@ -144,10 +132,7 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
             Response.Redirect("~/homePage.aspx");
         }
 
-        protected void btnFooterJoin_Click(object sender, EventArgs e)
-        {
-            txtFooterEmail.Text = string.Empty;
-        }
+        protected void btnFooterJoin_Click(object sender, EventArgs e) => txtFooterEmail.Text = string.Empty;
 
         protected void ibLogo_Click(object sender, ImageClickEventArgs e)
         {
@@ -162,3 +147,5 @@ namespace ShowsGarage.Web_Files.Master_Pages.Pages
         }
     }
 }
+
+

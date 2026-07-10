@@ -7,10 +7,10 @@ using System.Web.UI.WebControls;
 
 namespace ShowsGarage.Web_Files.Client.Pages
 {
-    public partial class shop : System.Web.UI.Page
+    public partial class shop : Page
     {
-        private const string BasePillStyle = "flex-shrink: 0 !important; white-space: nowrap !important; display: inline-block !important; background-color: #141414 !important; border: 1px solid #222222 !important; color: #aaaaaa !important; font-size: 13px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; padding: 8px 18px !important; border-radius: 20px !important; text-decoration: none !important; cursor: pointer !important;";
-        private const string ActivePillStyle = "flex-shrink: 0 !important; white-space: nowrap !important; display: inline-block !important; background-color: rgba(255, 87, 34, 0.08) !important; border: 1px solid #ff5722 !important; color: #ff5722 !important; font-size: 13px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.3px !important; padding: 8px 18px !important; border-radius: 20px !important; text-decoration: none !important; cursor: pointer !important;";
+        private const string BasePillStyle = "btn-filter-pill-isolated";
+        private const string ActivePillStyle = "btn-filter-pill-isolated active-pill-isolated";
 
         private string connStr => ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
@@ -34,21 +34,25 @@ namespace ShowsGarage.Web_Files.Client.Pages
 
         private void BindCategories()
         {
-            string query = "SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryName ASC";
+            const string query = "SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryName ASC";
 
             using (SqlConnection con = new SqlConnection(connStr))
-            using (SqlCommand cmd = new SqlCommand(query, con))
-            using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
             {
-                DataTable dt = new DataTable();
-                try
+                using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    con.Open();
-                    sda.Fill(dt);
-                    rptCategories.DataSource = dt;
-                    rptCategories.DataBind();
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        try
+                        {
+                            con.Open();
+                            sda.Fill(dt);
+                            rptCategories.DataSource = dt;
+                            rptCategories.DataBind();
+                        }
+                        catch { /* Quiet fallback catch engine */ }
+                    }
                 }
-                catch { /* Quiet fallback catch engine */ }
             }
         }
 
@@ -65,31 +69,33 @@ namespace ShowsGarage.Web_Files.Client.Pages
             query += " ORDER BY ProductID DESC";
 
             using (SqlConnection con = new SqlConnection(connStr))
-            using (SqlCommand cmd = new SqlCommand(query, con))
             {
-                if (categoryId > 0)
+                using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@catID", categoryId);
-                }
-
-                using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
-                {
-                    DataTable dt = new DataTable();
-                    try
+                    if (categoryId > 0)
                     {
-                        con.Open();
-                        sda.Fill(dt);
-                        rptProducts.DataSource = dt;
-                        rptProducts.DataBind();
+                        cmd.Parameters.AddWithValue("@catID", categoryId);
                     }
-                    catch { /* Quiet fallback catch engine */ }
+
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        try
+                        {
+                            con.Open();
+                            sda.Fill(dt);
+                            rptProducts.DataSource = dt;
+                            rptProducts.DataBind();
+                        }
+                        catch { /* Quiet fallback catch engine */ }
+                    }
                 }
             }
         }
 
         private void BindProductsFilteredBySearch(string keyword)
         {
-            string query = @"SELECT ProductID, Title, BrandName, MRP, SellingPrice, ImagePath, 
+            const string query = @"SELECT ProductID, Title, BrandName, MRP, SellingPrice, ImagePath, 
                                    ISNULL(StockQuantity, 0) AS StockQuantity 
                             FROM Products 
                             WHERE Title LIKE @search 
@@ -97,48 +103,48 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             ORDER BY ProductID DESC";
 
             using (SqlConnection con = new SqlConnection(connStr))
-            using (SqlCommand cmd = new SqlCommand(query, con))
             {
-                cmd.Parameters.AddWithValue("@search", "%" + keyword + "%");
-
-                using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    DataTable dt = new DataTable();
-                    try
+                    cmd.Parameters.AddWithValue("@search", "%" + keyword + "%");
+
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
                     {
-                        con.Open();
-                        sda.Fill(dt);
-                        rptProducts.DataSource = dt;
-                        rptProducts.DataBind();
+                        DataTable dt = new DataTable();
+                        try
+                        {
+                            con.Open();
+                            sda.Fill(dt);
+                            rptProducts.DataSource = dt;
+                            rptProducts.DataBind();
+                        }
+                        catch { /* Quiet fallback catch engine */ }
                     }
-                    catch { /* Quiet fallback catch engine */ }
                 }
             }
         }
 
         protected void CategoryFilter_Click(object sender, EventArgs e)
         {
-            LinkButton btn = (LinkButton)sender;
-            int categoryId = Convert.ToInt32(btn.CommandArgument);
-            BindProducts(categoryId);
-
-            // Reset default base styles safely using your constants
-            lnkAll.Attributes["style"] = BasePillStyle;
-            lnkAll.CssClass = "btn-filter-pill-isolated";
-
-            foreach (RepeaterItem item in rptCategories.Items)
+            LinkButton btn = sender as LinkButton;
+            if (btn != null)
             {
-                LinkButton lb = (LinkButton)item.FindControl("lnkCat");
-                if (lb != null)
-                {
-                    lb.Attributes["style"] = BasePillStyle;
-                    lb.CssClass = "btn-filter-pill-isolated";
-                }
-            }
+                int categoryId = Convert.ToInt32(btn.CommandArgument);
+                BindProducts(categoryId);
 
-            // Bind high performance active style tokens onto selection target
-            btn.Attributes["style"] = ActivePillStyle;
-            btn.CssClass = "btn-filter-pill-isolated active-pill-isolated";
+                lnkAll.CssClass = BasePillStyle;
+
+                foreach (RepeaterItem item in rptCategories.Items)
+                {
+                    LinkButton lb = (LinkButton)item.FindControl("lnkCat");
+                    if (lb != null)
+                    {
+                        lb.CssClass = BasePillStyle;
+                    }
+                }
+
+                btn.CssClass = ActivePillStyle;
+            }
         }
     }
 }

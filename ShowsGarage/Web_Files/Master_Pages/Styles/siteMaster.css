@@ -1,10 +1,52 @@
-﻿/* --- 1. GLOBAL & STICKY FOOTER RESET --- */
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&display=swap');
+
+/* ==========================================================================
+   THEME ARCHITECTURE CONFIGURATION SYSTEM (PERFORMANCE BLENDED CONTRAST)
+   ========================================================================== */
+:root {
+    /* Brand Anchors - Fixed Across Framework Modes */
+    --brand-cream: #f3e6b5;
+    --brand-racing-yellow: #ffcc00; /* High-Octane Vivid Yellow Accent */
+    --original-footer-bg: #1a1a1a;
+    /* Workspace Environments (Light Mode Configuration Layout) */
+    --body-bg: #ebeeef; /* Chalky Blue-Grey Canvas */
+    --header-bg: #282b33; /* Dark Steel Grey Header Panel */
+    --card-bg: #ffffff;
+    /* Typography & Core Control Elements (Light Mode) */
+    --text-main: #232b35;
+    --text-muted: #536375;
+    --nav-link: #f3e6b5;
+    --nav-link-hover: #ffffff;
+    --search-btn-bg: var(--brand-racing-yellow); /* Vivid Yellow for Light Mode */
+    --icon-filter: brightness(0) invert(0.9);
+    --logo-blend: normal;
+}
+
+[data-theme="dark"] {
+    /* Workspace Environments Override (Dark Mode Configuration Layout) */
+    --body-bg: #121316; /* Deep Matte Carbon Black */
+    --header-bg: #cfd6dc; /* Light Steel Grey Header Panel */
+    --card-bg: #1c1d22;
+    /* Typography & Core Control Elements Override (Dark Mode) */
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --nav-link: #1e293b; /* Deep slate navigation color against light steel */
+    --nav-link-hover: #e50914;
+    --search-btn-bg: var(--nav-link); /* Dynamically maps to Deep Slate #1e293b in Dark Mode */
+    --icon-filter: brightness(0) invert(0.15);
+    --logo-blend: multiply;
+}
+
+/* --- 1. GLOBAL & STICKY FOOTER RESET --- */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background-color: #005461; /* Deep Teal Body */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--body-bg) !important;
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .wrapper {
@@ -15,61 +57,59 @@ html, body {
 
 /* --- 2. PROMO STRIP & HEADER --- */
 .promo-strip {
-    background-color: #1a1a1a;
-    /*    color: #FAEAB1;*/
+    background-color: #0f1011;
     text-align: center;
-    padding: 6px 0;
+    padding: 7px 0;
     font-size: 11px;
-    letter-spacing: 1.5px;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 2px;
     text-transform: uppercase;
+    color: #ffffff;
 }
 
-/* Card Link Wrapper - Removes default link styles */
 .my-gallery-card-link {
     text-decoration: none;
     color: inherit;
     display: block;
 }
 
-/* Card Styling & Hover Effects */
 .my-gallery-card {
-    background: #ffffff;
-    border-radius: 8px;
+    background: var(--card-bg);
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.3s ease;
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-/* Subtle lift animation when hovering anywhere on the card/image */
 .my-gallery-card-link:hover .my-gallery-card {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
 .my-gallery-image-wrapper {
     width: 100%;
-    height: 220px; /* Adjust height to fit your toy cars nicely */
+    height: 220px;
     overflow: hidden;
-    background-color: #f5f5f5;
+    background-color: rgba(0,0,0,0.03);
 }
 
 .my-gallery-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Optional zoom effect on the image when card is hovered */
 .my-gallery-card-link:hover .my-gallery-image {
-    transform: scale(1.05);
+    transform: scale(1.06);
 }
 
 .my-gallery-card-body {
-    padding: 20px;
+    padding: 24px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -78,46 +118,56 @@ html, body {
 
     .my-gallery-card-body h4 {
         margin: 0 0 10px 0;
-        font-size: 1.25rem;
-        color: #333;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
     }
 
     .my-gallery-card-body p {
         margin: 0 0 20px 0;
-        color: #666;
+        color: var(--text-muted);
         font-size: 0.95rem;
-        line-height: 1.4;
+        line-height: 1.5;
         flex-grow: 1;
     }
 
-/* The styled "Fake" Button */
 .my-gallery-view-btn {
     display: inline-block;
-    background-color: #2c3e50;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease;
+    background-color: #232b35;
+    color: var(--brand-cream);
+    padding: 11px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
     align-self: center;
 }
 
-/* Changes button color when hovering anywhere on the card */
+[data-theme="dark"] .my-gallery-view-btn {
+    background-color: var(--header-bg);
+    color: var(--text-main);
+}
+
 .my-gallery-card-link:hover .my-gallery-view-btn {
-    background-color: #e74c3c;
+    background-color: #e50914;
+    color: #ffffff;
+    transform: scale(1.03);
 }
 
 header {
-    background-color: #D4C491;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: var(--header-bg) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     width: 100%;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #nav-bar {
     display: flex;
     flex-direction: column;
-    padding: 10px 5%;
+    padding: 20px 5% 16px 5%;
 }
 
 .header-top {
@@ -126,126 +176,233 @@ header {
     align-items: center;
     width: 100%;
     gap: 15px;
+    margin-bottom: 6px;
 }
 
 .logo-img {
-    width: 80px;
+    width: 82px;
     height: auto;
     flex-shrink: 0;
+    mix-blend-mode: var(--logo-blend);
+    transition: transform 0.2s ease;
 }
+
+    .logo-img:hover {
+        transform: scale(1.04);
+    }
 
 /* --- 3. ENHANCED SEARCH BAR --- */
 #search-bar {
-    #search-bar {
-        background: rgba(255, 255, 255, 0.9); /* 90% white */
-        backdrop-filter: blur(5px);
-        border: 1px solid #d4c491;
-    }
-
     display: flex;
     align-items: center;
-    border: 1px solid #d4c491;
+    border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 25px;
-    background: #fff;
+    background: #ffffff;
     flex: 1;
     max-width: 500px;
-    height: 38px;
+    height: 40px;
     overflow: hidden;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
 }
 
     #search-bar input[type="text"] {
         flex: 1;
         border: none !important;
-        padding: 0 12px;
+        padding: 0 18px;
         height: 100%;
         outline: none;
         font-size: 14px;
         background: transparent;
+        color: #1a1a1a;
         min-width: 0;
     }
 
 .search-icon {
-    width: 42px !important;
+    width: 46px !important;
     height: 100% !important;
-    background: linear-gradient(135deg, #fcf6e0 0%, #FAEAB1 100%);
+    background: var(--search-btn-bg) !important;
     border: none;
-    border-left: 1px solid #d4c491;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px !important;
+    padding: 10px !important;
     box-sizing: border-box;
+    transition: background-color 0.2s ease;
+}
+
+/* Fixed: Only target the internal drawing parameters of the icon image, keeping the background pristine */
+[data-theme="dark"] .search-icon {
+    background-color: var(--search-btn-bg) !important;
+}
+
+    [data-theme="dark"] .search-icon img,
+    [data-theme="dark"] .search-icon input[type="image"] {
+        filter: brightness(0) invert(1) !important; /* Safely targets the inner drawing asset vector elements only */
+    }
+
+.search-icon:hover {
+    background: #ffffff !important;
+}
+
+[data-theme="dark"] .search-icon:hover img,
+[data-theme="dark"] .search-icon:hover input[type="image"] {
+    filter: none !important; /* Safely drops the rendering inversion elements when hovering */
+}
+
+/* --- 4. ICON & UTILITY NAVIGATION DECK GROUPS --- */
+#utility-buttons {
+    display: flex;
+    align-items: center;
     flex-shrink: 0;
 }
 
-    .search-icon:hover {
-        background: #005461 !important;
-    }
-
-    .search-icon:hover {
-        filter: invert(1);
-    }
-
-/* --- 4. ICON GROUPS --- */
 .icon-group {
     display: flex;
-    gap: 12px;
+    gap: 20px;
     align-items: center;
     flex-shrink: 0;
 }
 
 .nav-icon {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
+    filter: var(--icon-filter) !important;
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+    .nav-icon:hover {
+        filter: brightness(0) invert(0) sepia(1) saturate(20) hue-rotate(345deg) !important;
+        transform: translateY(-2px);
+    }
+
+/* ==========================================================================
+   SLIDING PILL INTERACTION SYSTEM SETUP
+   ========================================================================== */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.sliding-toggle-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 56px;
+    height: 26px;
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 9999px;
+    padding: 2px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+[data-theme="dark"] .sliding-toggle-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+[data-theme="dark"] .toggle-slider {
+    transform: translateX(30px);
+    background-color: #e50914;
+    box-shadow: 0 0 8px rgba(229, 9, 20, 0.4);
+}
+
+.toggle-icon {
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transition: color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.sun-icon {
+    margin-left: 2px;
+    color: #ffffff;
+}
+
+.moon-icon {
+    margin-right: 2px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .sun-icon {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .moon-icon {
+    color: #1e293b;
 }
 
 /* --- 5. NAVIGATION LINKS --- */
 .header-bottom {
     display: flex;
     justify-content: center;
-    padding: 10px 0;
-    border-top: 1px solid rgba(0,0,0,0.05);
+    padding: 14px 0 16px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 #user-nav ul, #admin-nav ul {
     display: flex;
     list-style: none;
-    gap: 30px;
+    gap: 45px;
     margin: 0;
     padding: 0;
 }
 
-#user-nav a {
-    color: #0000FF;
-    font-weight: bold;
+#user-nav a, #admin-nav a {
+    color: var(--nav-link) !important;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
     text-decoration: none;
     text-transform: uppercase;
-    font-size: 13px;
+    font-size: 12.5px;
+    letter-spacing: 1px;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-block;
 }
 
-#admin-nav a {
-    color: #0000FF;
-    font-weight: bold;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-size: 13px;
-}
+    #user-nav a:hover, #admin-nav a:hover {
+        color: var(--nav-link-hover) !important;
+        transform: translateY(-1px);
+    }
 
 /* --- 6. MAIN CONTENT --- */
 .main-container {
     flex: 1 0 auto;
-    padding: 20px 5%;
+    padding: 40px 5%;
 }
 
-/* --- 7. PREMIUM FOOTER (FIXED LINK COLORS & STACKING) --- */
+/* --- 7. ORIGINAL HIGHER-CONTRAST PREMIUM FOOTER --- */
 footer {
     flex-shrink: 0;
-    background-color: #1a1a1a;
+    background-color: var(--original-footer-bg) !important;
     color: #ffffff;
-    padding: 50px 0 20px 0;
-    border-top: 4px solid #D4AF37;
+    padding: 60px 0 20px 0;
+    border-top: 4px solid var(--brand-racing-yellow); /* Bright racing gold border track string */
+    box-shadow: 0 -6px 25 rgba(0, 0, 0, 0.15);
 }
 
 .footer-content {
@@ -256,42 +413,41 @@ footer {
 }
 
 .footer-section h4 {
-    color: #D4AF37; /* Gold Header */
-    margin-bottom: 20px;
-    font-size: 15px;
+    color: var(--brand-racing-yellow);
+    font-family: 'Montserrat', sans-serif;
+    margin-bottom: 25px;
+    font-size: 14px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
 }
 
-/* This fixes the "Blue Link" and "Stacking" issue */
 .footer-section a {
-    color: #ccc !important; /* Normal off-white color */
+    color: rgba(255, 255, 255, 0.7) !important;
     text-decoration: none !important;
-    display: block; /* Forces each link to be on a new line (below each other) */
-    margin-bottom: 12px;
-    font-size: 14px;
-    transition: color 0.3s ease, transform 0.2s ease;
+    display: block;
+    margin-bottom: 14px;
+    font-size: 13.5px;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
     .footer-section a:hover {
-        color: #FAEAB1 !important; /* Turns Cream/Gold on hover */
-        transform: translateX(5px); /* Subtle slide effect */
+        color: #ffffff !important;
+        transform: translateX(4px);
     }
 
 .footer-section p {
-    color: #bbb;
-    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13.5px;
     line-height: 1.6;
 }
 
-/* --- FOOTER NEWSLETTER CONTAINER --- */
 .newsletter-container {
     display: flex;
     align-items: stretch;
     margin-top: 15px;
     height: 45px;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid #333;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     overflow: hidden;
 }
@@ -307,43 +463,44 @@ footer {
     height: 100%;
 }
 
-/* --- THE GRID-CENTERED BUTTON --- */
+    .footer-input::placeholder {
+        color: rgba(255, 255, 255, 0.35);
+    }
+
 .footer-btn {
-    background-color: #D4AF37 !important;
-    color: #1a1a1a !important;
-    text-decoration: none !important;
+    background-color: var(--brand-racing-yellow) !important;
+    color: var(--original-footer-bg) !important;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 700 !important;
     font-size: 12px !important;
-    padding: 0 20px !important;
-    /* Using Grid for absolute centering */
+    padding: 0 24px !important;
     display: grid !important;
     place-items: center !important;
     height: 100% !important;
     border: none !important;
     cursor: pointer !important;
-    /* Resetting all text-pushing properties */
     line-height: normal !important;
-    vertical-align: middle !important;
     margin: 0 !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
     .footer-btn:hover {
-        background-color: #FAEAB1 !important;
+        background-color: #ffffff !important;
     }
 
 .footer-bottom {
     text-align: center;
-    font-size: 11px;
+    font-size: 11.5px;
     margin-top: 40px;
     padding-top: 20px;
-    border-top: 1px solid #333;
-    color: #666;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.35);
 }
 
-/* --- 8. MOBILE RESPONSIVE (HORIZONTAL HEADER) --- */
+/* --- 8. MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
     #nav-bar {
-        padding: 8px 2%;
+        padding: 12px 3% 10px 3%;
     }
 
     .header-top {
@@ -352,7 +509,7 @@ footer {
     }
 
     .logo-img {
-        width: 60px;
+        width: 62px;
     }
 
     #search-bar {
@@ -360,20 +517,20 @@ footer {
     }
 
     .search-icon {
-        width: 34px !important;
+        width: 36px !important;
     }
 
     .icon-group {
-        gap: 8px;
+        gap: 12px;
     }
 
     .nav-icon {
-        width: 20px;
-        height: 20px;
+        width: 19px;
+        height: 19px;
     }
 
     #user-nav ul, #admin-nav ul {
-        gap: 12px;
+        gap: 20px;
     }
 
     .footer-content {
@@ -382,84 +539,98 @@ footer {
     }
 
     .footer-section a:hover {
-        transform: none; /* Disable slide on mobile center align */
+        transform: none;
     }
 }
 
+/* --- COHESIVE ANIMATED DEVELOPER OVERLAY NEON GLOW --- */
 .developer-link {
-    color: #D4AF37 !important; /* Gold to match your theme */
+    color: var(--brand-racing-yellow) !important;
     text-decoration: none;
     font-weight: bold;
     transition: all 0.3s ease;
     padding-bottom: 2px;
     border-bottom: 1px solid transparent;
+    display: inline-block;
 }
 
     .developer-link:hover {
-        color: #FAEAB1 !important; /* Changes to cream on hover */
-        border-bottom: 1px solid #FAEAB1;
-        text-shadow: 0 0 8px rgba(250, 234, 177, 0.4);
+        color: #ffffff !important;
+        border-bottom-color: #ffffff;
+        text-shadow: 0 0 10px var(--brand-racing-yellow), 0 0 20px var(--brand-racing-yellow);
     }
 
-/* --- CONTENT PAGE STYLING --- */
-
-/* Use this wrapper on your Pages to create a clean workspace */
+/* --- CONTENT PAGE STYLING RULES --- */
 .content-card {
-    background-color: #ffffff; /* Clean white background for data */
-    border-radius: 8px;
-    padding: 30px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    color: #333; /* Dark text for easy reading */
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 35px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     margin-bottom: 40px;
+    transition: background-color 0.3s ease;
 }
 
-/* Page Titles */
 .page-header {
-    color: #FAEAB1; /* Soft cream for the title on the teal background */
+    color: var(--text-main);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
     margin-bottom: 25px;
-    font-weight: 300;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 }
 
-/* Grid for Car Cards */
 .item-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 25px;
 }
 
-/* Individual Car Card Styling */
 .car-card {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 10px;
+    background: var(--card-bg);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
-    .car-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
+[data-theme="dark"] .car-card {
+    border-color: rgba(255,255,255,0.04);
+}
+
+.car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+}
 
 .car-info {
-    padding: 15px;
+    padding: 20px;
     text-align: center;
 }
 
 .car-price {
-    color: #005461; /* Deep teal for the price */
-    font-weight: bold;
-    font-size: 18px;
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 19px;
+    margin-bottom: 12px;
 }
 
 .buy-btn {
-    background-color: #D4AF37; /* Gold only for the button */
-    color: #1a1a1a;
+    background-color: #232b35;
+    color: var(--brand-cream);
     border: none;
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-weight: bold;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+[data-theme="dark"] .buy-btn {
+    background-color: var(--header-bg);
+    color: var(--text-main);
+}
+
+.buy-btn:hover {
+    background-color: #e50914;
+    color: #ffffff;
 }

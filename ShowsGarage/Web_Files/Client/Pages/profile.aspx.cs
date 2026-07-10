@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Net;
@@ -10,15 +11,15 @@ namespace ShowsGarage.Web_Files.Client.Pages
 {
     public partial class profile : Page
     {
-        private readonly string connStr = System.Configuration.ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
+        private string connStr => ConfigurationManager.ConnectionStrings["ShowsGarage"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             // Restored the original authorization check and ReturnUrl tracking
             if (Session["UserRole"] == null)
             {
-                string currentUrlWithQueryString = base.Request.Url.PathAndQuery;
-                base.Response.Redirect("/Web_Files/Master_Pages/Pages/login.aspx?ReturnUrl=" + HttpUtility.UrlEncode(currentUrlWithQueryString));
+                string currentUrlWithQueryString = Request.Url.PathAndQuery;
+                Response.Redirect("/Web_Files/Master_Pages/Pages/login.aspx?ReturnUrl=" + HttpUtility.UrlEncode(currentUrlWithQueryString));
                 return;
             }
 
@@ -34,7 +35,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             {
                 using (SqlConnection con = new SqlConnection(connStr))
                 {
-                    string query = "SELECT FullName, Phone, Email FROM Users WHERE Email = @email";
+                    const string query = "SELECT FullName, Phone, Email FROM Users WHERE Email = @email";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -59,7 +60,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             catch (Exception ex)
             {
                 lblStatus.Text = "Error loading profile data: " + ex.Message;
-                lblStatus.ForeColor = Color.Red;
+                lblStatus.ForeColor = Color.FromArgb(229, 9, 20); // Aligned to crimson validation red
             }
         }
 
@@ -69,7 +70,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             {
                 using (SqlConnection con = new SqlConnection(connStr))
                 {
-                    string query = "UPDATE Users SET FullName = @name, Phone = @phone WHERE Email = @email";
+                    const string query = "UPDATE Users SET FullName = @name, Phone = @phone WHERE Email = @email";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -92,7 +93,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             catch (Exception ex)
             {
                 lblStatus.Text = "Profile Save Error: " + ex.Message;
-                lblStatus.ForeColor = Color.Red;
+                lblStatus.ForeColor = Color.FromArgb(229, 9, 20);
             }
         }
 
@@ -135,7 +136,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             catch (Exception ex)
             {
                 lblStatus.Text = "SMTP Connection Error: " + ex.Message;
-                lblStatus.ForeColor = Color.Red;
+                lblStatus.ForeColor = Color.FromArgb(229, 9, 20);
             }
         }
 
@@ -146,7 +147,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             phOtpVerification.Visible = false;
             rfvCurrentPass.Enabled = true;
             lblStatus.Text = "Recovery mode aborted.";
-            lblStatus.ForeColor = Color.Yellow;
+            lblStatus.ForeColor = Color.FromArgb(255, 204, 0); // Vivid Yellow warn accent indicator
         }
 
         protected void btnUpdatePassword_Click(object sender, EventArgs e)
@@ -162,8 +163,8 @@ namespace ShowsGarage.Web_Files.Client.Pages
                 {
                     con.Open();
 
-                    string checkQuery = "SELECT PasswordHash FROM Users WHERE Email = @email";
-                    string currentDbPassword = "";
+                    const string checkQuery = "SELECT PasswordHash FROM Users WHERE Email = @email";
+                    string currentDbPassword = string.Empty;
 
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, con))
                     {
@@ -175,32 +176,31 @@ namespace ShowsGarage.Web_Files.Client.Pages
                         }
                     }
 
-                    // Handle validation conditionally based on mode (OTP vs standard password check)
+                    // Handle verification route mapping conditionally based on active drawer views
                     if (phOtpVerification.Visible)
                     {
                         if (Session["ProfileRecoveryOTP"] == null || txtProfileOTP.Text.Trim() != Session["ProfileRecoveryOTP"].ToString())
                         {
                             lblStatus.Text = "The verification profile OTP code is incorrect.";
-                            lblStatus.ForeColor = Color.Red;
+                            lblStatus.ForeColor = Color.FromArgb(229, 9, 20);
                             return;
                         }
                     }
                     else if (txtCurrentPassword.Text != currentDbPassword)
                     {
                         lblStatus.Text = "Incorrect current password. Identity authentication check failed.";
-                        lblStatus.ForeColor = Color.Red;
+                        lblStatus.ForeColor = Color.FromArgb(229, 9, 20);
                         return;
                     }
 
-                    // Restored reuse layout validation logic
                     if (newPassword == currentDbPassword)
                     {
                         lblStatus.Text = "You cannot reuse your current password layout. Please select a distinct one.";
-                        lblStatus.ForeColor = Color.Red;
+                        lblStatus.ForeColor = Color.FromArgb(229, 9, 20);
                         return;
                     }
 
-                    string updateQuery = "UPDATE Users SET PasswordHash = @newPassword WHERE Email = @email";
+                    const string updateQuery = "UPDATE Users SET PasswordHash = @newPassword WHERE Email = @email";
                     using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                     {
                         updateCmd.Parameters.AddWithValue("@newPassword", newPassword);
@@ -212,14 +212,12 @@ namespace ShowsGarage.Web_Files.Client.Pages
                             lblStatus.Text = "Security credentials updated securely and successfully!";
                             lblStatus.ForeColor = Color.LightGreen;
 
-                            // Reset input fields
                             txtCurrentPassword.Text = string.Empty;
                             txtNewPassword.Text = string.Empty;
                             txtConfirmNewPassword.Text = string.Empty;
                             txtProfileOTP.Text = string.Empty;
                             Session["ProfileRecoveryOTP"] = null;
 
-                            // Revert view back to default state
                             phStandardReset.Visible = true;
                             phOtpVerification.Visible = false;
                             rfvCurrentPass.Enabled = true;
@@ -230,7 +228,7 @@ namespace ShowsGarage.Web_Files.Client.Pages
             catch (Exception ex)
             {
                 lblStatus.Text = "Credentials Update Failure: " + ex.Message;
-                lblStatus.ForeColor = Color.Red;
+                lblStatus.ForeColor = Color.FromArgb(229, 9, 20);
             }
         }
     }
